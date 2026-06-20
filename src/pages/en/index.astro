@@ -8,7 +8,7 @@ import AboutUs from "@/components/home/AboutUs.astro";
 import Process from "@/components/home/Process.astro";
 import Campaign from "@/components/home/Campaign.astro";
 
-// La page solo arma el SEO (ns "meta"). El contenido lo trae cada componente.
+// Misma estructura que la home es; getLang detecta "/en" y los textos salen en inglés.
 const lang = getLang(Astro.url);
 const meta = useTranslations(lang, "meta");
 ---
