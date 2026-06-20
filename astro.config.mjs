@@ -20,6 +20,7 @@ export default defineConfig({
     imageService: true,
     maxDuration: 30,
   }),
+  server: { port: 8090 },
   security: { checkOrigin: true },
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
   integrations: [icon(), react()],

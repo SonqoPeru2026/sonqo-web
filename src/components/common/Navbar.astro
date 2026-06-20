@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import { languages } from "@/i18n/config";
 
@@ -18,8 +19,8 @@ const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
 
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur">
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-    <a href={localizePath("/", lang)} class="font-heading text-xl font-bold text-primary">
-      Sonqo
+    <a href={localizePath("/", lang)} class="text-primary" aria-label="Sonqo">
+      <Icon name="logo-sonqo" class="h-8 w-auto" />
     </a>
 
     <ul class="flex items-center gap-6">
@@ -33,7 +34,7 @@ const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
       <li>
         <a
           href={localizePath(path, otherLang)}
-          class="font-body text-sm font-medium text-burgundy-dark"
+          class="font-body text-sm font-medium text-burgundy-700"
         >
           {languages[otherLang]}
         </a>
