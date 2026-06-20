@@ -1,0 +1,13 @@
+---
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "packageCard");
+---
+
+<section id="packages" class="py-20">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-heading text-3xl font-bold text-burgundy">{t.title}</h2>
+    {/* TODO diseño próxima semana */}
+  </div>
+</section>

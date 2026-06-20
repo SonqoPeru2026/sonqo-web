@@ -1,0 +1,43 @@
+---
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import { languages } from "@/i18n/config";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "navbar");
+
+const links = [
+  { href: "/", label: t.home },
+  { href: "/donate", label: t.donate },
+  { href: "/faq", label: t.faq },
+];
+
+// Ruta equivalente en el otro idioma (para el switcher).
+const otherLang = lang === "es" ? "en" : "es";
+const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
+---
+
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <a href={localizePath("/", lang)} class="font-heading text-xl font-bold text-primary">
+      Sonqo
+    </a>
+
+    <ul class="flex items-center gap-6">
+      {links.map((l) => (
+        <li>
+          <a href={localizePath(l.href, lang)} class="font-body text-burgundy hover:text-primary">
+            {l.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <a
+          href={localizePath(path, otherLang)}
+          class="font-body text-sm font-medium text-burgundy-dark"
+        >
+          {languages[otherLang]}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
