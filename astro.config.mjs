@@ -36,26 +36,26 @@ export default defineConfig({
 
   env: {
     schema: {
-      // MercadoPago — requeridas, sin optional
-      MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret' }),
-      PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
+      // MercadoPago — pendiente para el final. Descomentar al integrar pagos.
+      // MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret' }),
+      // PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
 
-      // Sanity — un solo PROJECT_ID público, token secreto
-      PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public', optional: true }),
-      SANITY_DATASET: envField.string({ context: 'client', access: 'public', default: 'production' }),
-      SANITY_API_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Sanity — un solo PROJECT_ID público, token secreto. Requeridas.
+      PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),
+      SANITY_DATASET: envField.string({ context: 'client', access: 'public' }),
+      SANITY_API_TOKEN: envField.string({ context: 'server', access: 'secret' }),
 
-      // Resend — API key secreta + remitente/destino del formulario
-      RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
-      RESEND_FROM: envField.string({ context: 'server', access: 'public', optional: true }),
-      RESEND_TO: envField.string({ context: 'server', access: 'public', optional: true }),
+      // Resend — API key secreta + remitente/destino del formulario. Requeridas.
+      RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
+      RESEND_FROM: envField.string({ context: 'server', access: 'public' }),
+      RESEND_TO: envField.string({ context: 'server', access: 'public' }),
 
-      // Google Analytics
-      PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public', optional: true }),
+      // Google Analytics — pendiente para el final. Descomentar al configurar GA4.
+      // PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public' }),
 
-      // Supabase
-      PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public', optional: true }),
-      PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      // Supabase — requeridas.
+      PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public' }),
+      PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public' }),
     },
   },
 });
