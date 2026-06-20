@@ -1,1 +1,44 @@
+/* === Fuentes: Ubuntu self-hosted (sin request externo, sin layout shift) === */
+@import "@fontsource/ubuntu/400.css"; /* Regular — body */
+@import "@fontsource/ubuntu/500.css"; /* Medium  — subtítulos */
+@import "@fontsource/ubuntu/700.css"; /* Bold    — títulos */
+
 @import "tailwindcss";
+
+@theme {
+  /* === Tipografía === */
+  --font-heading: "Ubuntu", sans-serif;
+  --font-body: "Ubuntu", sans-serif;
+
+  /* === Marca: Rojo primario === */
+  --color-primary: #e4003f;
+  --color-primary-light: #ff4d7a;
+  --color-primary-dark: #b0002f;
+
+  /* === Marca: Burgundy === */
+  --color-burgundy: #540545;
+  --color-burgundy-light: #7a1a6b;
+  --color-burgundy-dark: #2e0126;
+
+  /* === Marca: Coral === */
+  --color-coral: #eb526b;
+  --color-coral-light: #f28a9a;
+  --color-coral-dark: #c73050;
+
+  /* === Marca: Rosa suave === */
+  --color-pink: #e88ca1;
+  --color-pink-light: #f2b8c6;
+  --color-pink-dark: #c4607a;
+}
+
+/* === Base === */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
