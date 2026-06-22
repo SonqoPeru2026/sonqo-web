@@ -1,0 +1,111 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "footer");
+const nav = useTranslations(lang, "navbar");
+const year = new Date().getFullYear();
+
+const home = localizePath("/", lang);
+
+const explore = [
+  { href: `${home}#proposito`, label: nav.purpose },
+  { href: `${home}#logros`, label: nav.achievements },
+  { href: `${home}#nosotros`, label: nav.about },
+  { href: `${home}#contacto`, label: nav.contact },
+];
+
+const info = [
+  { href: "/terminos.pdf", label: t.terms, external: true },
+  { href: "/privacidad.pdf", label: t.privacy, external: true },
+  { href: `${home}#faq`, label: t.faq, external: false },
+];
+
+const socials = [
+  { href: "https://www.instagram.com/sonqoperusolidario/", icon: "logo-instagram", label: "Instagram" },
+  { href: "https://www.linkedin.com/company/sonqo-peru-solidario/", icon: "logo-linkedln", label: "LinkedIn" },
+  { href: "https://www.facebook.com/sonqoperusolidario/", icon: "logo-facebook", label: "Facebook" },
+];
+---
+
+<footer class="bg-gradient-to-b from-primary from-[89%] to-coral text-white">
+  <div class="mx-auto max-w-7xl px-8 pt-20 pb-10">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1fr]">
+      <!-- Marca -->
+      <div>
+        <Icon name="logo-sonqo" class="h-8 w-auto" />
+        <p class="mt-8 max-w-sm font-body font-medium text-white/90">
+          {t.tagline}
+        </p>
+      </div>
+
+      <!-- Explora -->
+      <nav aria-label={t.exploreHeading}>
+        <h2 class="inline-block border-b-2 border-white/60 pb-1 font-heading text-sm font-bold uppercase tracking-wide">
+          {t.exploreHeading}
+        </h2>
+        <ul class="mt-6 space-y-4">
+          {
+            explore.map((l) => (
+              <li>
+                <a href={l.href} class="font-medium text-white/80 transition-colors hover:text-white">
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <!-- Información -->
+      <nav aria-label={t.infoHeading}>
+        <h2 class="inline-block border-b-2 border-white/60 pb-1 font-heading text-sm font-bold uppercase tracking-wide">
+          {t.infoHeading}
+        </h2>
+        <ul class="mt-6 space-y-4">
+          {
+            info.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  target={l.external ? "_blank" : undefined}
+                  rel={l.external ? "noopener noreferrer" : undefined}
+                  class="font-medium text-white/80 transition-colors hover:text-white"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <hr class="mt-16 border-white/25" />
+
+    <div class="mt-8 flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+      <p class="font-body text-sm font-medium text-white/80">
+        © {year} Sonqo Perú · {t.rights}
+      </p>
+
+      <ul class="flex items-center gap-3">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-white transition hover:-translate-y-0.5 hover:bg-white/90"
+              >
+                <Icon name={s.icon} class="h-7 w-7 text-primary" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

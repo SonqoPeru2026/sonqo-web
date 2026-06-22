@@ -1,1 +1,94 @@
+/* === Fuentes: Ubuntu self-hosted (sin request externo, sin layout shift) === */
+@import "@fontsource/ubuntu/400.css"; /* Regular — body */
+@import "@fontsource/ubuntu/500.css"; /* Medium  — subtítulos */
+@import "@fontsource/ubuntu/700.css"; /* Bold    — títulos */
+
 @import "tailwindcss";
+
+@theme {
+  /* === Tipografía === */
+  --font-heading: "Ubuntu", sans-serif;
+  --font-body: "Ubuntu", sans-serif;
+
+  /* === Rojo primario (DEFAULT = 500) === */
+  --color-primary: #e4003f;
+  --color-primary-50: #fff1f4;
+  --color-primary-100: #ffdbe3;
+  --color-primary-200: #ffb8c8;
+  --color-primary-300: #ff4d7a; /* light original */
+  --color-primary-400: #f51d5a;
+  --color-primary-500: #e4003f; /* base original */
+  --color-primary-600: #c70036;
+  --color-primary-700: #b0002f; /* dark original */
+  --color-primary-800: #8f0027;
+  --color-primary-900: #6b001d;
+  --color-primary-950: #420012;
+
+  /* === Burgundy (DEFAULT = 500) === */
+  --color-burgundy: #540545;
+  --color-burgundy-50: #f7eef5;
+  --color-burgundy-100: #ecd6e7;
+  --color-burgundy-200: #d9aecf;
+  --color-burgundy-300: #b87aab;
+  --color-burgundy-400: #7a1a6b; /* light original */
+  --color-burgundy-500: #540545; /* base original */
+  --color-burgundy-600: #420436;
+  --color-burgundy-700: #2e0126; /* dark original */
+  --color-burgundy-800: #25011f;
+  --color-burgundy-900: #1a0116;
+  --color-burgundy-950: #0e000b;
+
+  /* === Coral (DEFAULT = 500) === */
+  --color-coral: #eb526b;
+  --color-coral-50: #fef2f4;
+  --color-coral-100: #fcdfe4;
+  --color-coral-200: #f9c2cb;
+  --color-coral-300: #f28a9a; /* light original */
+  --color-coral-400: #f0697f;
+  --color-coral-500: #eb526b; /* base original */
+  --color-coral-600: #d83a55;
+  --color-coral-700: #c73050; /* dark original */
+  --color-coral-800: #a32742;
+  --color-coral-900: #821f35;
+  --color-coral-950: #4d0f1e;
+
+  /* === Rosa suave (DEFAULT = 500) === */
+  --color-pink: #e88ca1;
+  --color-pink-50: #fdf5f7;
+  --color-pink-100: #f9e3e9;
+  --color-pink-200: #f2b8c6; /* light original */
+  --color-pink-300: #ec9fb1;
+  --color-pink-400: #ea93a6;
+  --color-pink-500: #e88ca1; /* base original */
+  --color-pink-600: #d6738b;
+  --color-pink-700: #c4607a; /* dark original */
+  --color-pink-800: #a04d63;
+  --color-pink-900: #7c3b4c;
+  --color-pink-950: #4a232e;
+
+  /* === Neutral / texto (DEFAULT = 500). #666 y #000 incluidos === */
+  --color-ink: #666666;
+  --color-ink-50: #f6f6f7;
+  --color-ink-100: #e7e7e9;
+  --color-ink-200: #cfcfd3;
+  --color-ink-300: #adadb4;
+  --color-ink-400: #84848d;
+  --color-ink-500: #666666; /* gris original */
+  --color-ink-600: #525257;
+  --color-ink-700: #404044;
+  --color-ink-800: #2a2a2d;
+  --color-ink-900: #171718;
+  --color-ink-950: #000000; /* negro original */
+}
+
+/* === Base === */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
