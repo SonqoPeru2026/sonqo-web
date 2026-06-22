@@ -1,44 +1,191 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
-import { languages } from "@/i18n/config";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "navbar");
 
+// Anclas de la one-page principal. Desde otra page apuntan a "/#seccion".
+const home = localizePath("/", lang);
 const links = [
-  { href: "/", label: t.home },
-  { href: "/donate", label: t.donate },
-  { href: "/faq", label: t.faq },
+  { href: `${home}#proposito`, label: t.purpose },
+  { href: `${home}#logros`, label: t.achievements },
+  { href: `${home}#nosotros`, label: t.about },
+  { href: `${home}#contacto`, label: t.contact },
 ];
 
-// Ruta equivalente en el otro idioma (para el switcher).
-const otherLang = lang === "es" ? "en" : "es";
+// Switcher de idioma: misma ruta en el otro locale.
 const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
+const langOption = (code: "es" | "en", label: string) => ({
+  label,
+  href: localizePath(path, code),
+  active: lang === code,
+});
+const langs = [langOption("es", "ES"), langOption("en", "EN")];
 ---
 
-<header class="sticky top-0 z-50 bg-white/90 backdrop-blur">
-  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-    <a href={localizePath("/", lang)} class="text-primary" aria-label="Sonqo">
+<header class="fixed inset-x-0 top-0 z-50 px-4 py-4">
+  <nav
+    class="mx-auto flex max-w-6xl items-center justify-between gap-6 rounded-[20px] bg-white px-6 py-5 shadow-[0_8px_24px_-4px_rgb(0_0_0/0.2)] sm:px-8"
+  >
+    <a href={home} aria-label="Sonqo Perú" class="text-primary">
       <Icon name="logo-sonqo" class="h-8 w-auto" />
     </a>
 
-    <ul class="flex items-center gap-6">
-      {links.map((l) => (
-        <li>
-          <a href={localizePath(l.href, lang)} class="font-body text-burgundy hover:text-primary">
-            {l.label}
-          </a>
-        </li>
-      ))}
-      <li>
-        <a
-          href={localizePath(path, otherLang)}
-          class="font-body text-sm font-medium text-burgundy-700"
-        >
-          {languages[otherLang]}
-        </a>
-      </li>
+    <ul class="hidden items-center gap-8 md:flex">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="font-heading text-sm font-bold uppercase tracking-wide text-ink-900 transition-colors hover:text-primary"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
     </ul>
+
+    <!-- Controles desktop -->
+    <div class="hidden items-center gap-4 md:flex">
+      <div class="flex items-center rounded-full bg-ink-100 p-1 text-sm font-medium">
+        {
+          langs.map((o) => (
+            <a
+              href={o.href}
+              aria-current={o.active ? "true" : undefined}
+              class:list={[
+                "rounded-full px-3 py-1 transition-colors",
+                o.active ? "bg-white text-primary shadow-sm" : "text-ink-400 hover:text-ink-600",
+              ]}
+            >
+              {o.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <a
+        href={localizePath("/donate", lang)}
+        class="rounded-full bg-primary px-6 py-2.5 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+      >
+        {t.cta}
+      </a>
+    </div>
+
+    <!-- Botón hamburguesa (mobile) -->
+    <button
+      id="menu-open"
+      type="button"
+      aria-label="Abrir menú"
+      aria-controls="mobile-menu"
+      class="text-primary transition-transform hover:scale-110 active:scale-95 md:hidden"
+    >
+      <Icon name="menu" class="h-6 w-auto" />
+    </button>
   </nav>
 </header>
+
+<!-- Overlay menú mobile -->
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-[60] flex flex-col bg-primary px-6 py-6 text-white md:hidden"
+>
+  <div class="flex items-center justify-between">
+    <Icon name="logo-sonqo" class="h-8 w-auto text-white" />
+    <button id="menu-close" type="button" aria-label="Cerrar menú" class="p-2 text-white transition-transform hover:rotate-90">
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="5" y1="5" x2="19" y2="19" />
+        <line x1="19" y1="5" x2="5" y2="19" />
+      </svg>
+    </button>
+  </div>
+
+  <nav class="mt-12 flex flex-col" aria-label="Menú principal">
+    {
+      links.map((l, i) => (
+        <a
+          href={l.href}
+          style={`--i:${i}`}
+          class="menu-link flex items-baseline gap-4 border-b border-white/15 py-4 font-heading text-xl font-bold uppercase tracking-wide"
+        >
+          <span class="font-body text-xs font-medium text-white/40">0{i + 1}</span>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="mt-auto flex flex-col gap-5">
+    <div class="flex w-max items-center rounded-full bg-white/15 p-1 text-sm font-medium">
+      {
+        langs.map((o) => (
+          <a
+            href={o.href}
+            aria-current={o.active ? "true" : undefined}
+            class:list={[
+              "rounded-full px-4 py-1.5 transition-colors",
+              o.active ? "bg-white text-primary" : "text-white/70",
+            ]}
+          >
+            {o.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <a
+      href={localizePath("/donate", lang)}
+      class="rounded-full bg-white py-4 text-center font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+    >
+      {t.cta}
+    </a>
+  </div>
+</div>
+
+<style is:global>
+  #mobile-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-12px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      visibility 0.35s;
+  }
+  #mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  /* Links entran escalonados al abrir */
+  #mobile-menu .menu-link {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+    transition-delay: 0s;
+  }
+  #mobile-menu.is-open .menu-link {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i) * 0.07s);
+  }
+</style>
+
+<script>
+  const open = document.getElementById("menu-open");
+  const close = document.getElementById("menu-close");
+  const menu = document.getElementById("mobile-menu");
+
+  const setOpen = (state: boolean) => {
+    menu?.classList.toggle("is-open", state);
+    document.documentElement.classList.toggle("overflow-hidden", state);
+  };
+
+  open?.addEventListener("click", () => setOpen(true));
+  close?.addEventListener("click", () => setOpen(false));
+  menu?.querySelectorAll("a[href]").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+</script>

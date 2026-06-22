@@ -1,5 +1,7 @@
 export default {
-  home: "Inicio",
-  donate: "Donar",
-  faq: "Preguntas",
+  purpose: "Propósito",
+  achievements: "Logros",
+  about: "Nosotros",
+  contact: "Contáctanos",
+  cta: "Dona aquí",
 } as const;
