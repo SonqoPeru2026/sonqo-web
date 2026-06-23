@@ -80,8 +80,9 @@
   --color-ink-900: #171718;
   --color-ink-950: #000000; /* negro original */
 
-  /* === Fondo de página === */
-  --color-cream: #fcf9f8;
+  /* === Fondos de sección === */
+  --color-cream: #fcf9f8; /* Purpose */
+  --color-mist: #f6f2f2; /* Process */
 }
 
 /* === Base === */
