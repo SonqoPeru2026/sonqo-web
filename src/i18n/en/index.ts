@@ -10,6 +10,7 @@ import history from "./history";
 import gallery from "./gallery";
 import contact from "./contact";
 import campaign from "./campaign";
+import donateHero from "./donateHero";
 import packageCard from "./packageCard";
 import customAmount from "./customAmount";
 import bankTransfers from "./bankTransfers";
@@ -28,6 +29,7 @@ export default {
   gallery,
   contact,
   campaign,
+  donateHero,
   packageCard,
   customAmount,
   bankTransfers,
