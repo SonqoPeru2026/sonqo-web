@@ -79,6 +79,9 @@
   --color-ink-800: #2a2a2d;
   --color-ink-900: #171718;
   --color-ink-950: #000000; /* negro original */
+
+  /* === Fondo de página === */
+  --color-cream: #fcf9f8;
 }
 
 /* === Base === */

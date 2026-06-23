@@ -1,13 +1,63 @@
 ---
-import { getLang, useTranslations } from "@/i18n/utils";
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "purpose");
+
+const chips = [
+  { icon: "purpose-honorem", label: t.chipHonorem },
+  { icon: "purpose-freemoney", label: t.chipNonprofit },
+  { icon: "purpose-jacket", label: t.chipJackets },
+];
 ---
 
-<section id="purpose" class="py-20">
-  <div class="mx-auto max-w-6xl px-4">
-    <h2 class="font-heading text-3xl font-bold text-burgundy">{t.title}</h2>
-    {/* TODO diseño próxima semana */}
+<section id="proposito" class="bg-cream py-24">
+  <div class="mx-auto grid w-full max-w-[1200px] items-center gap-10 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
+    <!-- Columna texto -->
+    <div>
+      <div class="flex items-center gap-4">
+        <span class="h-0.5 w-8 bg-primary"></span>
+        <span class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+          {t.eyebrow}
+        </span>
+      </div>
+
+      <h2 class="mt-6 font-heading text-3xl font-bold uppercase leading-tight text-burgundy sm:text-4xl lg:text-[40px] lg:leading-[1.2]">
+        {t.title}
+      </h2>
+
+      <p class="mt-6 font-body leading-relaxed text-ink sm:text-lg">{t.paragraph1}</p>
+      <p class="mt-5 font-body leading-relaxed text-ink sm:text-lg">{t.paragraph2}</p>
+
+      <ul class="mt-8 flex flex-wrap gap-3 lg:flex-nowrap">
+        {
+          chips.map((chip) => (
+            <li class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-burgundy px-4 py-2 font-body text-sm font-medium text-white">
+              <Icon name={chip.icon} class="h-5 w-auto" />
+              {chip.label}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Tarjeta infografía -->
+    <div
+      class="flex flex-col items-start gap-4 rounded-3xl bg-[linear-gradient(145deg,var(--color-primary)_0%,#e11d48_100%)] p-8 text-white shadow-[0px_20px_25px_-5px_rgb(0_0_0/0.1),0px_8px_10px_-6px_rgb(0_0_0/0.1)] sm:p-10"
+    >
+      <Icon name="purpose-heart" class="h-8 w-auto" />
+
+      <h3 class="mt-2 font-heading text-2xl font-bold">{t.cardTitle}</h3>
+      <p class="font-body leading-relaxed text-white/90">{t.cardText}</p>
+
+      <a
+        href={localizePath("/infographic", lang)}
+        class="mt-2 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+      >
+        {t.cardCta}
+        <Icon name="purpose-download" class="h-4 w-auto" />
+      </a>
+    </div>
   </div>
 </section>

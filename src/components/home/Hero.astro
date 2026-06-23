@@ -36,15 +36,20 @@ const stats = [
       </p>
 
       <!-- Stats -->
-      <dl class="mt-8 flex items-center gap-6">
+      <dl
+        class="mt-8 inline-flex items-center gap-8 rounded-2xl border border-white/[0.59] px-6 py-4 backdrop-blur-[6px]"
+      >
         {
           stats.map((s, i) => (
-            <div class:list={[i > 0 && "border-l border-white/30 pl-6"]}>
-              <dt class="font-heading text-2xl font-bold">{s.value}</dt>
-              <dd class="mt-1 font-body text-xs font-medium uppercase tracking-wide text-white/80">
-                {s.label}
-              </dd>
-            </div>
+            <>
+              {i > 0 && <div aria-hidden class="h-10 w-px self-center bg-white/50" />}
+              <div>
+                <dt class="font-heading text-2xl font-bold leading-8">{s.value}</dt>
+                <dd class="mt-1 font-body text-xs font-medium uppercase tracking-wide text-white/80">
+                  {s.label}
+                </dd>
+              </div>
+            </>
           ))
         }
       </dl>
@@ -65,12 +70,18 @@ const stats = [
           {hero.ctaMore}
         </a>
       </div>
+
+      <!-- Pago seguro -->
+      <p class="mt-4 flex items-center gap-2 px-3 font-body text-[13px] text-white/70">
+        <Icon name="hero-lock" class="h-5 w-auto" />
+        {hero.secureLabel}
+      </p>
     </div>
 
     <!-- Columna imagen (corazón) -->
     <div class="flex justify-center lg:justify-end">
       <img
-        src="/images/hero-sonqo.png"
+        src="/images/hero-sonqo.webp"
         alt={hero.title}
         width="600"
         height="600"
