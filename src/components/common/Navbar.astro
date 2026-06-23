@@ -79,7 +79,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
     <button
       id="menu-open"
       type="button"
-      aria-label="Abrir menú"
+      aria-label={t.menuOpen}
       aria-controls="mobile-menu"
       class="text-primary transition-transform hover:scale-110 active:scale-95 md:hidden"
     >
@@ -88,92 +88,128 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
   </nav>
 </header>
 
-<!-- Overlay menú mobile -->
-<div
+<!-- Backdrop -->
+<div id="menu-backdrop" class="fixed inset-0 z-[55] bg-black/50 md:hidden"></div>
+
+<!-- Drawer móvil (entra desde la izquierda) -->
+<aside
   id="mobile-menu"
-  class="fixed inset-0 z-[60] flex flex-col bg-primary px-6 py-6 text-white md:hidden"
+  class="fixed inset-y-0 right-0 z-[60] flex h-full w-[86%] max-w-sm flex-col bg-primary text-white shadow-2xl md:hidden"
 >
-  <div class="flex items-center justify-between">
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-5">
     <Icon name="logo-sonqo" class="h-8 w-auto text-white" />
-    <button id="menu-close" type="button" aria-label="Cerrar menú" class="p-2 text-white transition-transform hover:rotate-90">
-      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="5" y1="5" x2="19" y2="19" />
-        <line x1="19" y1="5" x2="5" y2="19" />
-      </svg>
+    <button
+      id="menu-close"
+      type="button"
+      aria-label={t.menuClose}
+      class="flex size-10 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25"
+    >
+      <Icon name="close" class="h-5 w-5" />
     </button>
   </div>
 
-  <nav class="mt-12 flex flex-col" aria-label="Menú principal">
-    {
-      links.map((l, i) => (
-        <a
-          href={l.href}
-          style={`--i:${i}`}
-          class="menu-link flex items-baseline gap-4 border-b border-white/15 py-4 font-heading text-xl font-bold uppercase tracking-wide"
-        >
-          <span class="font-body text-xs font-medium text-white/40">0{i + 1}</span>
-          {l.label}
-        </a>
-      ))
-    }
-  </nav>
-
-  <div class="mt-auto flex flex-col gap-5">
-    <div class="flex w-max items-center rounded-full bg-white/15 p-1 text-sm font-medium">
+  <!-- Contenido -->
+  <div class="flex-1 overflow-y-auto px-5 pb-6">
+    <!-- Grupo: navegación -->
+    <nav class="menu-card rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:0" aria-label="Menú principal">
+      <p class="px-3 pb-1 pt-2 font-heading text-xs font-bold uppercase tracking-[0.15em] text-white/50">
+        {t.menuGroupNav}
+      </p>
       {
-        langs.map((o) => (
+        links.map((l) => (
           <a
-            href={o.href}
-            data-lang-switch
-            aria-current={o.active ? "true" : undefined}
-            class:list={[
-              "rounded-full px-4 py-1.5 transition-colors",
-              o.active ? "bg-white text-primary" : "text-white/70",
-            ]}
+            href={l.href}
+            class="block rounded-xl px-3 py-3 font-heading text-lg font-bold transition-colors hover:bg-white/10"
           >
-            {o.label}
+            {l.label}
           </a>
         ))
       }
-    </div>
+    </nav>
 
+    <!-- Grupo: idioma -->
+    <div class="menu-card mt-4 rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:1">
+      <p class="px-3 pb-1 pt-2 font-heading text-xs font-bold uppercase tracking-[0.15em] text-white/50">
+        {t.menuGroupLang}
+      </p>
+      <div class="mt-1 grid grid-cols-2 gap-2 p-1">
+        {
+          langs.map((o) => (
+            <a
+              href={o.href}
+              data-lang-switch
+              aria-current={o.active ? "true" : undefined}
+              class:list={[
+                "rounded-xl border py-3 text-center font-heading text-sm font-bold uppercase tracking-wide transition-colors",
+                o.active
+                  ? "border-white bg-white text-primary"
+                  : "border-white/25 text-white/80 hover:bg-white/10",
+              ]}
+            >
+              {o.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="px-5 pb-7 pt-1">
     <a
       href={localizePath("/donate", lang)}
-      class="rounded-full bg-white py-4 text-center font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+      class="block rounded-full bg-white py-4 text-center font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
     >
       {t.cta}
     </a>
   </div>
-</div>
+</aside>
 
 <style is:global>
-  #mobile-menu {
+  /* Backdrop */
+  #menu-backdrop {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-12px);
     transition:
-      opacity 0.35s ease,
-      transform 0.35s ease,
+      opacity 0.3s ease,
+      visibility 0.3s;
+  }
+  #menu-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* Drawer: entra deslizando desde la derecha */
+  #mobile-menu {
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
       visibility 0.35s;
   }
   #mobile-menu.is-open {
-    opacity: 1;
-    visibility: visible;
     transform: none;
+    visibility: visible;
   }
-  /* Links entran escalonados al abrir */
-  #mobile-menu .menu-link {
+  /* Tarjetas entran escalonadas */
+  #mobile-menu .menu-card {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateX(14px);
     transition:
       opacity 0.4s ease,
       transform 0.4s ease;
-    transition-delay: 0s;
   }
-  #mobile-menu.is-open .menu-link {
+  #mobile-menu.is-open .menu-card {
     opacity: 1;
     transform: none;
-    transition-delay: calc(0.12s + var(--i) * 0.07s);
+    transition-delay: calc(0.1s + var(--i) * 0.08s);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #mobile-menu,
+    #menu-backdrop,
+    #mobile-menu .menu-card {
+      transition-duration: 0.01ms;
+    }
   }
 </style>
 
@@ -183,14 +219,17 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
     const open = document.getElementById("menu-open");
     const close = document.getElementById("menu-close");
     const menu = document.getElementById("mobile-menu");
+    const backdrop = document.getElementById("menu-backdrop");
 
     const setOpen = (state: boolean) => {
       menu?.classList.toggle("is-open", state);
+      backdrop?.classList.toggle("is-open", state);
       document.documentElement.classList.toggle("overflow-hidden", state);
     };
 
     open?.addEventListener("click", () => setOpen(true));
     close?.addEventListener("click", () => setOpen(false));
+    backdrop?.addEventListener("click", () => setOpen(false));
     menu
       ?.querySelectorAll("a[href]")
       .forEach((a) => a.addEventListener("click", () => setOpen(false)));
