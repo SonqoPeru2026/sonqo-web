@@ -30,10 +30,10 @@ const chips = [
       <p class="mt-6 font-body leading-relaxed text-ink sm:text-lg">{t.paragraph1}</p>
       <p class="mt-5 font-body leading-relaxed text-ink sm:text-lg">{t.paragraph2}</p>
 
-      <ul class="mt-8 flex flex-wrap gap-3 lg:flex-nowrap">
+      <ul class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:flex-nowrap">
         {
           chips.map((chip) => (
-            <li class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-burgundy px-4 py-2 font-body text-sm font-medium text-white">
+            <li class="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-burgundy px-4 py-2 font-body text-sm font-medium text-white sm:w-auto sm:justify-start">
               <Icon name={chip.icon} class="h-5 w-auto" />
               {chip.label}
             </li>

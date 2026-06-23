@@ -56,7 +56,7 @@ const progress = bars.map((b) => ({
         {
           progress.map((bar) => (
             <div>
-              <div class="flex flex-wrap items-end justify-between gap-2">
+              <div class="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-2">
                 <span class="font-heading text-base font-bold text-[#111827]">{bar.label}</span>
                 <span class="text-sm">
                   <span class="font-heading text-lg font-bold text-primary">
@@ -71,7 +71,7 @@ const progress = bars.map((b) => ({
                 </span>
               </div>
 
-              <div class="relative mt-5 h-4 w-full rounded-full bg-black/[0.06]">
+              <div class="relative mt-9 h-4 w-full rounded-full bg-black/[0.06] sm:mt-6">
                 {/* ticks 25/50/75% */}
                 {[25, 50, 75].map((tick) => (
                   <span

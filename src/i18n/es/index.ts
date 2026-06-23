@@ -8,6 +8,7 @@ import aboutus from "./aboutus";
 import process from "./process";
 import history from "./history";
 import gallery from "./gallery";
+import contact from "./contact";
 import campaign from "./campaign";
 import packageCard from "./packageCard";
 import customAmount from "./customAmount";
@@ -26,6 +27,7 @@ export default {
   process,
   history,
   gallery,
+  contact,
   campaign,
   packageCard,
   customAmount,
