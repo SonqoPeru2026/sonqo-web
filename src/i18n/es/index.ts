@@ -6,6 +6,7 @@ import purpose from "./purpose";
 import motivation from "./motivation";
 import aboutus from "./aboutus";
 import process from "./process";
+import history from "./history";
 import campaign from "./campaign";
 import packageCard from "./packageCard";
 import customAmount from "./customAmount";
@@ -22,6 +23,7 @@ export default {
   motivation,
   aboutus,
   process,
+  history,
   campaign,
   packageCard,
   customAmount,

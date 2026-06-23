@@ -1,0 +1,215 @@
+---
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "history");
+
+// Datos históricos (placeholder hasta conectar Sanity). Solo 900, 5490 y 5000
+// son cifras oficiales; el resto es la trayectoria de referencia del diseño.
+const data = [
+  { year: 2016, value: 900 },
+  { year: 2017, value: 2790 },
+  { year: 2018, value: 3500 },
+  { year: 2019, value: 5490, kind: "peak" },
+  { year: 2020, value: 2490 },
+  { year: 2021, value: 3070 },
+  { year: 2022, value: 3420 },
+  { year: 2023, value: 2000 },
+  { year: 2024, value: 3700 },
+  { year: 2025, value: 4490 },
+  { year: 2026, value: 5000, kind: "goal" },
+];
+
+// Sistema de coordenadas del SVG (se escala al ancho del contenedor).
+const W = 1000;
+const H = 380;
+const padL = 56;
+const padR = 44;
+const padTop = 60;
+const baseY = 320; // eje X (valor 0)
+const vMax = 6000;
+
+const x = (i: number) => padL + (i * (W - padL - padR)) / (data.length - 1);
+const y = (v: number) => baseY - (v / vMax) * (baseY - padTop);
+
+const points = data.map((d, i) => ({ ...d, x: x(i), y: y(d.value) }));
+
+// Curva suave (Catmull-Rom → Bézier cúbica).
+function smoothPath(pts: { x: number; y: number }[]) {
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
+const linePath = smoothPath(points);
+const areaPath = `${linePath} L ${points.at(-1)!.x} ${baseY} L ${points[0].x} ${baseY} Z`;
+
+const gridlines = [1500, 3000, 4500, 6000];
+const peak = points.find((p) => p.kind === "peak")!;
+const goal = points.find((p) => p.kind === "goal")!;
+const first = points[0];
+const fmt = (n: number) => n.toLocaleString("en-US");
+---
+
+<section id="history" class="bg-mist py-24">
+  <div class="mx-auto w-full max-w-[1100px] px-6 sm:px-8">
+    <!-- Encabezado -->
+    <div class="text-center">
+      <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+        {t.eyebrow}
+      </p>
+      <h2 class="mt-4 font-heading text-2xl font-bold uppercase leading-tight text-burgundy sm:text-3xl lg:text-4xl">
+        {t.title}
+      </h2>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="mt-12 overflow-hidden rounded-3xl bg-burgundy p-2 shadow-[0px_24px_50px_-10px_rgb(102_0_26/0.3)] sm:p-4">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        class="h-auto w-full"
+        role="img"
+        aria-label={t.title}
+      >
+        <defs>
+          <linearGradient id="historyArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"></stop>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"></stop>
+          </linearGradient>
+          <filter id="historyGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Gridlines -->
+        {
+          gridlines.map((g) => (
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={y(g)}
+              y2={y(g)}
+              stroke="#ffffff"
+              stroke-opacity="0.08"
+            />
+          ))
+        }
+
+        <!-- Área + línea -->
+        <path d={areaPath} fill="url(#historyArea)"></path>
+        <path
+          d={linePath}
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          filter="url(#historyGlow)"></path>
+
+        <!-- Puntos -->
+        {
+          points.map((p) => (
+            <circle
+              cx={p.x}
+              cy={p.y}
+              r={p.kind ? 7 : 4.5}
+              fill="#e4003f"
+              stroke="#ffffff"
+              stroke-width="2"
+              filter={p.kind ? "url(#historyGlow)" : undefined}
+            />
+          ))
+        }
+
+        <!-- Etiquetas de años -->
+        {
+          points.map((p) => (
+            <text
+              x={p.x}
+              y={baseY + 28}
+              text-anchor="middle"
+              class="font-body"
+              font-size="13"
+              fill="#ffffff"
+              fill-opacity={p.kind === "goal" ? "0.95" : "0.55"}
+              font-weight={p.kind === "goal" ? "700" : "500"}
+            >
+              {p.year}
+            </text>
+          ))
+        }
+
+        <!-- Valor inicial 900 -->
+        <text
+          x={first.x}
+          y={first.y - 16}
+          text-anchor="middle"
+          class="font-heading"
+          font-size="14"
+          font-weight="700"
+          fill="#fff5e5"
+          fill-opacity="0.85">{fmt(first.value)}</text>
+
+        <!-- Pico histórico -->
+        <text
+          x={peak.x}
+          y={peak.y - 34}
+          text-anchor="middle"
+          class="font-heading"
+          font-size="11"
+          font-weight="700"
+          letter-spacing="0.6"
+          fill="#ffb28c">{t.peakLabel.toUpperCase()}</text>
+        <text
+          x={peak.x}
+          y={peak.y - 14}
+          text-anchor="middle"
+          class="font-heading"
+          font-size="20"
+          font-weight="700"
+          fill="#fff5e5">{fmt(peak.value)}</text>
+
+        <!-- Meta 2026 -->
+        <text
+          x={goal.x}
+          y={goal.y - 40}
+          text-anchor="end"
+          class="font-heading"
+          font-size="11"
+          font-weight="700"
+          letter-spacing="0.6"
+          fill="#ffb28c">{t.goalLabel.toUpperCase()}</text>
+        <text
+          x={goal.x}
+          y={goal.y - 18}
+          text-anchor="end"
+          class="font-heading"
+          font-size="22"
+          font-weight="700"
+          fill="#ffffff">{fmt(goal.value)}</text>
+
+        <!-- Chip de crecimiento -->
+        <g transform={`translate(${padL - 16}, 24)`}>
+          <rect width="168" height="32" rx="16" fill="#ffffff"></rect>
+          <text x="16" y="21" class="font-heading" font-size="13" font-weight="700" fill="#e4003f"
+            >{t.growthValue}</text>
+          <text x="68" y="21" class="font-body" font-size="13" fill="#e4003f">{t.growthLabel}</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
