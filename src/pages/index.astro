@@ -8,6 +8,7 @@ import AboutUs from "@/components/home/AboutUs.astro";
 import Process from "@/components/home/Process.astro";
 import History from "@/components/home/History.astro";
 import Campaign from "@/components/home/Campaign.astro";
+import Gallery from "@/components/home/Gallery.astro";
 
 // La page solo arma el SEO (ns "meta"). El contenido lo trae cada componente.
 const lang = getLang(Astro.url);
@@ -21,5 +22,6 @@ const meta = useTranslations(lang, "meta");
   <Motivation />
   <History />
   <Campaign />
+  <Gallery />
   <AboutUs />
 </Layout>
