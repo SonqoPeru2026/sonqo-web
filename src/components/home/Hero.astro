@@ -52,24 +52,24 @@ const stats = [
       </dl>
 
       <!-- CTAs -->
-      <div class="mt-10 flex flex-wrap items-center gap-4">
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
         <a
           href={localizePath("/donate", lang)}
-          class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90 sm:w-auto"
         >
           <Icon name="hero-donate" class="h-5 w-auto" />
           {hero.ctaDonate}
         </a>
         <a
           href="#proposito"
-          class="inline-flex items-center rounded-full border border-white px-6 py-3 font-heading text-sm font-bold text-white transition-colors hover:bg-white/10"
+          class="inline-flex w-full items-center justify-center rounded-full border border-white px-6 py-3 font-heading text-sm font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
         >
           {hero.ctaMore}
         </a>
       </div>
 
       <!-- Pago seguro -->
-      <p class="mt-4 flex items-center gap-2 px-3 font-body text-[13px] text-white/70">
+      <p class="mt-4 flex items-center justify-center gap-2 font-body text-[13px] text-white/70 sm:justify-start">
         <Icon name="hero-lock" class="h-5 w-auto" />
         {hero.secureLabel}
       </p>
