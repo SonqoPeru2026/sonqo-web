@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import "@/styles/global.css";
 import Navbar from "@/components/common/Navbar.astro";
 import Footer from "@/components/common/Footer.astro";
@@ -28,6 +29,9 @@ const lang = Astro.currentLocale ?? "es";
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+
+    <!-- Navegación suave entre páginas/idiomas, sin recarga completa -->
+    <ClientRouter />
   </head>
   <body class="font-body text-burgundy-900 antialiased">
     <Navbar />

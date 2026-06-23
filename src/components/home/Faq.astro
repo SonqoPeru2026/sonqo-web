@@ -81,14 +81,19 @@ const items = [
 <script>
   // Acordeón: un panel abierto a la vez. Solo togglea aria-expanded;
   // la animación de abrir/cerrar es 100% CSS (grid-template-rows 0fr→1fr).
-  document.querySelectorAll<HTMLElement>("[data-faq]").forEach((group) => {
-    const triggers = group.querySelectorAll<HTMLButtonElement>(".faq-trigger");
-    triggers.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const isOpen = btn.getAttribute("aria-expanded") === "true";
-        triggers.forEach((b) => b.setAttribute("aria-expanded", "false"));
-        btn.setAttribute("aria-expanded", String(!isOpen));
+  // Se vincula en cada carga, incluida la navegación soft con View Transitions.
+  function initFaq() {
+    document.querySelectorAll<HTMLElement>("[data-faq]").forEach((group) => {
+      const triggers = group.querySelectorAll<HTMLButtonElement>(".faq-trigger");
+      triggers.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const isOpen = btn.getAttribute("aria-expanded") === "true";
+          triggers.forEach((b) => b.setAttribute("aria-expanded", "false"));
+          btn.setAttribute("aria-expanded", String(!isOpen));
+        });
       });
     });
-  });
+  }
+
+  document.addEventListener("astro:page-load", initFaq);
 </script>

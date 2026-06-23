@@ -54,6 +54,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
           langs.map((o) => (
             <a
               href={o.href}
+              data-lang-switch
               aria-current={o.active ? "true" : undefined}
               class:list={[
                 "rounded-full px-3 py-1 transition-colors",
@@ -123,6 +124,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
         langs.map((o) => (
           <a
             href={o.href}
+            data-lang-switch
             aria-current={o.active ? "true" : undefined}
             class:list={[
               "rounded-full px-4 py-1.5 transition-colors",
@@ -176,16 +178,39 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
 </style>
 
 <script>
-  const open = document.getElementById("menu-open");
-  const close = document.getElementById("menu-close");
-  const menu = document.getElementById("mobile-menu");
+  // Se vincula en cada carga, incluida la navegación soft con View Transitions.
+  function initNavbar() {
+    const open = document.getElementById("menu-open");
+    const close = document.getElementById("menu-close");
+    const menu = document.getElementById("mobile-menu");
 
-  const setOpen = (state: boolean) => {
-    menu?.classList.toggle("is-open", state);
-    document.documentElement.classList.toggle("overflow-hidden", state);
-  };
+    const setOpen = (state: boolean) => {
+      menu?.classList.toggle("is-open", state);
+      document.documentElement.classList.toggle("overflow-hidden", state);
+    };
 
-  open?.addEventListener("click", () => setOpen(true));
-  close?.addEventListener("click", () => setOpen(false));
-  menu?.querySelectorAll("a[href]").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    open?.addEventListener("click", () => setOpen(true));
+    close?.addEventListener("click", () => setOpen(false));
+    menu
+      ?.querySelectorAll("a[href]")
+      .forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+    // Al cambiar de idioma, recordar la posición de scroll para no perderla.
+    document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((a) => {
+      a.addEventListener("click", () => {
+        sessionStorage.setItem("langScrollY", String(window.scrollY));
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initNavbar);
+
+  // Restaurar el scroll tras el cambio de idioma (antes de pintar, sin salto).
+  document.addEventListener("astro:after-swap", () => {
+    const y = sessionStorage.getItem("langScrollY");
+    if (y !== null) {
+      window.scrollTo(0, Number(y));
+      sessionStorage.removeItem("langScrollY");
+    }
+  });
 </script>
