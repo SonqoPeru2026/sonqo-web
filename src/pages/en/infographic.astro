@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+import InfographicHero from "@/components/infographic/InfographicHero.astro";
+import InfographicForm from "@/components/infographic/InfographicForm.astro";
+
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
+---
+
+<Layout title={meta.infographicTitle}>
+  <InfographicHero />
+  <InfographicForm />
+</Layout>

@@ -1,19 +1,19 @@
 ---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import { getLang, useTranslations } from "@/i18n/utils";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "gallery");
 
-const images = [
-  "1.jpg",
-  "2.jpg",
-  "3.jpg",
-  "4.jpg",
-  "5.jpg",
-  "6.jpg",
-  "7.jpg",
-  "8.jpg",
-];
+// Importa las 8 imágenes de la galería para que Astro las optimice (srcset + webp/avif).
+const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/images/gallery/*.webp",
+  { eager: true },
+);
+const images = Object.entries(galleryModules)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+  .map(([, mod]) => mod.default);
 
 const half = Math.ceil(images.length / 2);
 const rowTop = images.slice(0, half);
@@ -45,12 +45,13 @@ const rows = [
           <ul class:list={["marquee__track", row.direction === "right" && "marquee__track--reverse"]}>
             {row.items.map((src) => (
               <li class="marquee__item">
-                <img
-                  src={`/images/gallery/${src}`}
+                <Image
+                  src={src}
                   alt={t.imageAlt}
                   loading="lazy"
-                  width="340"
-                  height="240"
+                  width={340}
+                  height={240}
+                  sizes="340px"
                   class="h-full w-full rounded-2xl object-cover shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.2)]"
                 />
               </li>

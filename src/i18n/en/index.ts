@@ -14,6 +14,9 @@ import donateHero from "./donateHero";
 import packageCard from "./packageCard";
 import customAmount from "./customAmount";
 import bankTransfers from "./bankTransfers";
+import checkout from "./checkout";
+import infographic from "./infographic";
+import notFound from "./notFound";
 import faq from "./faq";
 
 export default {
@@ -33,5 +36,8 @@ export default {
   packageCard,
   customAmount,
   bankTransfers,
+  checkout,
+  infographic,
+  notFound,
   faq,
 } as const;

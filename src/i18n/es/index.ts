@@ -14,6 +14,9 @@ import donateHero from "./donateHero";
 import packageCard from "./packageCard";
 import customAmount from "./customAmount";
 import bankTransfers from "./bankTransfers";
+import checkout from "./checkout";
+import infographic from "./infographic";
+import notFound from "./notFound";
 import faq from "./faq";
 
 // Sección nueva → 1 import + 1 línea aquí (y su gemelo en en/index.ts).
@@ -34,5 +37,8 @@ export default {
   packageCard,
   customAmount,
   bankTransfers,
+  checkout,
+  infographic,
+  notFound,
   faq,
 } as const;

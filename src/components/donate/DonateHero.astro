@@ -1,20 +1,24 @@
 ---
+import { Image } from "astro:assets";
 import { getLang, useTranslations } from "@/i18n/utils";
+import donateHeroImg from "@/assets/images/donate-hero.webp";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "donateHero");
 ---
 
-<section class="relative isolate flex min-h-[50vh] items-center overflow-hidden pt-[140px] pb-16 text-white">
-  <!-- Imagen de fondo -->
-  <img
-    src="/images/donate-hero.png"
+<section class="relative isolate flex min-h-[60vh] items-center overflow-hidden pt-[140px] pb-16 text-white">
+  <!-- Imagen de fondo (LCP: priority = eager + fetchpriority high + preload) -->
+  <Image
+    src={donateHeroImg}
     alt=""
     aria-hidden="true"
-    class="absolute inset-0 -z-20 h-full w-full object-cover"
+    priority
+    sizes="100vw"
+    class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_45%]"
   />
-  <!-- Velo para legibilidad (negro 48%, como en el diseño) -->
-  <div aria-hidden="true" class="absolute inset-0 -z-10"></div>
+  <!-- Velo para legibilidad (negro 69%, como en el diseño) -->
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-black/[0.48]"></div>
 
   <div class="mx-auto w-full max-w-[1200px] px-6 text-center sm:px-8">
     <span
