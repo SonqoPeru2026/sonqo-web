@@ -1,0 +1,33 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  label: string;
+  value: string;
+  copyLabel: string;
+  copyable?: boolean;
+}
+
+const { label, value, copyLabel, copyable = true } = Astro.props;
+---
+
+<div class="flex items-center justify-between gap-3 border-b border-ink-100 pb-3">
+  <div class="min-w-0">
+    <span class="inline-block rounded bg-primary/10 px-2 py-0.5 font-heading text-xs font-bold text-primary">
+      {label}
+    </span>
+    <p class="mt-1 truncate font-body text-[#1b1c1c]">{value}</p>
+  </div>
+  {
+    copyable && (
+      <button
+        type="button"
+        data-copy={value}
+        class="copy-btn inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 font-heading text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+      >
+        <Icon name="copy" class="h-3.5 w-3.5" />
+        <span class="copy-label">{copyLabel}</span>
+      </button>
+    )
+  }
+</div>

@@ -1,13 +1,128 @@
 ---
+
+import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import CopyRow from "@/components/donate/CopyRow.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "bankTransfers");
+
+// Datos de cuentas (no traducibles).
+const bcpSoles = [
+  { label: t.soles, value: "193-2579491-0-63" },
+  { label: "CCI", value: "00219300257949106315" },
+];
+const bcpDollars = [
+  { label: t.dollars, value: "194-9944199-1-62" },
+  { label: "CCI", value: "00219400994419916299" },
+];
+const interbank = [
+  { label: t.soles, value: "200-3001754120" },
+  { label: "CCI", value: "00320000300175412039" },
+];
+const venmoName = "Pablo-Lohmann";
+
+const cardClass =
+  "rounded-3xl border border-primary/10 bg-white p-6 shadow-[0px_10px_30px_-14px_rgb(0_0_0/0.1)] sm:p-8";
 ---
 
-<section id="bank-transfers" class="py-20">
-  <div class="mx-auto max-w-6xl px-4">
-    <h2 class="font-heading text-3xl font-bold text-burgundy">{t.title}</h2>
-    {/* TODO diseño próxima semana */}
+<section id="bank-transfers" class="bg-cream pb-24 pt-4" data-copy-section data-copied={t.copied}>
+  <div class="mx-auto w-full max-w-[1200px] px-6 sm:px-8">
+    <h2 class="text-center font-heading text-xl font-bold uppercase text-primary sm:text-2xl">
+      {t.heading}
+    </h2>
+    <p class="mx-auto mt-3 max-w-2xl text-center font-body text-sm text-ink sm:text-base">
+      {t.subtitle}
+    </p>
+
+    <div class="mt-10 space-y-6">
+      <!-- BCP (ocupa todo el ancho por las 2 monedas) -->
+      <article class={cardClass}>
+        <Icon name="donate-bcp" class="h-8 w-auto" />
+        <div class="mt-6 grid gap-x-10 gap-y-4 sm:grid-cols-2">
+          <div class="space-y-4">
+            {bcpSoles.map((row) => <CopyRow label={row.label} value={row.value} copyLabel={t.copy} />)}
+          </div>
+          <div class="space-y-4">
+            {bcpDollars.map((row) => <CopyRow label={row.label} value={row.value} copyLabel={t.copy} />)}
+          </div>
+        </div>
+      </article>
+
+      <!-- Interbank · PayPal -->
+      <div class="grid gap-6 sm:grid-cols-2">
+        <article class={cardClass}>
+          <Icon name="donate-interbank" class="h-8 w-auto" />
+          <div class="mt-6 space-y-4">
+            {interbank.map((row) => <CopyRow label={row.label} value={row.value} copyLabel={t.copy} />)}
+          </div>
+        </article>
+
+        <article class={cardClass}>
+          <Icon name="donate-paypal" class="h-7 w-auto" />
+          <div class="mt-6 space-y-4">
+            <CopyRow label={t.email} value="contacto@sonqoperu.com" copyLabel={t.copy} />
+            <CopyRow label={t.name} value="Pablo Lohmann" copyLabel={t.copy} copyable={false} />
+          </div>
+        </article>
+      </div>
+
+      <!-- Venmo (centrado abajo) -->
+      <div class="flex justify-center">
+        <article class:list={[cardClass, "w-full max-w-md"]}>
+          <Icon name="donate-venmo" class="h-12 w-auto" />
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <div>
+              <span class="inline-block rounded bg-primary/10 px-2 py-0.5 font-heading text-xs font-bold text-primary">
+                {t.name}
+              </span>
+              <p class="mt-1 font-body text-[#1b1c1c]">{venmoName}</p>
+            </div>
+            <img
+              src="/images/donate-venmo-qr.webp"
+              alt="Venmo QR"
+              width="128"
+              height="128"
+              class="size-32 shrink-0 rounded-xl border border-ink-100 bg-white p-1.5"
+            />
+          </div>
+        </article>
+      </div>
+    </div>
   </div>
 </section>
+
+<script>
+  // Copiar al portapapeles con feedback temporal.
+  function initCopy() {
+    document.querySelectorAll<HTMLElement>("[data-copy-section]").forEach((section) => {
+      const copiedText = section.dataset.copied ?? "✓";
+      section.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((btn) => {
+        const label = btn.querySelector(".copy-label");
+        const original = label?.textContent ?? "";
+        btn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.copy ?? "");
+            if (!label) return;
+            label.textContent = copiedText;
+            btn.classList.add("is-copied");
+            setTimeout(() => {
+              label.textContent = original;
+              btn.classList.remove("is-copied");
+            }, 1500);
+          } catch {
+            /* clipboard no disponible */
+          }
+        });
+      });
+    });
+  }
+  document.addEventListener("astro:page-load", initCopy);
+</script>
+
+<style>
+  .copy-btn.is-copied {
+    background-color: var(--color-primary);
+    color: #fff;
+  }
+</style>

@@ -9,4 +9,5 @@ export default {
   communitiesLabel: "Comunidades",
   ctaDonate: "Dona aquí",
   ctaMore: "Conoce más",
+  secureLabel: "Pago 100% seguro",
 } as const;

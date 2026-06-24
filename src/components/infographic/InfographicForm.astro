@@ -1,0 +1,166 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "infographic");
+
+// Inputs estilo "underline" del Figma, pero con label visible (a11y).
+const labelClass = "font-body text-sm font-medium text-ink-500";
+const fieldClass =
+  "w-full border-0 border-b border-ink-200 bg-transparent pb-2 pt-1 font-body text-burgundy-900 transition-colors placeholder:text-ink-300 focus:border-primary focus:outline-none focus:ring-0";
+
+const sources = [
+  t.sourceInstagram,
+  t.sourceFacebook,
+  t.sourceFriend,
+  t.sourceSearch,
+  t.sourceOther,
+];
+
+const cardItems = [t.cardItem1, t.cardItem2, t.cardItem3, t.cardItem4];
+
+const badges = [
+  { icon: "purpose-download", label: t.badgePdf },
+  { icon: "hero-heart", label: t.badgeInstant },
+  { icon: "check", label: t.badgeNoSpam },
+];
+---
+
+<section class="bg-mist py-20 sm:py-24">
+  <div
+    class="mx-auto grid w-full max-w-[1200px] items-center gap-12 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20"
+  >
+    <!-- ============ Columna izquierda: formulario ============ -->
+    <div>
+      <div class="flex items-center gap-4">
+        <span class="h-0.5 w-8 bg-primary"></span>
+        <span class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+          {t.formEyebrow}
+        </span>
+      </div>
+
+      <h2 class="mt-6 font-heading text-3xl font-bold leading-tight text-burgundy sm:text-4xl">
+        {t.formTitleLine1}<br />{t.formTitleLine2}
+      </h2>
+
+      <form action="/api/infographic" method="POST" class="mt-10 flex flex-col gap-7">
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for="ig-name">{t.nameLabel}</label>
+          <input
+            class={fieldClass}
+            type="text"
+            id="ig-name"
+            name="name"
+            placeholder={t.namePlaceholder}
+            autocomplete="name"
+            required
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for="ig-email">{t.emailLabel}</label>
+          <input
+            class={fieldClass}
+            type="email"
+            id="ig-email"
+            name="email"
+            placeholder={t.emailPlaceholder}
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for="ig-phone">{t.phoneLabel}</label>
+          <input
+            class={fieldClass}
+            type="tel"
+            id="ig-phone"
+            name="phone"
+            placeholder={t.phonePlaceholder}
+            autocomplete="tel"
+            required
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class={labelClass} for="ig-source">
+            {t.sourceLabel}
+            <span class="font-normal text-ink-300">({t.sourceOptional})</span>
+          </label>
+          <select class:list={[fieldClass, "cursor-pointer"]} id="ig-source" name="source">
+            <option value="" disabled selected>{t.sourceDefault}</option>
+            {sources.map((s) => <option value={s}>{s}</option>)}
+          </select>
+        </div>
+
+        <label class="flex items-start gap-3 font-body text-sm text-ink-500">
+          <input
+            type="checkbox"
+            name="consent"
+            required
+            class="mt-0.5 size-4 shrink-0 rounded border-ink-300 text-primary focus:ring-primary/30"
+          />
+          <span>{t.consent}</span>
+        </label>
+
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-primary py-4 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-primary-600"
+        >
+          {t.submit}
+          <Icon name="purpose-download" class="h-4 w-auto" />
+        </button>
+
+        <p class="text-center font-body text-sm text-ink-400">{t.note}</p>
+      </form>
+    </div>
+
+    <!-- ============ Columna derecha: tarjeta de la infografía ============ -->
+    <div
+      class="relative overflow-hidden rounded-[28px] bg-[radial-gradient(120%_120%_at_85%_0%,var(--color-coral)_0%,var(--color-primary)_55%,var(--color-primary-700)_100%)] p-8 text-white shadow-[0px_30px_70px_-25px_rgb(228_0_63/0.6)] sm:p-10"
+    >
+      <!-- Corazón gigante decorativo de fondo -->
+      <Icon
+        name="purpose-heart"
+        class="pointer-events-none absolute -right-10 -top-8 h-44 w-auto text-white/10"
+      />
+
+      <span class="relative flex size-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20">
+        <Icon name="purpose-heart" class="h-8 w-auto" />
+      </span>
+
+      <h3 class="relative mt-6 font-heading text-3xl font-bold">{t.cardTitle}</h3>
+      <p class="relative mt-2 font-body text-sm text-white/80">{t.cardIntro}</p>
+
+      <ul class="relative mt-6 flex flex-col gap-4">
+        {
+          cardItems.map((item) => (
+            <li class="flex items-center gap-3 font-body text-sm">
+              <Icon name="check" class="h-5 w-5 shrink-0 rounded-full bg-white/25 p-1" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Señales de confianza -->
+      <div class="relative mt-8 flex flex-wrap gap-2 border-t border-white/20 pt-6">
+        {
+          badges.map((b) => (
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-body text-xs font-medium">
+              <Icon name={b.icon} class="h-3.5 w-auto" />
+              {b.label}
+            </span>
+          ))
+        }
+      </div>
+
+      <p class="relative mt-8 flex items-center justify-center gap-2 text-center font-heading text-sm font-medium uppercase tracking-wide text-white/85">
+        <Icon name="purpose-heart" class="h-4 w-auto" />
+        {t.cardTagline}
+      </p>
+    </div>
+  </div>
+</section>

@@ -11,10 +11,7 @@ const stats = [
 ];
 ---
 
-<section
-  id="inicio"
-  class="flex min-h-dvh items-center bg-[linear-gradient(to_bottom,var(--color-primary)_0%,var(--color-primary)_85%,var(--color-coral)_100%)] pt-[112px] text-white"
->
+<section id="inicio" class="flex min-h-dvh items-center bg-[linear-gradient(to_bottom,var(--color-primary)_0%,var(--color-primary)_85%,var(--color-coral)_100%)] pt-[112px] text-white">
   <div class="mx-auto grid w-full max-w-[1200px] items-center gap-[30px] px-8 pb-16 lg:grid-cols-2">
     <!-- Columna texto -->
     <div>
@@ -36,41 +33,52 @@ const stats = [
       </p>
 
       <!-- Stats -->
-      <dl class="mt-8 flex items-center gap-6">
+      <dl
+        class="mt-8 inline-flex items-center gap-8 rounded-2xl border border-white/[0.59] px-6 py-4 backdrop-blur-[6px]"
+      >
         {
           stats.map((s, i) => (
-            <div class:list={[i > 0 && "border-l border-white/30 pl-6"]}>
-              <dt class="font-heading text-2xl font-bold">{s.value}</dt>
-              <dd class="mt-1 font-body text-xs font-medium uppercase tracking-wide text-white/80">
-                {s.label}
-              </dd>
-            </div>
+            <>
+              {i > 0 && <div aria-hidden class="h-10 w-px self-center bg-white/50" />}
+              <div>
+                <dt class="font-heading text-2xl font-bold leading-8">{s.value}</dt>
+                <dd class="mt-1 font-body text-xs font-medium uppercase tracking-wide text-white/80">
+                  {s.label}
+                </dd>
+              </div>
+            </>
           ))
         }
       </dl>
 
       <!-- CTAs -->
-      <div class="mt-10 flex flex-wrap items-center gap-4">
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
         <a
           href={localizePath("/donate", lang)}
-          class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90 sm:w-auto"
         >
           <Icon name="hero-donate" class="h-5 w-auto" />
           {hero.ctaDonate}
         </a>
         <a
           href="#proposito"
-          class="inline-flex items-center rounded-full border border-white px-6 py-3 font-heading text-sm font-bold text-white transition-colors hover:bg-white/10"
+          class="inline-flex w-full items-center justify-center rounded-full border border-white px-6 py-3 font-heading text-sm font-bold text-white transition-colors hover:bg-white/10 sm:w-auto"
         >
           {hero.ctaMore}
         </a>
       </div>
+
+      <!-- Pago seguro -->
+      <p class="mt-4 flex items-center justify-center gap-2 font-body text-[13px] text-white/70 sm:justify-start">
+        <Icon name="hero-lock" class="h-5 w-auto" />
+        {hero.secureLabel}
+      </p>
     </div>
 
     <!-- Columna imagen (corazón) -->
     <div class="flex justify-center lg:justify-end">
       <img
-        src="/images/hero-sonqo.png"
+        src="/images/hero-sonqo.webp"
         alt={hero.title}
         width="600"
         height="600"
