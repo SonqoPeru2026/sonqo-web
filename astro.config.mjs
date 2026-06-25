@@ -57,6 +57,10 @@ export default defineConfig({
       // Supabase — requeridas.
       PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public' }),
       PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public' }),
+
+      // Upstash Redis — rate limiting. Secretas, solo server.
+      UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret' }),
+      UPSTASH_REDIS_REST_TOKEN: envField.string({ context: 'server', access: 'secret' }),
     },
   },
 });

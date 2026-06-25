@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import SuccessModal from "@/components/common/SuccessModal.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "infographic");
@@ -25,11 +26,20 @@ const badges = [
   { icon: "hero-heart", label: t.badgeInstant },
   { icon: "check", label: t.badgeNoSpam },
 ];
+
+const errorClass = "hidden font-body text-xs text-primary";
+
+const fieldMessages = {
+  name: t.errName,
+  email: t.errEmail,
+  phone: t.errPhone,
+  consent: t.errConsent,
+};
 ---
 
 <section class="bg-mist py-20 sm:py-24">
   <div
-    class="mx-auto grid w-full max-w-[1200px] items-center gap-12 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20"
+    class="mx-auto grid w-full max-w-[1280px] items-center gap-12 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20"
   >
     <!-- ============ Columna izquierda: formulario ============ -->
     <div>
@@ -44,7 +54,19 @@ const badges = [
         {t.formTitleLine1}<br />{t.formTitleLine2}
       </h2>
 
-      <form action="/api/infographic" method="POST" class="mt-10 flex flex-col gap-7">
+      <form
+        action="/api/infographic"
+        method="POST"
+        data-ig-form
+        data-msg-sending={t.sending}
+        data-msg-success={t.success}
+        data-msg-error={t.formError}
+        data-messages={JSON.stringify(fieldMessages)}
+        class="mt-10 flex flex-col gap-7"
+      >
+        {/* Honeypot anti-bot */}
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+
         <div class="flex flex-col gap-2">
           <label class={labelClass} for="ig-name">{t.nameLabel}</label>
           <input
@@ -54,8 +76,10 @@ const badges = [
             name="name"
             placeholder={t.namePlaceholder}
             autocomplete="name"
+            aria-describedby="ig-name-error"
             required
           />
+          <p id="ig-name-error" data-error="name" class={errorClass}></p>
         </div>
 
         <div class="flex flex-col gap-2">
@@ -67,8 +91,10 @@ const badges = [
             name="email"
             placeholder={t.emailPlaceholder}
             autocomplete="email"
+            aria-describedby="ig-email-error"
             required
           />
+          <p id="ig-email-error" data-error="email" class={errorClass}></p>
         </div>
 
         <div class="flex flex-col gap-2">
@@ -80,8 +106,10 @@ const badges = [
             name="phone"
             placeholder={t.phonePlaceholder}
             autocomplete="tel"
+            aria-describedby="ig-phone-error"
             required
           />
+          <p id="ig-phone-error" data-error="phone" class={errorClass}></p>
         </div>
 
         <div class="flex flex-col gap-2">
@@ -95,26 +123,42 @@ const badges = [
           </select>
         </div>
 
-        <label class="flex items-start gap-3 font-body text-sm text-ink-500">
-          <input
-            type="checkbox"
-            name="consent"
-            required
-            class="mt-0.5 size-4 shrink-0 rounded border-ink-300 text-primary focus:ring-primary/30"
-          />
-          <span>{t.consent}</span>
-        </label>
+        <div>
+          <label class="flex items-start gap-3 font-body text-sm text-ink-500">
+            <input
+              type="checkbox"
+              name="consent"
+              required
+              class="mt-0.5 size-4 shrink-0 rounded border-ink-300 text-primary focus:ring-primary/30"
+            />
+            <span>{t.consent}</span>
+          </label>
+          <p data-error="consent" class:list={[errorClass, "mt-2"]}></p>
+        </div>
 
         <button
           type="submit"
-          class="inline-flex items-center justify-center gap-2 rounded-full bg-primary py-4 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-primary-600"
+          data-submit
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-primary py-4 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {t.submit}
-          <Icon name="purpose-download" class="h-4 w-auto" />
+          <span data-label class="inline-flex items-center gap-2">
+            {t.submit}
+            <Icon name="purpose-download" class="h-4 w-auto" />
+          </span>
+          <span data-loading class="hidden items-center gap-2.5">
+            <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+            </svg>
+            {t.sending}
+          </span>
         </button>
 
+        <p data-form-error role="alert" class="hidden text-center font-body text-sm text-ink-500"></p>
         <p class="text-center font-body text-sm text-ink-400">{t.note}</p>
       </form>
+
+      <SuccessModal title={t.successTitle} message={t.success} closeLabel={t.modalClose} />
     </div>
 
     <!-- ============ Columna derecha: tarjeta de la infografía ============ -->
@@ -164,3 +208,110 @@ const badges = [
     </div>
   </div>
 </section>
+
+<script>
+  import { makeLeadSchema, type LeadMessages } from "@/lib/validation/lead";
+
+  function initInfographicForm() {
+    const form = document.querySelector<HTMLFormElement>("[data-ig-form]");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+
+    const button = form.querySelector<HTMLButtonElement>("[data-submit]");
+    const labelEl = form.querySelector<HTMLElement>("[data-label]");
+    const loadingEl = form.querySelector<HTMLElement>("[data-loading]");
+    const successModal = document.querySelector<HTMLDialogElement>("[data-success-modal]");
+    const formErrorEl = form.querySelector<HTMLElement>("[data-form-error]");
+
+    function setLoading(on: boolean) {
+      labelEl?.classList.toggle("hidden", on);
+      loadingEl?.classList.toggle("hidden", !on);
+      loadingEl?.classList.toggle("inline-flex", on);
+    }
+
+    function showSuccess() {
+      formErrorEl?.classList.add("hidden");
+      successModal?.showModal();
+    }
+
+    function showError() {
+      if (!formErrorEl) return;
+      formErrorEl.textContent = form!.dataset.msgError ?? "";
+      formErrorEl.classList.remove("hidden");
+    }
+
+    const messages = JSON.parse(form.dataset.messages ?? "{}") as LeadMessages;
+    const schema = makeLeadSchema(messages);
+    const errorEls = form.querySelectorAll<HTMLElement>("[data-error]");
+
+    function readValues() {
+      const data: Record<string, unknown> = Object.fromEntries(new FormData(form!));
+      data.consent = form!.querySelector<HTMLInputElement>("[name=consent]")?.checked ?? false;
+      return data;
+    }
+
+    function validate(showErrors: boolean): boolean {
+      const result = schema.safeParse(readValues());
+      const errors: Record<string, string> = {};
+      if (!result.success) {
+        for (const issue of result.error.issues) {
+          const field = issue.path[0];
+          if (typeof field === "string" && !(field in errors)) errors[field] = issue.message;
+        }
+      }
+      errorEls.forEach((el) => {
+        const field = el.dataset.error!;
+        const msg = errors[field];
+        const input = form!.querySelector<HTMLElement>(`[name=${field}]`);
+        if (showErrors && msg) {
+          el.textContent = msg;
+          el.classList.remove("hidden");
+          input?.setAttribute("aria-invalid", "true");
+        } else {
+          el.classList.add("hidden");
+          input?.removeAttribute("aria-invalid");
+        }
+      });
+      if (button) button.disabled = !result.success;
+      return result.success;
+    }
+
+    form.addEventListener("input", () => validate(false));
+    form.addEventListener("blur", () => validate(true), true);
+    validate(false);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      // Guard: ignora reenvíos (Enter, doble click) mientras hay uno en curso.
+      if (form.dataset.sending === "true") return;
+      if (!button || !validate(true)) return;
+
+      form.dataset.sending = "true";
+      button.disabled = true;
+      setLoading(true);
+      formErrorEl?.classList.add("hidden");
+
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(readValues()),
+        });
+        if (res.ok) {
+          form.reset();
+          showSuccess();
+        } else {
+          showError();
+        }
+      } catch {
+        showError();
+      } finally {
+        form.dataset.sending = "false";
+        setLoading(false);
+        validate(false);
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", initInfographicForm);
+</script>
