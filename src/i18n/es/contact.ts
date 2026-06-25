@@ -15,4 +15,13 @@ export default {
   termsBefore: "Acepto los",
   termsLink: "términos y condiciones",
   submit: "Enviar mensaje",
+  sending: "Enviando...",
+  successTitle: "¡Mensaje enviado!",
+  success: "Gracias por escribirnos. Nuestro equipo te responderá muy pronto.",
+  modalClose: "Cerrar",
+  error: "No se pudo enviar. Inténtalo de nuevo.",
+  errName: "Ingresa tu nombre (mín. 2 caracteres).",
+  errEmail: "Ingresa un correo válido.",
+  errMessage: "El mensaje debe tener al menos 10 caracteres.",
+  errTerms: "Debes aceptar los términos y condiciones.",
 } as const;

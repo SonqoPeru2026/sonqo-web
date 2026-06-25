@@ -15,4 +15,13 @@ export default {
   termsBefore: "I accept the",
   termsLink: "terms and conditions",
   submit: "Send message",
+  sending: "Sending...",
+  successTitle: "Message sent!",
+  success: "Thanks for reaching out. Our team will get back to you very soon.",
+  modalClose: "Close",
+  error: "Couldn't send. Please try again.",
+  errName: "Enter your name (min. 2 characters).",
+  errEmail: "Enter a valid email.",
+  errMessage: "The message must be at least 10 characters.",
+  errTerms: "You must accept the terms and conditions.",
 } as const;
