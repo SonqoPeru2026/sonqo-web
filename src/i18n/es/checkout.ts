@@ -45,6 +45,8 @@ export default {
   termsLink: "Términos y Condiciones",
 
   // Resumen de la donación
+  customName: "Donación personalizada",
+  customImpact: "Cada sol acerca una casaca térmica a un niño que la necesita.",
   summaryKicker: "Tu donación",
   subtotalLabel: "Subtotal",
   totalLabel: "Total a pagar",

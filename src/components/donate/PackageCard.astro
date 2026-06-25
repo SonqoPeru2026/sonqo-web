@@ -15,7 +15,7 @@ const packages = [
 ];
 
 const fmt = (n: number) => n.toLocaleString("en-US");
-const donateHref = localizePath("/donate", lang);
+const checkoutHref = localizePath("/checkout", lang);
 ---
 
 <section id="packages" class="bg-cream py-20">
@@ -67,8 +67,7 @@ const donateHref = localizePath("/donate", lang);
             </p>
             <p class="mt-5 flex-1 font-body text-sm leading-relaxed text-ink">{pkg.impact}</p>
             <a
-              href={donateHref}
-              data-package={pkg.id}
+              href={`${checkoutHref}?package=${pkg.id}`}
               class="mt-6 block rounded-full bg-primary py-3 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
             >
               {t.donate}

@@ -14,26 +14,24 @@ import {
 } from "@react-email/components";
 import type { ReactNode } from "react";
 
-// Paleta OFICIAL de Sonqo (tokens de src/styles/global.css). Solo estos colores.
 export const brand = {
-  primary: "#e4003f", // crimson (primary-500)
-  primaryDark: "#b0002f", // primary-700
-  burgundy: "#540545", // burgundy-500
-  ink: "#291717", // tinta / texto fuerte
-  body: "#605e5e", // gris cuerpo (ink-500)
+  primary: "#e4003f",
+  primaryDark: "#b0002f",
+  burgundy: "#540545",
+  ink: "#291717",
+  body: "#605e5e",
   bodySoft: "#605e5e",
   label: "#605e5e",
-  cardBg: "#f6f2f2", // mist
-  cardBorder: "rgba(41,23,23,0.10)", // tinte de tinta, sutil
-  page: "#fafaf8", // fondo off-white oficial
+  cardBg: "#f6f2f2",
+  cardBorder: "rgba(41,23,23,0.10)",
+  page: "#fafaf8",
   white: "#ffffff",
 };
 
 export const SITE = "https://sonqoperu.com";
 
 // Assets hospedados en Cloudinary (PNG: los clientes de correo bloquean SVG).
-export const LOGO_SRC =
-  "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782300696/sonqo-logo_vpdniy.png";
+export const LOGO_SRC = "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782300696/sonqo-logo_vpdniy.png";
 
 const ICONS = {
   globe: "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301022/global_j8lxak.png",
@@ -48,7 +46,7 @@ export interface EmailLayoutProps {
   preview: string;
   heroSrc?: string;
   heroAlt?: string;
-  header?: ReactNode; // reemplaza el header por defecto (logo) si se provee
+  header?: ReactNode;
   footer?: "light" | "brand";
   footerNote?: string;
   children: ReactNode;

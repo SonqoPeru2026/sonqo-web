@@ -225,6 +225,7 @@ const fieldMessages = {
 
     function setLoading(on: boolean) {
       labelEl?.classList.toggle("hidden", on);
+      labelEl?.classList.toggle("inline-flex", !on);
       loadingEl?.classList.toggle("hidden", !on);
       loadingEl?.classList.toggle("inline-flex", on);
     }

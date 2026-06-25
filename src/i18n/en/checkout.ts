@@ -45,6 +45,8 @@ export default {
   termsLink: "Terms and Conditions",
 
   // Donation summary
+  customName: "Custom donation",
+  customImpact: "Every sol brings a thermal jacket closer to a child who needs it.",
   summaryKicker: "Your donation",
   subtotalLabel: "Subtotal",
   totalLabel: "Total to pay",

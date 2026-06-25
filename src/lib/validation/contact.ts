@@ -4,6 +4,7 @@ import { z } from "zod";
 export interface ContactMessages {
   name: string;
   email: string;
+  phone: string;
   message: string;
   terms: string;
 }
@@ -12,6 +13,7 @@ export interface ContactMessages {
 export const DEFAULT_CONTACT_MESSAGES: ContactMessages = {
   name: "Nombre inválido",
   email: "Correo inválido",
+  phone: "Teléfono inválido",
   message: "Mensaje inválido",
   terms: "Debes aceptar los términos",
 };

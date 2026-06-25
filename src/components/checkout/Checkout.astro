@@ -16,12 +16,20 @@ const packages = {
 } as const;
 
 type PackageId = keyof typeof packages;
+
+const rawAmount = Astro.url.searchParams.get("amount");
+const customAmount = rawAmount ? Math.round(Number(rawAmount)) : NaN;
+const isCustom = Number.isFinite(customAmount) && customAmount >= 10;
+
 const requested = Astro.url.searchParams.get("package");
 const selectedId: PackageId =
   requested && requested in packages ? (requested as PackageId) : "aliado";
-const selected = packages[selectedId];
 
-const amount = `${t.currency} ${selected.price.toFixed(2)}`;
+const summary = isCustom
+  ? { name: t.customName, impact: t.customImpact, price: customAmount }
+  : packages[selectedId];
+
+const amount = `${t.currency} ${summary.price.toFixed(2)}`;
 const donateHref = localizePath("/donate", lang);
 
 const inputClass =
@@ -225,11 +233,11 @@ const steps: Step[] = [
 
           <hr class="my-6 border-ink-100" />
 
-          <h2 class="text-center font-heading text-xl font-bold text-burgundy">{selected.name}</h2>
-          <p class="mt-2 text-center font-body text-sm text-ink">{selected.impact}</p>
+          <h2 class="text-center font-heading text-xl font-bold text-burgundy">{summary.name}</h2>
+          <p class="mt-2 text-center font-body text-sm text-ink">{summary.impact}</p>
 
           <div class="mt-6 overflow-hidden rounded-2xl bg-mist">
-            <img src="/images/checkout-photo.webp" alt={selected.name}
+            <img src="/images/checkout-photo.webp" alt={summary.name}
               width="440" height="440" class="h-auto w-full" />
           </div>
 
