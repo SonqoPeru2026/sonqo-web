@@ -30,7 +30,6 @@ export const brand = {
 
 export const SITE = "https://sonqoperu.com";
 
-// Assets hospedados en Cloudinary (PNG: los clientes de correo bloquean SVG).
 export const LOGO_SRC = "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782300696/sonqo-logo_vpdniy.png";
 
 const ICONS = {
@@ -39,8 +38,7 @@ const ICONS = {
   share: "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301021/shared_szm8cr.png",
 };
 
-export const HEART_SRC =
-  "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301061/Grupo_1_cfiti7.png";
+export const HEART_SRC = "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301061/Grupo_1_cfiti7.png";
 
 export interface EmailLayoutProps {
   preview: string;

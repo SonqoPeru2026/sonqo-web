@@ -5,5 +5,6 @@ export default {
   checkoutTitle: "Complete your donation — Sonqo",
   faqTitle: "Frequently asked questions — Sonqo",
   infographicTitle: "Free infographic — Sonqo",
+  thanksTitle: "Thank you for your donation — Sonqo",
   notFoundTitle: "Page not found — Sonqo",
 } as const;

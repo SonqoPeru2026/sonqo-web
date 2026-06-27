@@ -8,6 +8,7 @@
         "@astrojs/react": "6.0.0",
         "@astrojs/vercel": "11.0.0",
         "@fontsource/ubuntu": "^5.2.8",
+        "@mercadopago/sdk-react": "^1.0.7",
         "@react-email/components": "^1.0.12",
         "@react-email/render": "^2.0.9",
         "@supabase/supabase-js": "^2.108.2",
@@ -16,6 +17,7 @@
         "@upstash/redis": "^1.38.0",
         "astro": "7.0.2",
         "astro-icon": "^1.1.5",
+        "mercadopago": "^3.1.0",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "resend": "^6.14.0",
@@ -259,6 +261,10 @@
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
     "@mapbox/node-pre-gyp": ["@mapbox/node-pre-gyp@2.0.3", "", { "dependencies": { "consola": "^3.2.3", "detect-libc": "^2.0.0", "https-proxy-agent": "^7.0.5", "node-fetch": "^2.6.7", "nopt": "^8.0.0", "semver": "^7.5.3", "tar": "^7.4.0" }, "bin": { "node-pre-gyp": "bin/node-pre-gyp" } }, "sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg=="],
+
+    "@mercadopago/sdk-js": ["@mercadopago/sdk-js@0.0.3", "", {}, "sha512-kO48DNLHdfFAp3on12nuKdqNlEmw1x3+nM6wLd04BdWOXoFcAhkNMQV3AyUIanXdO/bB/dENakdacLT29297EQ=="],
+
+    "@mercadopago/sdk-react": ["@mercadopago/sdk-react@1.0.7", "", { "dependencies": { "@mercadopago/sdk-js": "^0.0.3" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-babuAgsi1pQU+jfIQX1Sl0efp2no64OU/9yYK+RDz0NvSyARe+/D9ih9GyDNwVJJZuAA2lS4GF06oSxDFS5HYg=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.5", "", { "dependencies": { "@tybys/wasm-util": "^0.10.2" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q=="],
 
@@ -825,6 +831,8 @@
     "mdast-util-to-hast": ["mdast-util-to-hast@13.2.1", "", { "dependencies": { "@types/hast": "^3.0.0", "@types/mdast": "^4.0.0", "@ungap/structured-clone": "^1.0.0", "devlop": "^1.0.0", "micromark-util-sanitize-uri": "^2.0.0", "trim-lines": "^3.0.0", "unist-util-position": "^5.0.0", "unist-util-visit": "^5.0.0", "vfile": "^6.0.0" } }, "sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA=="],
 
     "mdn-data": ["mdn-data@2.27.1", "", {}, "sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ=="],
+
+    "mercadopago": ["mercadopago@3.1.0", "", {}, "sha512-3VB8AFpE8eZgm67e22kVbR19k9JC/1j66voLSh7m9tPvkASuRKNH2Y7yb793rO+fIpMtvl+wBj27UY4jIItWYA=="],
 
     "merge-stream": ["merge-stream@2.0.0", "", {}, "sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w=="],
 

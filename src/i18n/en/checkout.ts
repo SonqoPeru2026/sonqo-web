@@ -45,6 +45,7 @@ export default {
   termsLink: "Terms and Conditions",
 
   // Donation summary
+  cardComingSoon: "Card payment will be available very soon.",
   customName: "Custom donation",
   customImpact: "Every sol brings a thermal jacket closer to a child who needs it.",
   summaryKicker: "Your donation",

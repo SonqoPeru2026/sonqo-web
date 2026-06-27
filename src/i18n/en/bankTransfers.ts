@@ -5,6 +5,8 @@ export default {
   dollars: "Dollars",
   email: "Email",
   name: "Name",
+  yapeNumber: "Number",
+  yapeScan: "Scan the QR with your Yape app",
   copy: "Copy",
   copied: "Copied",
 } as const;

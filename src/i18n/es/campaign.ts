@@ -7,4 +7,9 @@ export default {
   of: "de",
   cta: "Dona aquí",
   footnote: "Juntos podemos. Cada sol se convierte en abrigo.",
+  welcomeEyebrow: "Campaña invierno 2026",
+  welcomeTitle: "Este invierno, abriga con el corazón",
+  welcomeText: "Únete a nuestra campaña 2026 y ayuda a proteger a 5,000 niños del frío en las alturas del Perú.",
+  welcomeCta: "Dona ahora",
+  dismiss: "Seguir explorando",
 } as const;

@@ -37,9 +37,10 @@ export default defineConfig({
 
   env: {
     schema: {
-      // MercadoPago — pendiente para el final. Descomentar al integrar pagos.
-      // MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret' }),
-      // PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
+      // MercadoPago — opcionales mientras no haya keys (el código degrada sin romper).
+      MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
 
       // Sanity — un solo PROJECT_ID público, token secreto. Requeridas.
       PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),

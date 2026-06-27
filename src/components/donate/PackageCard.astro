@@ -2,16 +2,17 @@
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import CustomAmount from "@/components/donate/CustomAmount.astro";
+import { PACKAGES } from "@/lib/donation";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "packageCard");
 
-// Precios editables en Sanity (placeholder por ahora).
+// Nombres/impacto vienen del i18n; el precio, de la fuente de verdad (lib/donation).
 const packages = [
-  { id: "aliado", name: t.aliadoName, price: 33, impact: t.impact1 },
-  { id: "ninos", name: t.ninosName, price: 165, impact: t.impact5 },
-  { id: "corazon", name: t.corazonName, price: 330, impact: t.impact10 },
-  { id: "comunidad", name: t.comunidadName, price: 660, impact: t.impact20 },
+  { id: "aliado", name: t.aliadoName, price: PACKAGES.aliado.price, impact: t.impact1 },
+  { id: "ninos", name: t.ninosName, price: PACKAGES.ninos.price, impact: t.impact5 },
+  { id: "corazon", name: t.corazonName, price: PACKAGES.corazon.price, impact: t.impact10 },
+  { id: "comunidad", name: t.comunidadName, price: PACKAGES.comunidad.price, impact: t.impact20 },
 ];
 
 const fmt = (n: number) => n.toLocaleString("en-US");

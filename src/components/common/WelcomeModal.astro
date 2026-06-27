@@ -1,0 +1,112 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "campaign");
+const donateHref = localizePath("/donate", lang);
+---
+
+<dialog
+  data-welcome-modal
+  aria-labelledby="welcome-title"
+  class="welcome-modal m-auto w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-[20px] bg-white p-0 shadow-[0px_30px_70px_-20px_rgb(84_5_69/0.4)]"
+>
+  <div class="welcome-card relative">
+    <button
+      type="button"
+      data-welcome-close
+      aria-label={t.dismiss}
+      class="absolute right-4 top-4 z-10 flex size-8 items-center justify-center rounded-full bg-white/80 text-ink-500 opacity-70 transition-opacity hover:opacity-100"
+    >
+      <Icon name="close" class="h-3.5 w-auto" />
+    </button>
+
+    <!-- Top section: hero -->
+    <div class="flex h-52 items-center justify-center bg-primary">
+      <Icon name="campaign-heart" class="h-45 w-auto text-white" />
+    </div>
+
+    <!-- Content section -->
+    <div class="flex flex-col items-center px-8 py-6 text-center">
+      <span
+        class="rounded-full bg-ink-50 px-3 py-1 font-heading text-xs font-bold uppercase tracking-[1.2px] text-primary"
+      >
+        {t.welcomeEyebrow}
+      </span>
+
+      <h2 id="welcome-title" class="mt-5 font-heading text-2xl font-bold leading-8 text-ink-900">
+        {t.welcomeTitle}
+      </h2>
+
+      <p class="mt-4 max-w-[280px] font-body text-base leading-relaxed text-ink-500">
+        {t.welcomeText}
+      </p>
+
+      <a
+        href={donateHref}
+        class="mt-8 flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 font-heading text-base font-semibold uppercase tracking-wide text-white shadow-[0px_4px_6px_-1px_rgb(182_0_48/0.2)] transition-colors hover:bg-primary-600"
+      >
+        <Icon name="campaign-heart" class="h-4 w-auto text-white" />
+        {t.welcomeCta}
+      </a>
+
+      <button
+        type="button"
+        data-welcome-close
+        class="mt-4 flex items-center gap-1.5 font-body text-sm text-ink-500 transition-colors hover:text-burgundy"
+      >
+        {t.dismiss}
+        <Icon name="arrow" class="h-3 w-auto" />
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function initWelcomeModal() {
+    const modal = document.querySelector<HTMLDialogElement>("[data-welcome-modal]");
+    if (!modal || modal.dataset.bound) return;
+    modal.dataset.bound = "true";
+
+    modal
+      .querySelectorAll("[data-welcome-close]")
+      .forEach((btn) => btn.addEventListener("click", () => modal.close()));
+
+    // Clic en el backdrop cierra.
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.close();
+    });
+
+    // Solo la primera vez en la sesión.
+    if (localStorage.getItem("sonqo-welcome") === "1") return;
+    localStorage.setItem("sonqo-welcome", "1");
+    modal.showModal();
+  }
+
+  document.addEventListener("astro:page-load", initWelcomeModal);
+</script>
+
+<style>
+  .welcome-modal[open] .welcome-card {
+    animation: welcome-rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .welcome-modal::backdrop {
+    background-color: rgb(0 0 0 / 0.6);
+  }
+  @keyframes welcome-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .welcome-modal[open] .welcome-card {
+      animation: none;
+    }
+  }
+</style>
