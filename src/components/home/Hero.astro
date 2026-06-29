@@ -36,11 +36,11 @@ const total = String(slides.length).padStart(2, "0");
   <div data-hero-track class="hero-track flex">
     {
       slides.map((s, i) => (
+        <div data-slide={i} class="w-full shrink-0">
         <div
-          data-slide={i}
-          class="grid w-full shrink-0 grid-rows-[38vh_auto] lg:h-[100vh] lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-none"
+          class="mx-auto grid w-full max-w-[1440px] grid-rows-[38vh_auto] lg:h-[100vh] lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-none"
         >
-          <div class="relative order-1 mx-4 mb-4 mt-20 overflow-hidden rounded-3xl bg-mist lg:order-2 lg:ml-0 lg:mr-10 lg:mb-10 lg:mt-[112px] lg:flex lg:items-center lg:justify-center lg:rounded-[2.5rem] lg:bg-transparent">
+          <div class="relative order-1 mx-4 mb-4 mt-30 overflow-hidden rounded-3xl bg-mist lg:order-2 lg:ml-0 lg:mr-10 lg:mb-10 lg:mt-[112px] lg:flex lg:items-center lg:justify-center lg:rounded-[2.5rem] lg:bg-transparent">
             <img
               src={`/images/hero/${s.img}`}
               alt=""
@@ -90,11 +90,12 @@ const total = String(slides.length).padStart(2, "0");
             </div>
           </div>
         </div>
+        </div>
       ))
     }
   </div>
 
-  <div class="absolute bottom-8 left-7 z-30 flex items-center gap-6 lg:left-20">
+  <div class="absolute inset-x-0 bottom-8 z-30 mx-auto flex max-w-[1440px] items-center gap-6 px-7 lg:px-20">
     <div class="flex gap-3">
       <button
         type="button"
