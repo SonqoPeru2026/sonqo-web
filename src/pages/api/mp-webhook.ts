@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { redis } from "@/lib/redis";
 import { getPaymentClient, verifyWebhookSignature, isWebhookConfigured } from "@/lib/mercadopago";
+import { recordDonation } from "@/lib/donations";
 
 export const prerender = false;
 
@@ -50,8 +51,18 @@ export const POST: APIRoute = async ({ request, url }) => {
     const payment = await client.get({ id: String(dataId) });
     console.info(`[mp-webhook] pago ${dataId} → ${payment.status}`);
 
-    // TODO V2: si payment.status === "approved", registrar la donación en Supabase
-    // (tabla `donations` con monto, email, payment_id) para reportería y recibos.
+    // Solo registramos donaciones efectivamente aprobadas.
+    if (payment.status === "approved") {
+      await recordDonation({
+        paymentId: String(payment.id ?? dataId),
+        amount: payment.transaction_amount ?? 0,
+        currency: payment.currency_id ?? "PEN",
+        status: payment.status,
+        payerEmail: payment.payer?.email ?? null,
+        paymentMethod: payment.payment_method_id ?? null,
+        approvedAt: payment.date_approved ?? null,
+      });
+    }
 
     await redis.set(key, 1, { ex: 86400 }); // marca procesado (24h)
   } catch (err) {

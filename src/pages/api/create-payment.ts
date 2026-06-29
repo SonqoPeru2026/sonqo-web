@@ -48,7 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
         transaction_amount: amount,
         token: data.token,
         payment_method_id: data.paymentMethodId,
-        issuer_id: data.issuerId,
+        issuer_id: data.issuerId ? Number(data.issuerId) : undefined, // SDK MP espera número
         installments: data.installments,
         description: "Donación a Sonqo Perú",
         payer: {
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request }) => {
           identification: data.payer.identification,
         },
       },
-      requestOptions: { idempotencyKey: crypto.randomUUID() },
+      requestOptions: { idempotencyKey: data.token },
     });
 
     return new Response(

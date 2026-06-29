@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { initMercadoPago, CardPayment } from "@mercadopago/sdk-react";
 
 interface Props {
@@ -13,6 +13,9 @@ let mpInitialized = false;
 // Isla de pago: renderiza el Card Brick de MercadoPago (tokeniza la tarjeta en el navegador)
 // y envía solo el token a /api/create-payment. La tarjeta nunca toca nuestro server.
 export default function PaymentBrick({ publicKey, amount, packageId, thanksHref }: Props) {
+
+  const submitting = useRef(false);
+
   useEffect(() => {
     if (publicKey && !mpInitialized) {
       initMercadoPago(publicKey);
@@ -33,6 +36,8 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
       initialization={{ amount }}
       onSubmit={async (formData) => {
         // formData: tipo del SDK (token, payment_method_id, issuer_id, installments, payer).
+        if (submitting.current) return; // ya hay un pago en curso → ignorar
+        submitting.current = true;
         try {
           const res = await fetch("/api/create-payment", {
             method: "POST",
@@ -51,6 +56,7 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
           const status = res.ok ? (data.status ?? "error") : "error";
           window.location.href = `${thanksHref}?status=${status}`;
         } catch {
+          submitting.current = false; // falló la red: permitir reintento
           window.location.href = `${thanksHref}?status=error`;
         }
       }}
