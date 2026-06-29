@@ -55,9 +55,11 @@ export default defineConfig({
       // Google Analytics — pendiente para el final. Descomentar al configurar GA4.
       // PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public' }),
 
-      // Supabase — requeridas.
+      // Supabase — anon (leads) requeridas. Service key (donaciones, bypass RLS) opcional:
+      // el webhook degrada sin romper hasta que se configure.
       PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public' }),
       PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public' }),
+      SUPABASE_SERVICE_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
 
       // Upstash Redis — rate limiting. Secretas, solo server.
       UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret' }),
