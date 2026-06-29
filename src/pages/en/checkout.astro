@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+
+import Layout from "@/layouts/Layout.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+import CheckoutForm from "@/components/checkout/Checkout.astro";
+
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
+---
+
+<Layout title={meta.checkoutTitle}>
+  <CheckoutForm />
+</Layout>

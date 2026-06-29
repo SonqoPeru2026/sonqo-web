@@ -1,0 +1,255 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "navbar");
+
+// Anclas de la one-page principal. Desde otra page apuntan a "/#seccion".
+const home = localizePath("/", lang);
+const links = [
+  { href: `${home}#proposito`, label: t.purpose },
+  { href: `${home}#logros`, label: t.achievements },
+  { href: `${home}#nosotros`, label: t.about },
+  { href: `${home}#contacto`, label: t.contact },
+];
+
+// Switcher de idioma: misma ruta en el otro locale.
+const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
+const langOption = (code: "es" | "en", label: string) => ({
+  label,
+  href: localizePath(path, code),
+  active: lang === code,
+});
+const langs = [langOption("es", "ES"), langOption("en", "EN")];
+---
+
+<header class="fixed inset-x-0 top-0 z-50 px-4 py-4">
+  <nav
+    class="mx-auto flex max-w-[1280px] items-center justify-between gap-6 rounded-[20px] bg-white px-6 py-5 shadow-[0_8px_24px_-4px_rgb(0_0_0/0.2)] sm:px-8"
+  >
+    <a href={home} aria-label="Sonqo Perú" class="text-primary">
+      <Icon name="logo-sonqo" class="h-8 w-auto" />
+    </a>
+
+    <ul class="hidden items-center gap-8 md:flex">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="font-heading text-sm font-bold uppercase tracking-wide text-ink-900 transition-colors hover:text-primary"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Controles desktop -->
+    <div class="hidden items-center gap-4 md:flex">
+      <div class="flex items-center rounded-full bg-ink-100 p-1 text-sm font-medium">
+        {
+          langs.map((o) => (
+            <a
+              href={o.href}
+              data-lang-switch
+              aria-current={o.active ? "true" : undefined}
+              class:list={[
+                "rounded-full px-3 py-1 transition-colors",
+                o.active ? "bg-white text-primary shadow-sm" : "text-ink-400 hover:text-ink-600",
+              ]}
+            >
+              {o.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <a
+        href={localizePath("/donate", lang)}
+        class="rounded-full bg-primary px-6 py-2.5 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+      >
+        {t.cta}
+      </a>
+    </div>
+
+    <!-- Botón hamburguesa (mobile) -->
+    <button
+      id="menu-open"
+      type="button"
+      aria-label={t.menuOpen}
+      aria-controls="mobile-menu"
+      class="text-primary transition-transform hover:scale-110 active:scale-95 md:hidden"
+    >
+      <Icon name="menu" class="h-6 w-auto" />
+    </button>
+  </nav>
+</header>
+
+<!-- Backdrop -->
+<div id="menu-backdrop" class="fixed inset-0 z-[55] bg-black/50 md:hidden"></div>
+
+<!-- Drawer móvil (entra desde la izquierda) -->
+<aside
+  id="mobile-menu"
+  class="fixed inset-y-0 right-0 z-[60] flex h-full w-[86%] max-w-sm flex-col bg-primary text-white shadow-2xl md:hidden"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-5">
+    <Icon name="logo-sonqo" class="h-8 w-auto text-white" />
+    <button
+      id="menu-close"
+      type="button"
+      aria-label={t.menuClose}
+      class="flex size-10 items-center justify-center rounded-xl bg-white/15 text-white transition-colors hover:bg-white/25"
+    >
+      <Icon name="close" class="h-5 w-5" />
+    </button>
+  </div>
+
+  <!-- Contenido -->
+  <div class="flex-1 overflow-y-auto px-5 pb-6">
+    <!-- Grupo: navegación -->
+    <nav class="menu-card rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:0" aria-label="Menú principal">
+      <p class="px-3 pb-1 pt-2 font-heading text-xs font-bold uppercase tracking-[0.15em] text-white/50">
+        {t.menuGroupNav}
+      </p>
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class="block rounded-xl px-3 py-3 font-heading text-lg font-bold transition-colors hover:bg-white/10"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Grupo: idioma -->
+    <div class="menu-card mt-4 rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:1">
+      <p class="px-3 pb-1 pt-2 font-heading text-xs font-bold uppercase tracking-[0.15em] text-white/50">
+        {t.menuGroupLang}
+      </p>
+      <div class="mt-1 grid grid-cols-2 gap-2 p-1">
+        {
+          langs.map((o) => (
+            <a
+              href={o.href}
+              data-lang-switch
+              aria-current={o.active ? "true" : undefined}
+              class:list={[
+                "rounded-xl border py-3 text-center font-heading text-sm font-bold uppercase tracking-wide transition-colors",
+                o.active
+                  ? "border-white bg-white text-primary"
+                  : "border-white/25 text-white/80 hover:bg-white/10",
+              ]}
+            >
+              {o.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="px-5 pb-7 pt-1">
+    <a
+      href={localizePath("/donate", lang)}
+      class="block rounded-full bg-white py-4 text-center font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+    >
+      {t.cta}
+    </a>
+  </div>
+</aside>
+
+<style is:global>
+  /* Backdrop */
+  #menu-backdrop {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s;
+  }
+  #menu-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* Drawer: entra deslizando desde la derecha */
+  #mobile-menu {
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.35s;
+  }
+  #mobile-menu.is-open {
+    transform: none;
+    visibility: visible;
+  }
+  /* Tarjetas entran escalonadas */
+  #mobile-menu .menu-card {
+    opacity: 0;
+    transform: translateX(14px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+  #mobile-menu.is-open .menu-card {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.1s + var(--i) * 0.08s);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #mobile-menu,
+    #menu-backdrop,
+    #mobile-menu .menu-card {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>
+
+<script>
+  // Se vincula en cada carga, incluida la navegación soft con View Transitions.
+  function initNavbar() {
+    const open = document.getElementById("menu-open");
+    const close = document.getElementById("menu-close");
+    const menu = document.getElementById("mobile-menu");
+    const backdrop = document.getElementById("menu-backdrop");
+
+    const setOpen = (state: boolean) => {
+      menu?.classList.toggle("is-open", state);
+      backdrop?.classList.toggle("is-open", state);
+      document.documentElement.classList.toggle("overflow-hidden", state);
+    };
+
+    open?.addEventListener("click", () => setOpen(true));
+    close?.addEventListener("click", () => setOpen(false));
+    backdrop?.addEventListener("click", () => setOpen(false));
+    menu
+      ?.querySelectorAll("a[href]")
+      .forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+    // Al cambiar de idioma, recordar la posición de scroll para no perderla.
+    document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((a) => {
+      a.addEventListener("click", () => {
+        sessionStorage.setItem("langScrollY", String(window.scrollY));
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initNavbar);
+
+  // Restaurar el scroll tras el cambio de idioma (antes de pintar, sin salto).
+  document.addEventListener("astro:after-swap", () => {
+    const y = sessionStorage.getItem("langScrollY");
+    if (y !== null) {
+      window.scrollTo(0, Number(y));
+      sessionStorage.removeItem("langScrollY");
+    }
+  });
+</script>

@@ -1,0 +1,18 @@
+---
+export const prerender = true;
+
+import Layout from "@/layouts/Layout.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+import DonateHero from "@/components/donate/DonateHero.astro";
+import PackageCard from "@/components/donate/PackageCard.astro";
+import BankTransfers from "@/components/donate/BankTransfers.astro";
+
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
+---
+
+<Layout title={meta.donateTitle}>
+  <DonateHero />
+  <PackageCard />
+  <BankTransfers />
+</Layout>

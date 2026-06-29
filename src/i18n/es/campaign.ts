@@ -1,0 +1,15 @@
+export default {
+  eyebrow: "Campaña 2026",
+  title: "Cada sol cuenta",
+  subtitle: "Estas son nuestras metas para el invierno 2026. Tu aporte nos acerca a cada una.",
+  bar1Label: "Recaudación",
+  bar2Label: "Niños abrigados",
+  of: "de",
+  cta: "Dona aquí",
+  footnote: "Juntos podemos. Cada sol se convierte en abrigo.",
+  welcomeEyebrow: "Campaña invierno 2026",
+  welcomeTitle: "Este invierno, abriga con el corazón",
+  welcomeText: "Únete a nuestra campaña 2026 y ayuda a proteger a 5,000 niños del frío en las alturas del Perú.",
+  welcomeCta: "Dona ahora",
+  dismiss: "Seguir explorando",
+} as const;

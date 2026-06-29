@@ -1,0 +1,61 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "thanks");
+
+// Estado del pago vía ?status= (lo pone el Brick tras crear el pago).
+const status = Astro.url.searchParams.get("status") ?? "approved";
+const approved = status === "approved";
+
+const homeHref = localizePath("/", lang);
+const donateHref = localizePath("/donate", lang);
+---
+
+<section class="flex h-screen items-center justify-center bg-cream px-6">
+  <div class="mx-auto flex w-full max-w-lg flex-col items-center text-center">
+    <span
+      class:list={[
+        "flex size-20 items-center justify-center rounded-full",
+        approved ? "bg-primary/10" : "bg-ink-100",
+      ]}
+    >
+      <Icon
+        name={approved ? "check" : "close"}
+        class:list={["h-9 w-9", approved ? "text-primary" : "text-ink-500"]}
+      />
+    </span>
+
+    <h1 class="mt-8 font-heading text-3xl font-bold text-burgundy-900 sm:text-4xl">
+      {approved ? t.approvedTitle : t.rejectedTitle}
+    </h1>
+    <p class="mt-4 max-w-md font-body text-base text-ink-500 sm:text-lg">
+      {approved ? t.approvedText : t.rejectedText}
+    </p>
+
+    <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+      {
+        !approved && (
+          <a
+            href={donateHref}
+            class="inline-flex min-w-[200px] items-center justify-center rounded-full bg-primary px-8 py-3.5 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+          >
+            {t.retry}
+          </a>
+        )
+      }
+      <a
+        href={homeHref}
+        class:list={[
+          "inline-flex min-w-[200px] items-center justify-center rounded-full px-8 py-3.5 font-heading text-sm font-bold uppercase tracking-wide transition-colors",
+          approved
+            ? "bg-primary text-white hover:bg-primary-600"
+            : "border border-primary text-primary hover:bg-primary hover:text-white",
+        ]}
+      >
+        {t.backHome}
+      </a>
+    </div>
+  </div>
+</section>

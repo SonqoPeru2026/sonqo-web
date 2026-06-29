@@ -1,0 +1,19 @@
+---
+export const prerender = true;
+
+import Layout from "@/layouts/Layout.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
+const faq = useTranslations(lang, "faq");
+---
+
+<Layout title={meta.faqTitle}>
+  <section id="faq" class="py-20">
+    <div class="mx-auto max-w-6xl px-4">
+      <h1 class="font-heading text-4xl font-bold text-primary">{faq.title}</h1>
+      {/* TODO diseño próxima semana */}
+    </div>
+  </section>
+</Layout>

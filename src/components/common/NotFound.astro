@@ -1,0 +1,62 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "notFound");
+
+const homeHref = localizePath("/", lang);
+const purposeHref = `${localizePath("/", lang)}#proposito`;
+---
+
+<section class="flex min-h-[calc(100vh-80px)] items-center justify-center bg-cream px-6 py-40">
+  <div class="mx-auto flex w-full max-w-2xl flex-col items-center text-center">
+    <div class="flex items-center justify-center gap-2 sm:gap-3" aria-hidden="true">
+      <span class="font-heading text-[120px] font-bold leading-none text-primary sm:text-[200px]">4</span>
+      <Icon name="pagenotfound-heart" class="not-found-heart h-24 w-auto sm:h-[165px]" />
+      <span class="font-heading text-[120px] font-bold leading-none text-primary sm:text-[200px]">4</span>
+    </div>
+
+    <h1 class="mt-8 font-heading text-3xl font-bold text-burgundy-900 sm:text-5xl">
+      {t.title}
+    </h1>
+    <p class="mt-4 max-w-xl font-body text-base text-ink-500 sm:text-lg">
+      {t.description}
+    </p>
+
+    <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+      <a
+        href={homeHref}
+        class="inline-flex min-w-[240px] items-center justify-center rounded-full bg-primary px-8 py-4 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-sm transition-colors hover:bg-primary-600"
+      >
+        {t.homeButton}
+      </a>
+      <a
+        href={purposeHref}
+        class="inline-flex min-w-[240px] items-center justify-center rounded-full border border-primary px-8 py-4 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-primary hover:text-white"
+      >
+        {t.purposeButton}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .not-found-heart {
+    animation: heartbeat 2.4s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .not-found-heart {
+      animation: none;
+    }
+  }
+</style>

@@ -1,17 +1,33 @@
 ---
+export const prerender = true;
 
+import Layout from "@/layouts/Layout.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+import Hero from "@/components/home/Hero.astro";
+import Purpose from "@/components/home/Purpose.astro";
+import Motivation from "@/components/home/Motivation.astro";
+import AboutUs from "@/components/home/AboutUs.astro";
+import Process from "@/components/home/Process.astro";
+import History from "@/components/home/History.astro";
+import Campaign from "@/components/home/Campaign.astro";
+import Gallery from "@/components/home/Gallery.astro";
+import Contact from "@/components/home/Contact.astro";
+import Faq from "@/components/home/Faq.astro";
+
+// La page solo arma el SEO (ns "meta"). El contenido lo trae cada componente.
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title={meta.homeTitle} description={meta.homeDescription}>
+  <Hero />
+  <Purpose />
+  <Process />
+  <Motivation />
+  <History />
+  <Campaign />
+  <Gallery />
+  <AboutUs />
+  <Contact />
+  <Faq />
+</Layout>

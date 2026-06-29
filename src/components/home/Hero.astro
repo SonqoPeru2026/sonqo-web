@@ -1,0 +1,231 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const hero = useTranslations(lang, "hero");
+
+type Slide = {
+  img: string;
+  eyebrow: string;
+  title: string;
+  text: string;
+  cta: string;
+  href: string;
+  cta2?: string;
+  href2?: string;
+};
+const slides: Slide[] = [
+  { img: "hero-1.webp", eyebrow: hero.slide1Eyebrow, title: hero.slide1Title, text: hero.slide1Text, cta: hero.slide1Cta, href: localizePath("/donate", lang), cta2: hero.slide1Cta2, href2: "#proposito" },
+  { img: "hero-2.webp", eyebrow: hero.slide2Eyebrow, title: hero.slide2Title, text: hero.slide2Text, cta: hero.slide2Cta, href: "#proposito" },
+  { img: "hero-3.webp", eyebrow: hero.slide3Eyebrow, title: hero.slide3Title, text: hero.slide3Text, cta: hero.slide3Cta, href: localizePath("/infographic", lang) },
+  { img: "hero-4.webp", eyebrow: hero.slide4Eyebrow, title: hero.slide4Title, text: hero.slide4Text, cta: hero.slide4Cta, href: "#contacto" },
+];
+const SLIDE_MS = 6000;
+const total = String(slides.length).padStart(2, "0");
+---
+
+<section
+  id="inicio"
+  data-hero
+  style={`--slide-ms:${SLIDE_MS}ms`}
+  class="relative overflow-hidden bg-mist"
+>
+  <span aria-hidden="true" class="absolute left-0 top-1/2 z-20 hidden h-100 w-1 -translate-y-1/2 rounded-r bg-primary lg:block"></span>
+
+  <div data-hero-track class="hero-track flex">
+    {
+      slides.map((s, i) => (
+        <div
+          data-slide={i}
+          class="grid w-full shrink-0 grid-rows-[38vh_auto] lg:h-[100vh] lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-none"
+        >
+          <div class="relative order-1 mx-4 mb-4 mt-20 overflow-hidden rounded-3xl bg-mist lg:order-2 lg:ml-0 lg:mr-10 lg:mb-10 lg:mt-[112px] lg:flex lg:items-center lg:justify-center lg:rounded-[2.5rem] lg:bg-transparent">
+            <img
+              src={`/images/hero/${s.img}`}
+              alt=""
+              aria-hidden="true"
+              fetchpriority={i === 0 ? "high" : undefined}
+              loading={i === 0 ? "eager" : "lazy"}
+              onerror="this.style.display='none'"
+              class="relative z-10 h-full w-full object-cover lg:h-[500px] lg:w-[700px] lg:rounded-2xl"
+            />
+            <div
+              aria-hidden="true"
+              class="absolute inset-x-0 bottom-0 z-10 h-1/3 bg-[linear-gradient(to_top,rgb(0_0_0/0.32),transparent)] lg:hidden"
+            ></div>
+          </div>
+
+          <div class="order-2 flex flex-col justify-center px-7 pb-28 pt-10 lg:order-1 lg:px-16 lg:py-0 lg:pl-20 lg:pr-14">
+            <span class="inline-flex items-center gap-2.5 font-heading text-xs font-bold uppercase tracking-[0.22em] text-ink-400">
+              <span class="size-2 rounded-full bg-primary" aria-hidden="true" />
+              {s.eyebrow}
+            </span>
+
+            <h2
+              class="hero-title mt-5 max-w-xl font-heading text-4xl font-bold leading-[1.08] text-ink-900 sm:text-5xl lg:text-6xl"
+              set:html={s.title}
+            />
+            <p class="mt-5 max-w-md font-body text-base text-ink-500 sm:text-lg">
+              {s.text}
+            </p>
+
+            <div class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
+              <a
+                href={s.href}
+                class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 font-heading text-sm font-bold text-white shadow-[0_14px_30px_-12px_rgb(228_0_63/0.7)] transition-colors hover:bg-primary-600"
+              >
+                {s.cta}
+              </a>
+              {
+                s.cta2 && s.href2 && (
+                  <a
+                    href={s.href2}
+                    class="font-heading text-sm font-bold text-ink-900 underline decoration-2 underline-offset-[6px] transition-colors hover:text-primary"
+                  >
+                    {s.cta2}
+                  </a>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="absolute bottom-8 left-7 z-30 flex items-center gap-6 lg:left-20">
+    <div class="flex gap-3">
+      <button
+        type="button"
+        data-hero-prev
+        aria-label="Anterior"
+        class="flex size-11 items-center justify-center rounded-full border border-ink-300 bg-mist/80 text-ink-600 backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+      >
+        <Icon name="faq-chevron" class="h-4 w-auto rotate-90" />
+      </button>
+      <button
+        type="button"
+        data-hero-next
+        aria-label="Siguiente"
+        class="flex size-11 items-center justify-center rounded-full border border-ink-300 bg-mist/80 text-ink-600 backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+      >
+        <Icon name="faq-chevron" class="h-4 w-auto -rotate-90" />
+      </button>
+    </div>
+    <p class="font-heading text-sm text-ink-400" aria-live="polite">
+      <span data-hero-current class="text-xl font-bold text-primary">01</span>
+      <span class="mx-1">/</span>
+      {total}
+    </p>
+    <div class="hidden h-0.5 w-24 overflow-hidden rounded-full bg-ink-200 sm:block" aria-hidden="true">
+      <span data-hero-progress class="hero-progress block h-full w-full origin-left bg-primary"></span>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initHeroCarousel() {
+    const root = document.querySelector<HTMLElement>("[data-hero]");
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = "true";
+
+    const track = root.querySelector<HTMLElement>("[data-hero-track]");
+    const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+    const counter = root.querySelector<HTMLElement>("[data-hero-current]");
+    const progress = root.querySelector<HTMLElement>("[data-hero-progress]");
+    const count = slides.length;
+    if (!track || count <= 1) return;
+
+    const ms = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6000;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let index = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    function restartProgress() {
+      if (!progress || reduce) return;
+      progress.classList.remove("run");
+      void progress.offsetWidth;
+      progress.classList.add("run");
+    }
+    function show(i: number) {
+      index = (i + count) % count;
+      track!.style.transform = `translateX(${-index * 100}%)`;
+      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
+      restartProgress();
+    }
+    function next() {
+      show(index + 1);
+    }
+    function start() {
+      if (reduce) return;
+      if (timer) clearInterval(timer);
+      if (progress) progress.style.animationPlayState = "running";
+      timer = setInterval(next, ms);
+    }
+    function stop() {
+      if (timer) clearInterval(timer);
+      timer = undefined;
+      if (progress) progress.style.animationPlayState = "paused";
+    }
+
+    root.querySelector("[data-hero-next]")?.addEventListener("click", () => {
+      next();
+      start();
+    });
+    root.querySelector("[data-hero-prev]")?.addEventListener("click", () => {
+      show(index - 1);
+      start();
+    });
+
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+
+    show(0);
+    start();
+  }
+
+  document.addEventListener("astro:page-load", initHeroCarousel);
+  if (document.readyState !== "loading") initHeroCarousel();
+  else document.addEventListener("DOMContentLoaded", initHeroCarousel);
+</script>
+
+<style>
+  .hero-track {
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-title :global(.text-primary) {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .hero-progress {
+    transform: scaleX(0);
+  }
+  .hero-progress.run {
+    animation: hero-fill var(--slide-ms) linear forwards;
+  }
+  @keyframes hero-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-track {
+      transition: none;
+    }
+    .hero-progress {
+      transform: scaleX(1);
+    }
+    .hero-progress.run {
+      animation: none;
+    }
+  }
+</style>

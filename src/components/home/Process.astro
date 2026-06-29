@@ -1,0 +1,69 @@
+---
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "process");
+
+const steps = [
+  { num: "01", icon: "how-hand", title: t.step1Title, text: t.step1Text },
+  { num: "02", icon: "how-shirt", title: t.step2Title, text: t.step2Text },
+  { num: "03", icon: "how-happy", title: t.step3Title, text: t.step3Text },
+];
+---
+
+<section id="process" class="bg-mist py-24">
+  <div class="mx-auto w-full max-w-[1280px] px-6 sm:px-8">
+    <!-- Encabezado -->
+    <div class="text-center">
+      <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+        {t.eyebrow}
+      </p>
+      <h2 class="mt-4 font-heading text-3xl font-bold uppercase leading-tight text-burgundy sm:text-4xl lg:text-5xl">
+        {t.title}
+      </h2>
+    </div>
+
+    <!-- Pasos -->
+    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        steps.map((step) => (
+          <li class="rounded-3xl bg-white p-8 shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)]">
+            <div class="flex items-start justify-between">
+              <span class="flex size-12 items-center justify-center rounded-2xl bg-primary text-white">
+                <Icon name={step.icon} class="h-6 w-auto" />
+              </span>
+              <span class="font-heading text-4xl font-bold text-primary">{step.num}</span>
+            </div>
+            <h3 class="mt-4 font-heading text-xl font-bold text-burgundy">{step.title}</h3>
+            <p class="mt-2 font-body leading-relaxed text-ink">{step.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Bloque mapa / dónde llegamos -->
+    <div
+      class="mt-6 flex flex-col items-center gap-8 rounded-3xl bg-white p-8 shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)] lg:flex-row lg:gap-12 lg:p-12"
+    >
+      <div class="flex-1">
+        <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+          {t.mapEyebrow}
+        </p>
+        <h3 class="mt-3 font-heading text-2xl font-bold text-burgundy sm:text-3xl">
+          {t.mapTitle}
+        </h3>
+        <p class="mt-4 font-body leading-relaxed text-ink sm:text-lg">{t.mapText}</p>
+      </div>
+      <div class="flex-1">
+        <img
+          src="/images/how-children.webp"
+          alt={t.mapImageAlt}
+          width="558"
+          height="314"
+          class="aspect-[558/314] w-full rounded-2xl object-cover"
+        />
+      </div>
+    </div>
+  </div>
+</section>
