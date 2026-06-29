@@ -1,0 +1,125 @@
+---
+interface Props {
+  title: string;
+  message: string;
+  closeLabel?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+const { title, message, closeLabel = "Cerrar", ctaLabel, ctaHref } = Astro.props;
+---
+
+<dialog
+  data-success-modal
+  aria-labelledby="success-modal-title"
+  class="success-modal m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-white p-8 text-center shadow-[0px_30px_70px_-20px_rgb(84_5_69/0.35)]"
+>
+  <div class="modal-card flex flex-col items-center gap-4">
+    <span class="success-check flex size-16 items-center justify-center rounded-full bg-primary/10">
+      <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          class="check-path"
+          d="M5 13l4 4L19 7"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="color: var(--color-primary)"></path>
+      </svg>
+    </span>
+
+    <h3 id="success-modal-title" class="font-heading text-xl font-bold text-burgundy">{title}</h3>
+    <p class="font-body text-sm leading-relaxed text-ink-500">{message}</p>
+
+    <div class="mt-2 flex w-full flex-col gap-3">
+      {
+        ctaHref && ctaLabel && (
+          <a
+            href={ctaHref}
+            class="rounded-full bg-primary py-3 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+          >
+            {ctaLabel}
+          </a>
+        )
+      }
+      <button
+        type="button"
+        data-modal-close
+        autofocus
+        class="rounded-full bg-primary py-3 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+      >
+        {closeLabel}
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function initSuccessModal() {
+    document.querySelectorAll<HTMLDialogElement>("[data-success-modal]").forEach((modal) => {
+      if (modal.dataset.bound) return;
+      modal.dataset.bound = "true";
+
+      modal.querySelector("[data-modal-close]")?.addEventListener("click", () => modal.close());
+
+      // Clic en el backdrop (fuera de la tarjeta) cierra el modal.
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.close();
+      });
+    });
+  }
+  document.addEventListener("astro:page-load", initSuccessModal);
+</script>
+
+<style>
+  /* Overlay negro detrás del modal. */
+  .success-modal::backdrop {
+    background-color: rgb(0 0 0 / 0.6);
+  }
+  .success-modal[open] .modal-card {
+    animation: modal-rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .success-modal[open] .success-check {
+    animation: modal-pop 0.4s 0.05s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .success-modal[open] .check-path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: modal-draw 0.5s 0.2s ease-out forwards;
+  }
+  @keyframes modal-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes modal-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes modal-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .success-modal[open] .modal-card,
+    .success-modal[open] .success-check,
+    .success-modal[open] .check-path {
+      animation: none;
+    }
+    .success-modal[open] .check-path {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "campaign");
+
+// Métricas de campaña (placeholder; en V2 vienen del total de donaciones en Supabase).
+const bars = [
+  {
+    label: t.bar1Label,
+    current: 68400,
+    goal: 165000,
+    prefix: "S/",
+    fill: "from-[#ff3d63] to-primary",
+    glow: "shadow-[0px_2px_10px_0px_rgb(228_0_63/0.55)]",
+    pill: "bg-primary",
+    knob: "border-primary",
+  },
+  {
+    label: t.bar2Label,
+    current: 2050,
+    goal: 5000,
+    prefix: "",
+    fill: "from-[#8f295c] to-[#520f33]",
+    glow: "shadow-[0px_2px_10px_0px_rgb(115_20_71/0.55)]",
+    pill: "bg-[#731447]",
+    knob: "border-[#731447]",
+  },
+];
+
+const fmt = (n: number) => n.toLocaleString("en-US");
+const progress = bars.map((b) => ({ ...b, pct: Math.round((b.current / b.goal) * 100) }));
+---
+
+<div class="space-y-8">
+  {
+    progress.map((bar) => (
+      <div>
+        <div class="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-2">
+          <span class="font-heading text-base font-bold text-[#111827]">{bar.label}</span>
+          <span class="text-sm">
+            <span class="font-heading text-lg font-bold text-primary">
+              {bar.prefix}
+              {fmt(bar.current)}
+            </span>
+            <span class="text-ink-400">
+              {" "}
+              {t.of} {bar.prefix}
+              {fmt(bar.goal)}
+            </span>
+          </span>
+        </div>
+
+        <div class="relative mt-9 h-4 w-full rounded-full bg-black/[0.06] sm:mt-6">
+          {[25, 50, 75].map((tick) => (
+            <span class="absolute top-0 h-full w-0.5 bg-black/10" style={`left:${tick}%`} />
+          ))}
+          <div
+            class:list={["absolute inset-y-0 left-0 rounded-full bg-gradient-to-r", bar.fill, bar.glow]}
+            style={`width:${bar.pct}%`}
+          >
+            <span
+              class:list={[
+                "absolute right-0 top-1/2 size-5 -translate-y-1/2 translate-x-1/2 rounded-full border-2 bg-white shadow-md",
+                bar.knob,
+              ]}
+            />
+          </div>
+          <span
+            class:list={[
+              "absolute -top-8 -translate-x-1/2 rounded-full px-2.5 py-0.5 font-heading text-xs font-bold text-white",
+              bar.pill,
+            ]}
+            style={`left:${bar.pct}%`}
+          >
+            {bar.pct}%
+          </span>
+        </div>
+      </div>
+    ))
+  }
+</div>

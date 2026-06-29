@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import SuccessModal from "@/components/common/SuccessModal.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "contact");
@@ -11,12 +12,21 @@ const instagram = "sonqoperusolidario";
 
 // Estilos compartidos de los inputs.
 const fieldClass =
-  "w-full rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3.5 font-body text-sm text-[#1b1c1c] shadow-[0px_1px_2px_0px_rgb(0_0_0/0.05)] outline-none transition placeholder:text-[#6b7280] focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "w-full rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3.5 font-body text-sm text-[#1b1c1c] shadow-[0px_1px_2px_0px_rgb(0_0_0/0.05)] outline-none transition placeholder:text-[#6b7280] focus:border-primary focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-primary";
 const labelClass = "font-body text-sm font-medium text-[#374151]";
+const errorClass = "hidden font-body text-xs text-primary";
+
+// Mensajes de error por campo → se inyectan al script para validar con el mismo schema zod.
+const fieldMessages = {
+  name: t.errName,
+  email: t.errEmail,
+  message: t.errMessage,
+  terms: t.errTerms,
+};
 ---
 
 <section id="contacto" class="bg-mist py-24">
-  <div class="mx-auto grid w-full max-w-[1200px] items-start gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
+  <div class="mx-auto grid w-full max-w-[1280px] items-start gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
     <!-- Columna info -->
     <div>
       <div class="flex items-center gap-4">
@@ -61,8 +71,23 @@ const labelClass = "font-body text-sm font-medium text-[#374151]";
     <form
       action="/api/contact"
       method="POST"
+      data-contact-form
+      data-msg-sending={t.sending}
+      data-msg-success={t.success}
+      data-msg-error={t.error}
+      data-messages={JSON.stringify(fieldMessages)}
       class="flex flex-col gap-5 rounded-3xl bg-white p-6 shadow-[0px_20px_25px_-5px_rgb(0_0_0/0.1),0px_8px_10px_-6px_rgb(0_0_0/0.1)] sm:p-8"
     >
+      {/* Honeypot anti-bot: oculto a humanos; si se llena, descartamos en el server */}
+      <input
+        type="text"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+        class="hidden"
+      />
+
       <div class="flex flex-col gap-2">
         <label class={labelClass} for="contact-name">{t.labelName}</label>
         <input
@@ -71,8 +96,10 @@ const labelClass = "font-body text-sm font-medium text-[#374151]";
           id="contact-name"
           name="name"
           placeholder={t.placeholderName}
+          aria-describedby="contact-name-error"
           required
         />
+        <p id="contact-name-error" data-error="name" class={errorClass}></p>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -83,8 +110,10 @@ const labelClass = "font-body text-sm font-medium text-[#374151]";
           id="contact-email"
           name="email"
           placeholder={t.placeholderEmail}
+          aria-describedby="contact-email-error"
           required
         />
+        <p id="contact-email-error" data-error="email" class={errorClass}></p>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -105,7 +134,9 @@ const labelClass = "font-body text-sm font-medium text-[#374151]";
           id="contact-message"
           name="message"
           placeholder={t.placeholderMessage}
+          aria-describedby="contact-message-error"
           required></textarea>
+        <p id="contact-message-error" data-error="message" class={errorClass}></p>
       </div>
 
       <label class="flex items-center gap-3 font-body text-sm text-[#374151]">
@@ -120,13 +151,138 @@ const labelClass = "font-body text-sm font-medium text-[#374151]";
           <a href="#" class="font-medium text-primary hover:underline">{t.termsLink}</a>
         </span>
       </label>
+      <p data-error="terms" class={errorClass}></p>
 
       <button
         type="submit"
-        class="rounded-2xl bg-primary py-4 font-heading text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary/90"
+        data-submit
+        class="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary py-4 font-heading text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {t.submit}
+        <span data-label>{t.submit}</span>
+        <span data-loading class="hidden items-center gap-2.5">
+          <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+          </svg>
+          {t.sending}
+        </span>
       </button>
+
+      <p data-form-error role="alert" class="hidden text-center font-body text-sm text-ink-500"></p>
     </form>
+
+    <SuccessModal title={t.successTitle} message={t.success} closeLabel={t.modalClose} />
   </div>
 </section>
+
+<script>
+  import { makeContactSchema, type ContactMessages } from "@/lib/validation/contact";
+
+  function initContactForm() {
+    const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+
+    const button = form.querySelector<HTMLButtonElement>("[data-submit]");
+    const labelEl = form.querySelector<HTMLElement>("[data-label]");
+    const loadingEl = form.querySelector<HTMLElement>("[data-loading]");
+    const successModal = document.querySelector<HTMLDialogElement>("[data-success-modal]");
+    const formErrorEl = form.querySelector<HTMLElement>("[data-form-error]");
+
+    function setLoading(on: boolean) {
+      labelEl?.classList.toggle("hidden", on);
+      loadingEl?.classList.toggle("hidden", !on);
+      loadingEl?.classList.toggle("inline-flex", on);
+    }
+
+    function showSuccess() {
+      formErrorEl?.classList.add("hidden");
+      successModal?.showModal();
+    }
+
+    function showError() {
+      if (!formErrorEl) return;
+      formErrorEl.textContent = form!.dataset.msgError ?? "";
+      formErrorEl.classList.remove("hidden");
+    }
+
+    // Mismo schema que el server (una sola fuente de verdad), localizado vía data-messages.
+    const messages = JSON.parse(form.dataset.messages ?? "{}") as ContactMessages;
+    const schema = makeContactSchema(messages);
+    const errorEls = form.querySelectorAll<HTMLElement>("[data-error]");
+
+    function readValues() {
+      const data: Record<string, unknown> = Object.fromEntries(new FormData(form!));
+      data.terms = form!.querySelector<HTMLInputElement>("[name=terms]")?.checked ?? false;
+      return data;
+    }
+
+    // Valida con zod. Si showErrors, pinta los mensajes por campo. Devuelve si es válido.
+    function validate(showErrors: boolean): boolean {
+      const result = schema.safeParse(readValues());
+      const errors: Record<string, string> = {};
+      if (!result.success) {
+        for (const issue of result.error.issues) {
+          const field = issue.path[0];
+          if (typeof field === "string" && !(field in errors)) errors[field] = issue.message;
+        }
+      }
+
+      errorEls.forEach((el) => {
+        const field = el.dataset.error!;
+        const msg = errors[field];
+        const input = form!.querySelector<HTMLElement>(`[name=${field}]`);
+        if (showErrors && msg) {
+          el.textContent = msg;
+          el.classList.remove("hidden");
+          input?.setAttribute("aria-invalid", "true");
+        } else {
+          el.classList.add("hidden");
+          input?.removeAttribute("aria-invalid");
+        }
+      });
+
+      if (button) button.disabled = !result.success;
+      return result.success;
+    }
+
+    // Validación en vivo: limpia errores mientras escribe, muestra al salir del campo.
+    form.addEventListener("input", () => validate(false));
+    form.addEventListener("blur", () => validate(true), true);
+    validate(false); // estado inicial: botón deshabilitado hasta que sea válido
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      // Guard: ignora reenvíos (Enter, doble click) mientras hay uno en curso.
+      if (form.dataset.sending === "true") return;
+      if (!button || !validate(true)) return;
+
+      form.dataset.sending = "true";
+      button.disabled = true;
+      setLoading(true);
+      formErrorEl?.classList.add("hidden");
+
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(readValues()),
+        });
+        if (res.ok) {
+          form.reset();
+          showSuccess();
+        } else {
+          showError();
+        }
+      } catch {
+        showError();
+      } finally {
+        form.dataset.sending = "false";
+        setLoading(false);
+        validate(false); // re-evalúa disabled según el estado actual
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", initContactForm);
+</script>

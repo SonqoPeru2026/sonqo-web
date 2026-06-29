@@ -6,5 +6,6 @@ export default {
   checkoutTitle: "Completa tu donación — Sonqo",
   faqTitle: "Preguntas frecuentes — Sonqo",
   infographicTitle: "Infografía gratuita — Sonqo",
+  thanksTitle: "Gracias por tu donación — Sonqo",
   notFoundTitle: "Página no encontrada — Sonqo",
 } as const;

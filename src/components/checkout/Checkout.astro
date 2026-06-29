@@ -1,28 +1,42 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import { PACKAGES } from "@/lib/donation";
+import { PUBLIC_MP_PUBLIC_KEY } from "astro:env/client";
+import PaymentBrick from "@/components/checkout/PaymentBrick";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "checkout");
 const pkg = useTranslations(lang, "packageCard");
 
-// Paquetes (precios editables en Sanity más adelante). El paquete elegido llega
-// por query string: /checkout?package=ninos. Por defecto, "aliado".
 const packages = {
-  aliado: { name: pkg.aliadoName, price: 33, impact: pkg.impact1 },
-  ninos: { name: pkg.ninosName, price: 165, impact: pkg.impact5 },
-  corazon: { name: pkg.corazonName, price: 330, impact: pkg.impact10 },
-  comunidad: { name: pkg.comunidadName, price: 660, impact: pkg.impact20 },
+  aliado: { name: pkg.aliadoName, price: PACKAGES.aliado.price, impact: pkg.impact1 },
+  ninos: { name: pkg.ninosName, price: PACKAGES.ninos.price, impact: pkg.impact5 },
+  corazon: { name: pkg.corazonName, price: PACKAGES.corazon.price, impact: pkg.impact10 },
+  comunidad: { name: pkg.comunidadName, price: PACKAGES.comunidad.price, impact: pkg.impact20 },
 } as const;
 
 type PackageId = keyof typeof packages;
+
+const rawAmount = Astro.url.searchParams.get("amount");
+const customAmount = rawAmount ? Math.round(Number(rawAmount)) : NaN;
+const isCustom = Number.isFinite(customAmount) && customAmount >= 10;
+
 const requested = Astro.url.searchParams.get("package");
 const selectedId: PackageId =
   requested && requested in packages ? (requested as PackageId) : "aliado";
-const selected = packages[selectedId];
 
-const amount = `${t.currency} ${selected.price.toFixed(2)}`;
+const summary = isCustom
+  ? { name: t.customName, impact: t.customImpact, price: customAmount }
+  : packages[selectedId];
+
+const amount = `${t.currency} ${summary.price.toFixed(2)}`;
 const donateHref = localizePath("/donate", lang);
+const thanksHref = localizePath("/thanks", lang);
+
+// Pagos con tarjeta vía MercadoPago Brick. Sin keys, se muestra el placeholder.
+const paymentsReady = Boolean(PUBLIC_MP_PUBLIC_KEY);
+const brickPackageId = isCustom ? undefined : selectedId;
 
 const inputClass =
   "w-full rounded-lg border border-ink-200 bg-white px-4 py-3 font-body text-burgundy-900 placeholder:text-ink-400 transition-colors focus:border-primary focus:outline-none";
@@ -46,7 +60,7 @@ const steps: Step[] = [
 ---
 
 <section class="bg-mist pb-24 pt-[140px]">
-  <div class="mx-auto w-full max-w-[1200px] px-6 sm:px-8">
+  <div class="mx-auto w-full max-w-[1280px] px-6 sm:px-8">
     <!-- Indicador de progreso (lista ordenada = secuencia de pasos) -->
     <nav aria-label={t.stepsLabel} class="mb-8">
       <ol class="flex flex-wrap items-center gap-2 font-heading text-sm font-bold">
@@ -140,36 +154,24 @@ const steps: Step[] = [
           }
         </div>
 
-        <!-- Panel: tarjeta -->
+        <!-- Panel: tarjeta. Con keys MP → Card Brick (tokeniza en el navegador, PCI seguro).
+             Sin keys → placeholder visual del Brick. -->
         <div data-method-panel="card" class="mt-8">
-          <div>
-            <label class={labelClass} for="cardNumber">{t.cardNumberLabel}</label>
-            <div class="relative">
-              <Icon name="checkout-card"
-                class="pointer-events-none absolute left-4 top-1/2 h-4 w-auto -translate-y-1/2 text-ink-400" />
-              <input id="cardNumber" name="cardNumber" type="text" inputmode="numeric"
-                placeholder={t.cardNumberPlaceholder} class={`${inputClass} pl-11`} />
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <label class={labelClass} for="cardName">{t.cardNameLabel}</label>
-            <input id="cardName" name="cardName" type="text"
-              placeholder={t.cardNamePlaceholder} class={inputClass} />
-          </div>
-
-          <div class="mt-6 grid gap-6 sm:grid-cols-2">
-            <div>
-              <label class={labelClass} for="cardExpiry">{t.cardExpiryLabel}</label>
-              <input id="cardExpiry" name="cardExpiry" type="text" inputmode="numeric"
-                placeholder={t.cardExpiryPlaceholder} class={inputClass} />
-            </div>
-            <div>
-              <label class={labelClass} for="cardCvv">{t.cardCvvLabel}</label>
-              <input id="cardCvv" name="cardCvv" type="text" inputmode="numeric"
-                placeholder={t.cardCvvPlaceholder} class={inputClass} />
-            </div>
-          </div>
+          {
+            paymentsReady ? (
+              <PaymentBrick
+                client:only="react"
+                publicKey={PUBLIC_MP_PUBLIC_KEY ?? ""}
+                amount={summary.price}
+                packageId={brickPackageId}
+                thanksHref={thanksHref}
+              />
+            ) : (
+              <p class="rounded-xl bg-white p-5 text-center font-body text-sm text-ink-500 ring-1 ring-ink-200">
+                {t.cardComingSoon}
+              </p>
+            )
+          }
         </div>
 
         <!-- Panel: transferencia -->
@@ -225,11 +227,11 @@ const steps: Step[] = [
 
           <hr class="my-6 border-ink-100" />
 
-          <h2 class="text-center font-heading text-xl font-bold text-burgundy">{selected.name}</h2>
-          <p class="mt-2 text-center font-body text-sm text-ink">{selected.impact}</p>
+          <h2 class="text-center font-heading text-xl font-bold text-burgundy">{summary.name}</h2>
+          <p class="mt-2 text-center font-body text-sm text-ink">{summary.impact}</p>
 
           <div class="mt-6 overflow-hidden rounded-2xl bg-mist">
-            <img src="/images/checkout-photo.webp" alt={selected.name}
+            <img src="/images/checkout-photo.webp" alt={summary.name}
               width="440" height="440" class="h-auto w-full" />
           </div>
 

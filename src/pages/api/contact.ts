@@ -61,7 +61,6 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // 6. Email de confirmación al usuario (best-effort: no rompe la solicitud si falla,
-  //    p.ej. en dev Resend solo entrega al correo dueño de la cuenta).
   try {
     const html = await render(ContactUser({ name, email, phone, message }));
     const { error } = await resend.emails.send({

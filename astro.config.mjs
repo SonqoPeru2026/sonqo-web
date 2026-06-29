@@ -37,9 +37,10 @@ export default defineConfig({
 
   env: {
     schema: {
-      // MercadoPago — pendiente para el final. Descomentar al integrar pagos.
-      // MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret' }),
-      // PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
+      // MercadoPago — opcionales mientras no haya keys (el código degrada sin romper).
+      MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
 
       // Sanity — un solo PROJECT_ID público, token secreto. Requeridas.
       PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),
@@ -54,9 +55,15 @@ export default defineConfig({
       // Google Analytics — pendiente para el final. Descomentar al configurar GA4.
       // PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public' }),
 
-      // Supabase — requeridas.
+      // Supabase — anon (leads) requeridas. Service key (donaciones, bypass RLS) opcional:
+      // el webhook degrada sin romper hasta que se configure.
       PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public' }),
       PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public' }),
+      SUPABASE_SERVICE_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+
+      // Upstash Redis — rate limiting. Secretas, solo server.
+      UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret' }),
+      UPSTASH_REDIS_REST_TOKEN: envField.string({ context: 'server', access: 'secret' }),
     },
   },
 });

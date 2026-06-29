@@ -16,6 +16,7 @@ import customAmount from "./customAmount";
 import bankTransfers from "./bankTransfers";
 import checkout from "./checkout";
 import infographic from "./infographic";
+import thanks from "./thanks";
 import notFound from "./notFound";
 import faq from "./faq";
 
@@ -39,6 +40,7 @@ export default {
   bankTransfers,
   checkout,
   infographic,
+  thanks,
   notFound,
   faq,
 } as const;

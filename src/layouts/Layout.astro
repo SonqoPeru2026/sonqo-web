@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import "@/styles/global.css";
 import Navbar from "@/components/common/Navbar.astro";
 import Footer from "@/components/common/Footer.astro";
+import WelcomeModal from "@/components/common/WelcomeModal.astro";
 
 interface Props {
   title: string;
@@ -39,5 +40,6 @@ const lang = Astro.currentLocale ?? "es";
       <slot />
     </main>
     <Footer />
+    <WelcomeModal />
   </body>
 </html>
