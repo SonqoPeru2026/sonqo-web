@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+.git
+.env*
+.vercel
+.vscode
+.claude
+CLAUDE.md
+docs
+*.log

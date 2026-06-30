@@ -1,0 +1,88 @@
+---
+// Motor de animaciones global. Sin dependencias: IntersectionObserver + rAF.
+// - [data-reveal]            -> aparece al entrar al viewport (CSS en global.css).
+// - [data-count]             -> cuenta 0 -> valor cuando es visible.
+// CSS asociado: src/styles/global.css. Respeta prefers-reduced-motion.
+---
+
+<script>
+  function initAnimations() {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hasIO = "IntersectionObserver" in window;
+
+    // --- Reveal on scroll ---
+    const revealEls = document.querySelectorAll<HTMLElement>(
+      "[data-reveal]:not([data-reveal-bound])",
+    );
+    if (revealEls.length) {
+      if (reduced || !hasIO) {
+        revealEls.forEach((el) => el.classList.add("is-visible"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("is-visible");
+                obs.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+        );
+        revealEls.forEach((el) => {
+          el.setAttribute("data-reveal-bound", "");
+          io.observe(el);
+        });
+      }
+    }
+
+    // --- Counters (cuenta ascendente) ---
+    const countEls = document.querySelectorAll<HTMLElement>(
+      "[data-count]:not([data-count-bound])",
+    );
+    if (countEls.length) {
+      const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+
+      const run = (el: HTMLElement) => {
+        const target = Number(el.getAttribute("data-count")) || 0;
+        const dur = Number(el.getAttribute("data-count-dur")) || 1300;
+        const ease = (t: number) => 1 - Math.pow(2, -10 * t); // easeOutExpo
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min(1, (now - start) / dur);
+          el.textContent = fmt(target * ease(p));
+          if (p < 1) requestAnimationFrame(tick);
+          else el.textContent = fmt(target);
+        };
+        requestAnimationFrame(tick);
+      };
+
+      if (reduced || !hasIO) {
+        countEls.forEach((el) => {
+          el.textContent = (
+            Number(el.getAttribute("data-count")) || 0
+          ).toLocaleString("en-US");
+        });
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                run(e.target as HTMLElement);
+                obs.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.4 },
+        );
+        countEls.forEach((el) => {
+          el.setAttribute("data-count-bound", "");
+          io.observe(el);
+        });
+      }
+    }
+  }
+
+  // Corre en la carga inicial y tras cada navegación soft (View Transitions).
+  document.addEventListener("astro:page-load", initAnimations);
+</script>
