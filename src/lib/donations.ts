@@ -42,3 +42,23 @@ export async function recordDonation(donation: DonationRecord): Promise<boolean>
   }
   return true;
 }
+
+/**
+ * Total recaudado real: SUM(amount) de las donaciones aprobadas (fuente de verdad).
+ * Usa la función SQL `campaign_raised` (suma en la BD, devuelve un número, sin traer filas).
+ * Devuelve null si no hay BD disponible o falla, para que el caller degrade sin romper.
+ */
+export async function sumApprovedDonations(): Promise<number | null> {
+  const db = getSupabaseAdmin();
+  if (!db) {
+    console.warn("[donations] SUPABASE_SERVICE_KEY ausente, no se puede sumar la recaudación");
+    return null;
+  }
+
+  const { data, error } = await db.rpc("campaign_raised");
+  if (error) {
+    console.error("[donations] error sumando la recaudación:", error);
+    return null;
+  }
+  return Number(data) || 0;
+}
