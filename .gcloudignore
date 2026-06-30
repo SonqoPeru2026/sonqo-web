@@ -1,0 +1,14 @@
+# Qué NO subir como contexto a Cloud Build (gcloud builds submit).
+# Sin esto, gcloud cae a .gitignore. Listamos explícito para no subir basura.
+.git
+node_modules
+dist
+.astro
+.vercel
+.env*
+.vscode
+.claude
+*.log
+
+# Mantener en el contexto (necesarios para el build):
+#   Dockerfile, package.json, bun.lock, astro.config.mjs, src/, public/, tsconfig.json

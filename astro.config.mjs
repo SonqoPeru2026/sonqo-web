@@ -38,9 +38,9 @@ export default defineConfig({
   env: {
     schema: {
       // MercadoPago — opcionales mientras no haya keys (el código degrada sin romper).
-      MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
-      PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
-      MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      MP_ACCESS_TOKEN: envField.string({ context: 'server', access: 'secret' }),
+      PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
+      MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret' }),
 
       // Sanity — PROJECT_ID y dataset públicos. Lectura en build con dataset
       PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),
@@ -57,7 +57,7 @@ export default defineConfig({
       // el webhook degrada sin romper hasta que se configure.
       PUBLIC_SUPABASE_URL: envField.string({ context: 'client', access: 'public' }),
       PUBLIC_SUPABASE_ANON_KEY: envField.string({ context: 'client', access: 'public' }),
-      SUPABASE_SERVICE_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SUPABASE_SERVICE_KEY: envField.string({ context: 'server', access: 'secret' }),
 
       // Upstash Redis — rate limiting. Secretas, solo server.
       UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret' }),
