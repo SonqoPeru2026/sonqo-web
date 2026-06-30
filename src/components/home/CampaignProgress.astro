@@ -1,15 +1,21 @@
 ---
 import { getLang, useTranslations } from "@/i18n/utils";
+import { CAMPAIGN_GOAL_RAISED, CAMPAIGN_GOAL_KIDS, kidsFromRaised } from "@/lib/campaign";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "campaign");
 
-// Métricas de campaña (placeholder; en V2 vienen del total de donaciones en Supabase).
+// `goal` viene de las metas de campaña (V2: Sanity). `current` es el valor de
+// respaldo del build: arranca en 0 y se reemplaza en runtime con el total REAL
+// vía /api/campaign-progress. Si el fetch falla, queda este respaldo.
+const FALLBACK_RAISED = 0;
+
 const bars = [
   {
+    key: "raised",
     label: t.bar1Label,
-    current: 68400,
-    goal: 165000,
+    current: FALLBACK_RAISED,
+    goal: CAMPAIGN_GOAL_RAISED,
     prefix: "S/",
     fill: "from-[#ff3d63] to-primary",
     glow: "shadow-[0px_2px_10px_0px_rgb(228_0_63/0.55)]",
@@ -17,9 +23,10 @@ const bars = [
     knob: "border-primary",
   },
   {
+    key: "kids",
     label: t.bar2Label,
-    current: 2050,
-    goal: 5000,
+    current: kidsFromRaised(FALLBACK_RAISED),
+    goal: CAMPAIGN_GOAL_KIDS,
     prefix: "",
     fill: "from-[#8f295c] to-[#520f33]",
     glow: "shadow-[0px_2px_10px_0px_rgb(115_20_71/0.55)]",
@@ -29,19 +36,21 @@ const bars = [
 ];
 
 const fmt = (n: number) => n.toLocaleString("en-US");
-const progress = bars.map((b) => ({ ...b, pct: Math.round((b.current / b.goal) * 100) }));
+const pctOf = (current: number, goal: number) =>
+  goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
 ---
 
-<div class="space-y-8">
+<div class="space-y-8" data-campaign-progress>
   {
     progress.map((bar) => (
-      <div>
+      <div data-bar={bar.key}>
         <div class="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-2">
           <span class="font-heading text-base font-bold text-[#111827]">{bar.label}</span>
           <span class="text-sm">
             <span class="font-heading text-lg font-bold text-primary">
               {bar.prefix}
-              {fmt(bar.current)}
+              <span data-role="value">{fmt(bar.current)}</span>
             </span>
             <span class="text-ink-400">
               {" "}
@@ -56,7 +65,12 @@ const progress = bars.map((b) => ({ ...b, pct: Math.round((b.current / b.goal) *
             <span class="absolute top-0 h-full w-0.5 bg-black/10" style={`left:${tick}%`} />
           ))}
           <div
-            class:list={["absolute inset-y-0 left-0 rounded-full bg-gradient-to-r", bar.fill, bar.glow]}
+            data-role="fill"
+            class:list={[
+              "absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-[width] duration-1000 ease-out",
+              bar.fill,
+              bar.glow,
+            ]}
             style={`width:${bar.pct}%`}
           >
             <span
@@ -67,8 +81,9 @@ const progress = bars.map((b) => ({ ...b, pct: Math.round((b.current / b.goal) *
             />
           </div>
           <span
+            data-role="pill"
             class:list={[
-              "absolute -top-8 -translate-x-1/2 rounded-full px-2.5 py-0.5 font-heading text-xs font-bold text-white",
+              "absolute -top-8 -translate-x-1/2 rounded-full px-2.5 py-0.5 font-heading text-xs font-bold text-white transition-[left] duration-1000 ease-out",
               bar.pill,
             ]}
             style={`left:${bar.pct}%`}
@@ -80,3 +95,35 @@ const progress = bars.map((b) => ({ ...b, pct: Math.round((b.current / b.goal) *
     ))
   }
 </div>
+
+<script define:vars={{ goalRaised: CAMPAIGN_GOAL_RAISED, goalKids: CAMPAIGN_GOAL_KIDS }}>
+  // Trae el total recaudado real y anima las dos barras. La home sigue estática:
+  // este es el único trabajo en runtime del lado del cliente.
+  const root = document.querySelector("[data-campaign-progress]");
+  if (root) {
+    const fmt = (n) => n.toLocaleString("en-US");
+    const pctOf = (current, goal) =>
+      goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+
+    const paint = (key, current, goal) => {
+      const bar = root.querySelector(`[data-bar="${key}"]`);
+      if (!bar) return;
+      const pct = pctOf(current, goal);
+      bar.querySelector('[data-role="value"]').textContent = fmt(current);
+      bar.querySelector('[data-role="fill"]').style.width = `${pct}%`;
+      const pill = bar.querySelector('[data-role="pill"]');
+      pill.style.left = `${pct}%`;
+      pill.textContent = `${pct}%`;
+    };
+
+    fetch("/api/campaign-progress")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data || data.raised == null) return; // conserva el respaldo del build
+        const raised = data.raised;
+        paint("raised", raised, goalRaised);
+        paint("kids", Math.round((raised / goalRaised) * goalKids), goalKids);
+      })
+      .catch(() => {});
+  }
+</script>
