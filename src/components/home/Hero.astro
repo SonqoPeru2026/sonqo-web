@@ -1,26 +1,24 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import slide1 from "@/assets/images/hero-slide-1.jpg";
+import slide2 from "@/assets/images/hero-slide-2.jpg";
+import slide3 from "@/assets/images/hero-slide-3.jpg";
 
 const lang = getLang(Astro.url);
 const hero = useTranslations(lang, "hero");
 
-type Slide = {
-  img: string;
-  eyebrow: string;
-  title: string;
-  text: string;
-  cta: string;
-  href: string;
-  cta2?: string;
-  href2?: string;
-};
-const slides: Slide[] = [
-  { img: "hero-1.webp", eyebrow: hero.slide1Eyebrow, title: hero.slide1Title, text: hero.slide1Text, cta: hero.slide1Cta, href: localizePath("/donate", lang), cta2: hero.slide1Cta2, href2: "#proposito" },
-  { img: "hero-2.webp", eyebrow: hero.slide2Eyebrow, title: hero.slide2Title, text: hero.slide2Text, cta: hero.slide2Cta, href: "#proposito" },
-  { img: "hero-3.webp", eyebrow: hero.slide3Eyebrow, title: hero.slide3Title, text: hero.slide3Text, cta: hero.slide3Cta, href: localizePath("/infographic", lang) },
-  { img: "hero-4.webp", eyebrow: hero.slide4Eyebrow, title: hero.slide4Title, text: hero.slide4Text, cta: hero.slide4Cta, href: "#contacto" },
+const slides = [
+  { img: slide1, alt: hero.slide1Alt, title: hero.slide1Title, text: hero.slide1Text },
+  { img: slide2, alt: hero.slide2Alt, title: hero.slide2Title, text: hero.slide2Text },
+  { img: slide3, alt: hero.slide3Alt, title: hero.slide3Title, text: hero.slide3Text },
 ];
+
+// Numeros de impacto. TODO V2: traer de Sanity (ninos_atendidos, comunidades).
+const STAT_CHILDREN = "31,877+";
+const STAT_COMMUNITIES = "27";
+
 const SLIDE_MS = 6000;
 const total = String(slides.length).padStart(2, "0");
 ---
@@ -29,180 +27,304 @@ const total = String(slides.length).padStart(2, "0");
   id="inicio"
   data-hero
   style={`--slide-ms:${SLIDE_MS}ms`}
-  class="relative overflow-hidden bg-mist"
+  class="hero relative isolate min-h-[100dvh] overflow-hidden bg-ink-900"
 >
-  <span aria-hidden="true" class="absolute left-0 top-1/2 z-20 hidden h-100 w-1 -translate-y-1/2 rounded-r bg-primary lg:block"></span>
+  <!-- Datos de slides para el carousel (data attributes, sin JSON) -->
+  <div class="hidden" aria-hidden="true">
+    {slides.map((s, i) => (
+      <span data-slide={i} data-title={s.title} data-text={s.text}></span>
+    ))}
+  </div>
 
-  <div data-hero-track class="hero-track flex">
+  <!-- Fondos full-bleed (cross-fade) -->
+  <div class="absolute inset-0 -z-20">
     {
       slides.map((s, i) => (
-        <div data-slide={i} class="w-full shrink-0">
-        <div
-          class="mx-auto grid w-full max-w-[1440px] grid-rows-[38vh_auto] lg:h-[100vh] lg:grid-cols-[0.9fr_1.1fr] lg:grid-rows-none"
-        >
-          <div class="relative order-1 mx-4 mb-4 mt-30 overflow-hidden rounded-3xl bg-mist lg:order-2 lg:ml-0 lg:mr-10 lg:mb-10 lg:mt-[112px] lg:flex lg:items-center lg:justify-center lg:rounded-[2.5rem] lg:bg-transparent">
-            <img
-              src={`/images/hero/${s.img}`}
-              alt=""
-              aria-hidden="true"
-              fetchpriority={i === 0 ? "high" : undefined}
-              loading={i === 0 ? "eager" : "lazy"}
-              onerror="this.style.display='none'"
-              class="relative z-10 h-full w-full object-cover lg:h-[500px] lg:w-[700px] lg:rounded-2xl"
-            />
-            <div
-              aria-hidden="true"
-              class="absolute inset-x-0 bottom-0 z-10 h-1/3 bg-[linear-gradient(to_top,rgb(0_0_0/0.32),transparent)] lg:hidden"
-            ></div>
-          </div>
-
-          <div class="order-2 flex flex-col justify-center px-7 pb-28 pt-10 lg:order-1 lg:px-16 lg:py-0 lg:pl-20 lg:pr-14">
-            <span class="inline-flex items-center gap-2.5 font-heading text-xs font-bold uppercase tracking-[0.22em] text-ink-400">
-              <span class="size-2 rounded-full bg-primary" aria-hidden="true" />
-              {s.eyebrow}
-            </span>
-
-            <h2
-              class="hero-title mt-5 max-w-xl font-heading text-4xl font-bold leading-[1.08] text-ink-900 sm:text-5xl lg:text-6xl"
-              set:html={s.title}
-            />
-            <p class="mt-5 max-w-md font-body text-base text-ink-500 sm:text-lg">
-              {s.text}
-            </p>
-
-            <div class="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
-              <a
-                href={s.href}
-                class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 font-heading text-sm font-bold text-white shadow-[0_14px_30px_-12px_rgb(228_0_63/0.7)] transition-colors hover:bg-primary-600"
-              >
-                {s.cta}
-              </a>
-              {
-                s.cta2 && s.href2 && (
-                  <a
-                    href={s.href2}
-                    class="font-heading text-sm font-bold text-ink-900 underline decoration-2 underline-offset-[6px] transition-colors hover:text-primary"
-                  >
-                    {s.cta2}
-                  </a>
-                )
-              }
-            </div>
-          </div>
-        </div>
-        </div>
+        <Image
+          src={s.img}
+          alt={i === 0 ? s.alt : ""}
+          aria-hidden={i !== 0 ? "true" : undefined}
+          data-bg={i}
+          widths={[768, 1280, 1920, 2560]}
+          sizes="100vw"
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchpriority={i === 0 ? "high" : undefined}
+          class={`hero-bg absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-out ${i === 0 ? "opacity-100" : "opacity-0"}`}
+        />
       ))
     }
   </div>
 
-  <div class="absolute inset-x-0 bottom-8 z-30 mx-auto flex max-w-[1440px] items-center gap-6 px-7 lg:px-20">
-    <div class="flex gap-3">
+  <!-- Capa 1: Gradiente vertical fuerte (base oscura) -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background: linear-gradient(to top, rgb(15 15 18 / 0.92) 0%, rgb(15 15 18 / 0.7) 25%, rgb(15 15 18 / 0.45) 50%, rgb(15 15 18 / 0.25) 75%, rgb(15 15 18 / 0.1) 100%);"
+  >
+  </div>
+
+  <!-- Capa 2: Radial centrado oscuro (refuerzo detras del texto) -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-[9]"
+    style="background: radial-gradient(ellipse 80% 60% at 50% 45%, rgb(15 15 18 / 0.65) 0%, transparent 100%);"
+  >
+  </div>
+
+  <!-- Capa 3: Vignette superior (oscurece cielo) -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-[8]"
+    style="background: linear-gradient(to bottom, rgb(15 15 18 / 0.5) 0%, transparent 40%);"
+  >
+  </div>
+
+  <!-- Capa 4: Calidez sutil -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-[7] bg-primary/5 mix-blend-multiply"
+  >
+  </div>
+
+  <!-- Contenido centrado -->
+  <div
+    class="mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col items-center justify-center px-5 pt-28 pb-24 text-center sm:px-8 lg:px-20"
+  >
+    <!-- Badge / hashtag -->
+    <span
+      class="hero-fade-up inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 font-heading text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white/90 ring-1 ring-inset ring-white/15 backdrop-blur-md"
+    >
+      <Icon name="hero-heart" class="h-3.5 w-auto text-primary" />
+      {hero.hashtag}
+    </span>
+
+    <!-- Titulo principal -->
+    <h1
+      data-hero-title
+      class="hero-title hero-fade-up mt-7 max-w-4xl font-heading text-[2.8rem] font-bold leading-[1.05] text-white sm:text-6xl lg:text-[4.5rem] lg:leading-[1.03]"
+      style="animation-delay: 100ms"
+      set:html={slides[0].title}
+    />
+
+    <!-- Subtitulo -->
+    <p
+      data-hero-text
+      class="hero-fade-up mt-6 max-w-xl font-body text-base leading-relaxed text-white/80 sm:text-lg lg:text-xl"
+      style="animation-delay: 200ms"
+      set:html={slides[0].text}
+    />
+
+    <!-- Tarjeta de impacto centrada -->
+    <dl
+      class="hero-fade-up mt-14 flex items-center gap-10 rounded-2xl bg-black/30 px-10 py-5 ring-1 ring-inset ring-white/10 backdrop-blur-md sm:gap-12"
+      style="animation-delay: 300ms"
+    >
+      <div class="flex flex-col items-center">
+        <dt class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          {STAT_CHILDREN}
+        </dt>
+        <dd class="mt-1.5 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60">
+          {hero.statChildrenLabel}
+        </dd>
+      </div>
+      <div class="h-12 w-px bg-white/20" aria-hidden="true"></div>
+      <div class="flex flex-col items-center">
+        <dt class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          {STAT_COMMUNITIES}
+        </dt>
+        <dd class="mt-1.5 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60">
+          {hero.statCommunitiesLabel}
+        </dd>
+      </div>
+    </dl>
+
+    <!-- CTAs -->
+    <div
+      class="hero-fade-up mt-10 flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
+      style="animation-delay: 400ms"
+    >
+      <a
+        href={localizePath("/donate", lang)}
+        class="group inline-flex items-center justify-center gap-2.5 rounded-full bg-primary px-10 py-4 font-heading text-sm font-bold text-white shadow-[0_20px_50px_-12px_rgb(228_0_63/0.6)] transition-[background-color,transform,box-shadow] duration-300 hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgb(228_0_63/0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      >
+        <Icon name="hero-donate" class="h-5 w-auto text-white transition-transform duration-300 group-hover:scale-110" />
+        {hero.ctaPrimary}
+      </a>
+      <a
+        href="#proposito"
+        class="inline-flex items-center justify-center rounded-full border border-white/30 px-9 py-4 font-heading text-sm font-bold text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      >
+        {hero.ctaSecondary}
+      </a>
+    </div>
+
+    <!-- Seguridad -->
+    <p
+      class="hero-fade-up mt-6 inline-flex items-center justify-center gap-2 font-heading text-xs font-semibold text-white/50"
+      style="animation-delay: 500ms"
+    >
+      <Icon name="hero-lock" class="h-3.5 w-auto" />
+      {hero.secure}
+    </p>
+  </div>
+
+  <!-- Controles del carrusel (esquina inferior derecha) -->
+  <div class="absolute bottom-8 right-5 z-10 flex items-center gap-4 sm:right-8 lg:right-20">
+    <p class="font-heading text-sm text-white/50" aria-live="polite">
+      <span data-hero-current class="text-base font-bold text-white">01</span>
+      <span class="mx-0.5 text-white/30">/</span>
+      <span class="text-white/30">{total}</span>
+    </p>
+    <div class="hidden h-0.5 w-20 overflow-hidden rounded-full bg-white/15 sm:block" aria-hidden="true">
+      <span data-hero-progress class="hero-progress block h-full w-full origin-left bg-primary"></span>
+    </div>
+    <div class="flex gap-2">
       <button
         type="button"
         data-hero-prev
         aria-label="Anterior"
-        class="flex size-11 items-center justify-center rounded-full border border-ink-300 bg-mist/80 text-ink-600 backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+        class="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/70 backdrop-blur-sm transition-[border-color,background-color,color] duration-200 hover:border-white/40 hover:bg-white/10 hover:text-white"
       >
-        <Icon name="faq-chevron" class="h-4 w-auto rotate-90" />
+        <Icon name="faq-chevron" class="h-3.5 w-auto rotate-90" />
       </button>
       <button
         type="button"
         data-hero-next
         aria-label="Siguiente"
-        class="flex size-11 items-center justify-center rounded-full border border-ink-300 bg-mist/80 text-ink-600 backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+        class="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/70 backdrop-blur-sm transition-[border-color,background-color,color] duration-200 hover:border-white/40 hover:bg-white/10 hover:text-white"
       >
-        <Icon name="faq-chevron" class="h-4 w-auto -rotate-90" />
+        <Icon name="faq-chevron" class="h-3.5 w-auto -rotate-90" />
       </button>
-    </div>
-    <p class="font-heading text-sm text-ink-400" aria-live="polite">
-      <span data-hero-current class="text-xl font-bold text-primary">01</span>
-      <span class="mx-1">/</span>
-      {total}
-    </p>
-    <div class="hidden h-0.5 w-24 overflow-hidden rounded-full bg-ink-200 sm:block" aria-hidden="true">
-      <span data-hero-progress class="hero-progress block h-full w-full origin-left bg-primary"></span>
     </div>
   </div>
 </section>
 
-<script>
-  function initHeroCarousel() {
-    const root = document.querySelector<HTMLElement>("[data-hero]");
-    if (!root || root.dataset.bound) return;
-    root.dataset.bound = "true";
+<script is:inline>
+/**
+ * Hero Carousel
+ * - Alterna slides (texto + fondo) con auto-play
+ * - Pausa en hover/focus
+ * - Barra de progreso sincronizada
+ * - Fix: reanuda correctamente tras bfcache (navegar atrás/logo)
+ */
+(function () {
+  const root = document.querySelector("[data-hero]");
+  if (!root || root.dataset.bound) return;
+  root.dataset.bound = "true";
 
-    const track = root.querySelector<HTMLElement>("[data-hero-track]");
-    const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
-    const counter = root.querySelector<HTMLElement>("[data-hero-current]");
-    const progress = root.querySelector<HTMLElement>("[data-hero-progress]");
-    const count = slides.length;
-    if (!track || count <= 1) return;
+  // --- DOM refs ---
+  const bgs = [...root.querySelectorAll("[data-bg]")];
+  const titleEl = root.querySelector("[data-hero-title]");
+  const textEl = root.querySelector("[data-hero-text]");
+  const counter = root.querySelector("[data-hero-current]");
+  const progress = root.querySelector("[data-hero-progress]");
+  const nextBtn = root.querySelector("[data-hero-next]");
+  const prevBtn = root.querySelector("[data-hero-prev]");
 
-    const ms = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6000;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let index = 0;
-    let timer: ReturnType<typeof setInterval> | undefined;
+  // --- Slide data (desde data-attributes, sin JSON) ---
+  const slideEls = [...root.querySelectorAll("[data-slide]")];
+  const slides = slideEls.map((el) => ({
+    title: el.dataset.title,
+    text: el.dataset.text,
+  }));
 
-    function restartProgress() {
-      if (!progress || reduce) return;
-      progress.classList.remove("run");
-      void progress.offsetWidth;
-      progress.classList.add("run");
-    }
-    function show(i: number) {
-      index = (i + count) % count;
-      track!.style.transform = `translateX(${-index * 100}%)`;
-      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-      restartProgress();
-    }
-    function next() {
-      show(index + 1);
-    }
-    function start() {
-      if (reduce) return;
-      if (timer) clearInterval(timer);
-      if (progress) progress.style.animationPlayState = "running";
-      timer = setInterval(next, ms);
-    }
-    function stop() {
-      if (timer) clearInterval(timer);
-      timer = undefined;
-      if (progress) progress.style.animationPlayState = "paused";
-    }
+  const count = slides.length;
+  if (count <= 1 || !titleEl || !textEl) return;
 
-    root.querySelector("[data-hero-next]")?.addEventListener("click", () => {
-      next();
-      start();
+  // --- Config ---
+  const MS = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6000;
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // --- State ---
+  let index = 0;
+  let timer = null;
+
+  // --- Progress bar ---
+  function restartProgress() {
+    if (!progress || reducedMotion) return;
+    progress.classList.remove("run");
+    // Forzar reflow para reiniciar animación CSS
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        progress.classList.add("run");
+      });
     });
-    root.querySelector("[data-hero-prev]")?.addEventListener("click", () => {
-      show(index - 1);
-      start();
-    });
-
-    root.addEventListener("mouseenter", stop);
-    root.addEventListener("mouseleave", start);
-    root.addEventListener("focusin", stop);
-    root.addEventListener("focusout", start);
-
-    show(0);
-    start();
   }
 
-  document.addEventListener("astro:page-load", initHeroCarousel);
-  if (document.readyState !== "loading") initHeroCarousel();
-  else document.addEventListener("DOMContentLoaded", initHeroCarousel);
+  // --- Mostrar slide ---
+  function show(i) {
+    index = (i + count) % count;
+
+    // Fondo: alternar opacidad
+    bgs.forEach((bg, j) => {
+      bg.classList.toggle("opacity-100", j === index);
+      bg.classList.toggle("opacity-0", j !== index);
+    });
+
+    // Texto: swap directo
+    const slide = slides[index];
+    titleEl.innerHTML = slide.title;
+    textEl.innerHTML = slide.text;
+
+    // Contador
+    if (counter) counter.textContent = String(index + 1).padStart(2, "0");
+
+    restartProgress();
+  }
+
+  // --- Auto-play ---
+  function start() {
+    if (reducedMotion) return;
+    stop();
+    timer = setInterval(() => show(index + 1), MS);
+  }
+
+  function stop() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  // --- Eventos ---
+  nextBtn?.addEventListener("click", () => { show(index + 1); start(); });
+  prevBtn?.addEventListener("click", () => { show(index - 1); start(); });
+
+  root.addEventListener("mouseenter", stop);
+  root.addEventListener("mouseleave", start);
+  root.addEventListener("focusin", stop);
+  root.addEventListener("focusout", start);
+
+  // --- Fix bfcache: reanuda cuando el browser restaura la página ---
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) start();
+  });
+
+  // --- Init ---
+  restartProgress();
+  start();
+})();
 </script>
 
 <style>
-  .hero-track {
-    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
   .hero-title :global(.text-primary) {
     font-style: italic;
     color: var(--color-primary);
+    text-shadow: 0 0 40px rgb(228 0 63 / 0.3);
   }
 
+  /* Entrada escalonada */
+  .hero-fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes hero-fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Barra de progreso del carousel */
   .hero-progress {
     transform: scaleX(0);
   }
@@ -210,23 +332,22 @@ const total = String(slides.length).padStart(2, "0");
     animation: hero-fill var(--slide-ms) linear forwards;
   }
   @keyframes hero-fill {
-    from {
-      transform: scaleX(0);
-    }
-    to {
-      transform: scaleX(1);
-    }
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 
+  /* Respetar reduced-motion */
   @media (prefers-reduced-motion: reduce) {
-    .hero-track {
-      transition: none;
-    }
-    .hero-progress {
-      transform: scaleX(1);
+    .hero-fade-up {
+      opacity: 1;
+      transform: none;
+      animation: none;
     }
     .hero-progress.run {
       animation: none;
+    }
+    .hero-progress {
+      transform: scaleX(1);
     }
   }
 </style>

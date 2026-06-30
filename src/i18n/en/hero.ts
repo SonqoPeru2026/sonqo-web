@@ -1,22 +1,20 @@
 export default {
-  slide1Eyebrow: "From the heart of Peru",
+  hashtag: "#WarmthFromTheHeart",
+  ctaPrimary: "Donate now",
+  ctaSecondary: "Learn more",
+  secure: "100% secure payment",
+  statChildrenLabel: "Children protected",
+  statCommunitiesLabel: "Communities",
+
   slide1Title: 'Warmth from the <span class="text-primary">heart</span>',
-  slide1Text: "Each thermal jacket protects a child from the Andean winter frosts.",
-  slide1Cta: "Donate now",
-  slide1Cta2: "Learn more",
+  slide1Text: "Each thermal jacket shields a child from the<br>Andean winter frosts.",
+  slide1Alt: "Children from an Andean community waving in their Sonqo thermal jackets",
 
-  slide2Eyebrow: "Our mission",
-  slide2Title: 'Discover our <span class="text-primary">purpose</span>',
+  slide2Title: 'Let\'s add up <span class="text-primary">hearts</span>',
   slide2Text: "Since 2016 we bring warmth to the highest communities of Cusco and Huancavelica.",
-  slide2Cta: "Our purpose",
+  slide2Alt: "Group of happy children raising their hands in their Sonqo jackets",
 
-  slide3Eyebrow: "Free infographic",
-  slide3Title: 'All of <span class="text-primary">Sonqo</span> in one document',
-  slide3Text: "Download the free infographic and discover how your support transforms lives.",
-  slide3Cta: "Download infographic",
-
-  slide4Eyebrow: "Join the cause",
-  slide4Title: 'Let\'s add up <span class="text-primary">hearts</span>',
-  slide4Text: "Want to donate, volunteer or propose a project? Write to us.",
-  slide4Cta: "Contact us",
+  slide3Title: 'Your warmth, their <span class="text-primary">winter</span>',
+  slide3Text: "With your gift, a child faces the frosts with warmth and dignity.",
+  slide3Alt: "Children in wool hats and Sonqo jackets on the Andean highlands",
 } as const;

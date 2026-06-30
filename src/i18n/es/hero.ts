@@ -1,23 +1,22 @@
 export default {
-  // Cada slide del carrusel tiene su propio texto (marketing los ajusta luego).
-  slide1Eyebrow: "Desde el corazón del Perú",
+  // Hero: carrusel full-bleed. Solo foto + titulo + texto rotan; el resto es fijo.
+  hashtag: "#AbrigaConElCorazón",
+  ctaPrimary: "Dona ahora",
+  ctaSecondary: "Conoce más",
+  secure: "Pago 100% seguro",
+  // Etiquetas de la tarjeta de impacto (los numeros viven en Hero.astro, migran a Sanity).
+  statChildrenLabel: "Niños protegidos",
+  statCommunitiesLabel: "Comunidades",
+
   slide1Title: 'Abriga con el <span class="text-primary">corazón</span>',
   slide1Text: "Cada casaca térmica protege a un niño de las heladas del invierno andino.",
-  slide1Cta: "Dona ahora",
-  slide1Cta2: "Conoce más",
+  slide1Alt: "Niños de una comunidad andina saludando con sus casacas térmicas Sonqo",
 
-  slide2Eyebrow: "Nuestra misión",
-  slide2Title: 'Conoce nuestro <span class="text-primary">propósito</span>',
+  slide2Title: 'Sumemos <span class="text-primary">corazones</span>',
   slide2Text: "Desde 2016 llevamos abrigo a las comunidades más altas de Cusco y Huancavelica.",
-  slide2Cta: "Nuestro propósito",
+  slide2Alt: "Grupo de niños felices con sus casacas Sonqo levantando las manos",
 
-  slide3Eyebrow: "Infografía gratuita",
-  slide3Title: 'Todo <span class="text-primary">Sonqo</span> en un documento',
-  slide3Text: "Descarga gratis la infografía y descubre cómo tu apoyo transforma vidas.",
-  slide3Cta: "Descargar infografía",
-
-  slide4Eyebrow: "Únete a la causa",
-  slide4Title: 'Sumemos <span class="text-primary">corazones</span>',
-  slide4Text: "¿Quieres donar, ser voluntario o proponer un proyecto? Escríbenos.",
-  slide4Cta: "Contáctanos",
+  slide3Title: 'Tu abrigo, su <span class="text-primary">invierno</span>',
+  slide3Text: "Con tu donación, un niño enfrenta las heladas con calor y dignidad.",
+  slide3Alt: "Niños con gorros de lana y casacas Sonqo en la puna andina",
 } as const;
