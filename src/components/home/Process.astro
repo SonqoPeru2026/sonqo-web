@@ -27,8 +27,12 @@ const steps = [
     <!-- Pasos -->
     <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
-        steps.map((step) => (
-          <li class="rounded-3xl bg-white p-8 shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)]">
+        steps.map((step, i) => (
+          <li
+            data-reveal
+            style={`--reveal-delay:${i * 150}ms`}
+            class="rounded-3xl bg-white p-8 shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_20px_40px_-12px_rgb(0_0_0/0.12)]"
+          >
             <div class="flex items-start justify-between">
               <span class="flex size-12 items-center justify-center rounded-2xl bg-primary text-white">
                 <Icon name={step.icon} class="h-6 w-auto" />
@@ -44,6 +48,7 @@ const steps = [
 
     <!-- Bloque mapa / dónde llegamos -->
     <div
+      data-reveal
       class="mt-6 flex flex-col items-center gap-8 rounded-3xl bg-white p-8 shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)] lg:flex-row lg:gap-12 lg:p-12"
     >
       <div class="flex-1">

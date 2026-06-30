@@ -1,0 +1,53 @@
+# Cloud Build — rama develop → servicio sonqo-dev (desarrollo/preview)
+steps:
+  # 1. Build de la imagen Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--tag=southamerica-west1-docker.pkg.dev/$PROJECT_ID/sonqo-images/sonqo-web:dev-$SHORT_SHA'
+      - '--tag=southamerica-west1-docker.pkg.dev/$PROJECT_ID/sonqo-images/sonqo-web:dev-latest'
+      - '--build-arg=PUBLIC_SUPABASE_URL=$_PUBLIC_SUPABASE_URL'
+      - '--build-arg=PUBLIC_SUPABASE_ANON_KEY=$_PUBLIC_SUPABASE_ANON_KEY'
+      - '--build-arg=PUBLIC_SANITY_PROJECT_ID=$_PUBLIC_SANITY_PROJECT_ID'
+      - '--build-arg=SANITY_DATASET=development'
+      - '--build-arg=PUBLIC_MP_PUBLIC_KEY=$_PUBLIC_MP_PUBLIC_KEY_SANDBOX'
+      - '.'
+
+  # 2. Push al Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'southamerica-west1-docker.pkg.dev/$PROJECT_ID/sonqo-images/sonqo-web'
+
+  # 3. Deploy a Cloud Run (dev)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'sonqo-dev'
+      - '--image=southamerica-west1-docker.pkg.dev/$PROJECT_ID/sonqo-images/sonqo-web:dev-$SHORT_SHA'
+      - '--region=southamerica-west1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--min-instances=0'
+      - '--max-instances=3'
+      - '--concurrency=80'
+      - '--timeout=30s'
+      - '--set-env-vars=NODE_ENV=development'
+      # Requiere que MP_ACCESS_TOKEN_SANDBOX, MP_WEBHOOK_SECRET y SUPABASE_SERVICE_KEY
+      # existan en Secret Manager (crear antes del push, o el deploy falla).
+      # SANITY_API_TOKEN no se usa en runtime (lib/sanity usa CDN + dataset público).
+      - '--update-secrets=RESEND_API_KEY=RESEND_API_KEY:latest,RESEND_FROM=RESEND_FROM_DEV:latest,RESEND_TO=RESEND_TO:latest,UPSTASH_REDIS_REST_URL=UPSTASH_REDIS_REST_URL:latest,UPSTASH_REDIS_REST_TOKEN=UPSTASH_REDIS_REST_TOKEN:latest,MP_ACCESS_TOKEN=MP_ACCESS_TOKEN_SANDBOX:latest,MP_WEBHOOK_SECRET=MP_WEBHOOK_SECRET:latest,SUPABASE_SERVICE_KEY=SUPABASE_SERVICE_KEY:latest'
+
+substitutions:
+  _PUBLIC_SUPABASE_URL: 'https://cfnsfvohxxomtnbmppoo.supabase.co'
+  _PUBLIC_SUPABASE_ANON_KEY: 'sb_publishable_54tw4I_LpZhAZOCw5IThYA_LENcPCW9'
+  _PUBLIC_SANITY_PROJECT_ID: 'pq113h64'           # proyecto Sanity (público, dataset development)
+  _PUBLIC_MP_PUBLIC_KEY_SANDBOX: 'TEST-ea6c61b3-6f7e-474e-ab61-e518c333b205'  # MP public key sandbox
+
+options:
+  logging: CLOUD_LOGGING_ONLY
