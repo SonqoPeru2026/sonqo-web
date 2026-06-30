@@ -13,10 +13,10 @@ const { ninosAtendidos, comunidades, solesRecaudados } = await getSiteSettings()
 const fmt = (n: number) => n.toLocaleString("en-US");
 
 const stats = [
-  { icon: "achievements-jacket", prefix: "S/", value: fmt(PACKAGES.aliado.price), label: t.label1 },
-  { icon: "achievements-comunity", prefix: "+", value: fmt(comunidades), label: t.label2 },
-  { icon: "achievements-childrens", prefix: "", value: fmt(ninosAtendidos), label: t.label3 },
-  { icon: "achievements-hand", prefix: "S/", value: fmt(solesRecaudados), label: t.label4 },
+  { icon: "achievements-jacket", prefix: "S/", value: PACKAGES.aliado.price, label: t.label1 },
+  { icon: "achievements-comunity", prefix: "+", value: comunidades, label: t.label2 },
+  { icon: "achievements-childrens", prefix: "", value: ninosAtendidos, label: t.label3 },
+  { icon: "achievements-hand", prefix: "S/", value: solesRecaudados, label: t.label4 },
 ];
 ---
 
@@ -41,15 +41,19 @@ const stats = [
     <!-- Tarjetas de cifras -->
     <ul class="mt-20 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        stats.map((stat) => (
-          <li class="group flex flex-col items-center rounded-3xl bg-white px-4 py-8 text-center shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)] transition-colors hover:bg-primary">
+        stats.map((stat, i) => (
+          <li
+            data-reveal
+            style={`--reveal-delay:${i * 150}ms`}
+            class="group flex flex-col items-center rounded-3xl bg-white px-4 py-8 text-center shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.05)] transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:bg-primary hover:shadow-[0px_20px_40px_-12px_rgb(228_0_63/0.3)]"
+          >
             <Icon
               name={stat.icon}
-              class="h-14 w-auto text-primary transition-colors group-hover:text-white"
+              class="h-14 w-auto text-primary transition-[color,transform] duration-300 group-hover:scale-110 group-hover:text-white"
             />
             <p class="mt-4 flex items-baseline justify-center gap-1 font-heading font-bold text-primary transition-colors group-hover:text-white">
               {stat.prefix && <span class="text-xl">{stat.prefix}</span>}
-              <span class="text-4xl leading-none">{stat.value}</span>
+              <span class="text-4xl leading-none" data-count={stat.value}>{fmt(stat.value)}</span>
             </p>
             <p class="mt-3 whitespace-nowrap font-body text-xs font-medium uppercase tracking-[0.35px] text-ink transition-colors group-hover:text-white/90">
               {stat.label}

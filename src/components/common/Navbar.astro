@@ -24,7 +24,7 @@ const langOption = (code: "es" | "en", label: string) => ({
 const langs = [langOption("es", "ES"), langOption("en", "EN")];
 ---
 
-<header class="fixed inset-x-0 top-0 z-50 px-4 py-4">
+<header transition:animate="none" class="fixed inset-x-0 top-0 z-50 px-4 py-4">
   <nav
     class="mx-auto flex max-w-[1280px] items-center justify-between gap-6 rounded-[20px] bg-white px-6 py-5 shadow-[0_8px_24px_-4px_rgb(0_0_0/0.2)] sm:px-8"
   >
@@ -89,11 +89,12 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
 </header>
 
 <!-- Backdrop -->
-<div id="menu-backdrop" class="fixed inset-0 z-[55] bg-black/50 md:hidden"></div>
+<div id="menu-backdrop" transition:animate="none" class="fixed inset-0 z-[55] bg-black/50 md:hidden"></div>
 
 <!-- Drawer móvil (entra desde la izquierda) -->
 <aside
   id="mobile-menu"
+  transition:animate="none"
   class="fixed inset-y-0 right-0 z-[60] flex h-full w-[86%] max-w-sm flex-col bg-primary text-white shadow-2xl md:hidden"
 >
   <!-- Header -->

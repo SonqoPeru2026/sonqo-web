@@ -298,7 +298,61 @@ const total = String(slides.length).padStart(2, "0");
     if (e.persisted) start();
   });
 
+  // --- Typewriter (solo primer slide) ---
+  // Escribe el título char-por-char preservando el <span> resaltado (HTML).
+  // En los swaps del carrusel se usa el fade normal (show()).
+  function typewriter(el) {
+    // Capturar segmentos conservando la clase del resaltado.
+    const segments = [...el.childNodes].map((node) =>
+      node.nodeType === 1
+        ? { text: node.textContent, cls: node.getAttribute("class") }
+        : { text: node.textContent, cls: null }
+    );
+    const total = segments.reduce((n, s) => n + s.text.length, 0);
+    if (!total) return;
+
+    // Reservar altura para evitar salto de layout (CLS) al vaciar el título.
+    el.style.minHeight = el.getBoundingClientRect().height + "px";
+
+    const build = (count) => {
+      el.textContent = "";
+      let remaining = count;
+      for (const seg of segments) {
+        if (remaining <= 0) break;
+        const part = seg.text.slice(0, Math.min(remaining, seg.text.length));
+        if (seg.cls) {
+          const span = document.createElement("span");
+          span.setAttribute("class", seg.cls);
+          span.textContent = part;
+          el.appendChild(span);
+        } else {
+          el.appendChild(document.createTextNode(part));
+        }
+        remaining -= part.length;
+      }
+    };
+
+    build(0);
+    el.classList.add("tw-cursor");
+    let i = 0;
+    let last = 0;
+    const speed = 75; // ms por carácter (ritmo pausado, legible)
+    function tick(now) {
+      if (!last) last = now;
+      if (now - last >= speed) {
+        i++;
+        build(i);
+        last = now;
+      }
+      if (i < total) requestAnimationFrame(tick);
+      else el.classList.remove("tw-cursor");
+    }
+    // Pequeña espera para que el fade-up de entrada se asiente antes de escribir.
+    setTimeout(() => requestAnimationFrame(tick), 350);
+  }
+
   // --- Init ---
+  if (!reducedMotion) typewriter(titleEl);
   restartProgress();
   start();
 })();

@@ -94,4 +94,59 @@
     font-family: var(--font-heading);
     font-weight: 700;
   }
+
+  /* Scroll suave al navegar por las anclas del navbar.
+     scroll-padding-top compensa el navbar fixed (no tapa el título). */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6.5rem;
+  }
+}
+
+/* === Animaciones globales (JS en components/common/Animations.astro) === */
+
+/* Reveal on scroll: estado inicial; .is-visible lo activa el observer.
+   --reveal-delay (inline) escalona hijos de una grilla (cards 1×1). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Cursor del typewriter del hero (se quita al terminar de escribir). */
+.tw-cursor::after {
+  content: "";
+  display: inline-block;
+  width: 0.055em;
+  height: 0.92em;
+  margin-left: 0.06em;
+  background: currentColor;
+  vertical-align: -0.06em;
+  animation: tw-blink 0.9s steps(1, end) infinite;
+}
+@keyframes tw-blink {
+  50% { opacity: 0; }
+}
+
+/* Respetar reduced-motion en todo lo anterior. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .tw-cursor::after {
+    display: none;
+  }
 }
