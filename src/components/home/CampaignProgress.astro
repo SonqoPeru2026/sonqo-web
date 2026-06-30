@@ -1,21 +1,21 @@
 ---
 import { getLang, useTranslations } from "@/i18n/utils";
-import { CAMPAIGN_GOAL_RAISED, CAMPAIGN_GOAL_KIDS, kidsFromRaised } from "@/lib/campaign";
+import { getSiteSettings } from "@/lib/sanity";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "campaign");
 
-// `goal` viene de las metas de campaña (V2: Sanity). `current` es el valor de
-// respaldo del build: arranca en 0 y se reemplaza en runtime con el total REAL
-// vía /api/campaign-progress. Si el fetch falla, queda este respaldo.
-const FALLBACK_RAISED = 0;
+// Metas (goal) editables por el equipo en Sanity; se leen en build (prerender).
+const { metaRecaudada, metaNinos } = await getSiteSettings();
 
+// `current` arranca en 0 (respaldo del build) y se reemplaza en runtime con el
+// total REAL vía /api/campaign-progress. Si el fetch falla, queda en 0.
 const bars = [
   {
     key: "raised",
     label: t.bar1Label,
-    current: FALLBACK_RAISED,
-    goal: CAMPAIGN_GOAL_RAISED,
+    current: 0,
+    goal: metaRecaudada,
     prefix: "S/",
     fill: "from-[#ff3d63] to-primary",
     glow: "shadow-[0px_2px_10px_0px_rgb(228_0_63/0.55)]",
@@ -25,8 +25,8 @@ const bars = [
   {
     key: "kids",
     label: t.bar2Label,
-    current: kidsFromRaised(FALLBACK_RAISED),
-    goal: CAMPAIGN_GOAL_KIDS,
+    current: 0,
+    goal: metaNinos,
     prefix: "",
     fill: "from-[#8f295c] to-[#520f33]",
     glow: "shadow-[0px_2px_10px_0px_rgb(115_20_71/0.55)]",
@@ -96,7 +96,7 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
   }
 </div>
 
-<script define:vars={{ goalRaised: CAMPAIGN_GOAL_RAISED, goalKids: CAMPAIGN_GOAL_KIDS }}>
+<script define:vars={{ goalRaised: metaRecaudada, goalKids: metaNinos }}>
   // Trae el total recaudado real y anima las dos barras. La home sigue estática:
   // este es el único trabajo en runtime del lado del cliente.
   const root = document.querySelector("[data-campaign-progress]");

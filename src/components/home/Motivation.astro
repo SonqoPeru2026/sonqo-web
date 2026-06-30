@@ -1,16 +1,22 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import { getSiteSettings } from "@/lib/sanity";
+import { PACKAGES } from "@/lib/donation";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "motivation");
 
-// Valores numéricos: placeholder hasta conectar Sanity (CMS).
+// Cifras editables por el equipo en Sanity (leídas en build). El costo de casaca
+// se deriva del precio real del paquete Aliado (donation.ts) para no desincronizar.
+const { ninosAtendidos, comunidades, solesRecaudados } = await getSiteSettings();
+const fmt = (n: number) => n.toLocaleString("en-US");
+
 const stats = [
-  { icon: "achievements-jacket", prefix: "S/", value: "33", label: t.label1 },
-  { icon: "achievements-comunity", prefix: "+", value: "27", label: t.label2 },
-  { icon: "achievements-childrens", prefix: "", value: "31,877", label: t.label3 },
-  { icon: "achievements-hand", prefix: "S/", value: "765,260", label: t.label4 },
+  { icon: "achievements-jacket", prefix: "S/", value: fmt(PACKAGES.aliado.price), label: t.label1 },
+  { icon: "achievements-comunity", prefix: "+", value: fmt(comunidades), label: t.label2 },
+  { icon: "achievements-childrens", prefix: "", value: fmt(ninosAtendidos), label: t.label3 },
+  { icon: "achievements-hand", prefix: "S/", value: fmt(solesRecaudados), label: t.label4 },
 ];
 ---
 

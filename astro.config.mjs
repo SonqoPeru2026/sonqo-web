@@ -42,11 +42,9 @@ export default defineConfig({
       PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
       MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
 
-      // Sanity — un solo PROJECT_ID público, token secreto. Requeridas.
+      // Sanity — PROJECT_ID y dataset públicos. Lectura en build con dataset
       PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),
       SANITY_DATASET: envField.string({ context: 'client', access: 'public' }),
-      SANITY_API_TOKEN: envField.string({ context: 'server', access: 'secret' }),
-
       // Resend — API key secreta + remitente/destino del formulario. Requeridas.
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
       RESEND_FROM: envField.string({ context: 'server', access: 'public' }),
