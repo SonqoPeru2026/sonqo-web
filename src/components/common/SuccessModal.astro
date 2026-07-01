@@ -15,16 +15,26 @@ const { title, message, closeLabel = "Cerrar", ctaLabel, ctaHref } = Astro.props
   class="success-modal m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-white p-8 text-center shadow-[0px_30px_70px_-20px_rgb(84_5_69/0.35)]"
 >
   <div class="modal-card flex flex-col items-center gap-4">
-    <span class="success-check flex size-16 items-center justify-center rounded-full bg-primary/10">
-      <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          class="check-path"
-          d="M5 13l4 4L19 7"
+    <span class="success-check flex items-center justify-center">
+      <svg class="h-16 w-16 text-primary" viewBox="0 0 52 52" aria-hidden="true">
+        <circle
+          class="modal-circle"
+          cx="26" cy="26" r="25"
+          fill="none"
           stroke="currentColor"
-          stroke-width="2.5"
+          stroke-width="2"
+          style="stroke-dasharray: 157; stroke-dashoffset: 157;"
+        />
+        <path
+          class="modal-check"
+          d="M14.1 27.2l7.1 7.2 16.7-16.8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
-          style="color: var(--color-primary)"></path>
+          style="stroke-dasharray: 48; stroke-dashoffset: 48;"
+        />
       </svg>
     </span>
 
@@ -82,10 +92,13 @@ const { title, message, closeLabel = "Cerrar", ctaLabel, ctaHref } = Astro.props
   .success-modal[open] .success-check {
     animation: modal-pop 0.4s 0.05s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
-  .success-modal[open] .check-path {
-    stroke-dasharray: 24;
-    stroke-dashoffset: 24;
-    animation: modal-draw 0.5s 0.2s ease-out forwards;
+  .success-modal[open] .modal-circle {
+    transform-origin: center;
+    transform: rotate(-90deg);
+    animation: modal-draw-circle 0.5s 0.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  .success-modal[open] .modal-check {
+    animation: modal-draw-check 0.3s 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards;
   }
   @keyframes modal-rise {
     from {
@@ -107,7 +120,12 @@ const { title, message, closeLabel = "Cerrar", ctaLabel, ctaHref } = Astro.props
       transform: scale(1);
     }
   }
-  @keyframes modal-draw {
+  @keyframes modal-draw-circle {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes modal-draw-check {
     to {
       stroke-dashoffset: 0;
     }
@@ -115,10 +133,12 @@ const { title, message, closeLabel = "Cerrar", ctaLabel, ctaHref } = Astro.props
   @media (prefers-reduced-motion: reduce) {
     .success-modal[open] .modal-card,
     .success-modal[open] .success-check,
-    .success-modal[open] .check-path {
+    .success-modal[open] .modal-circle,
+    .success-modal[open] .modal-check {
       animation: none;
     }
-    .success-modal[open] .check-path {
+    .success-modal[open] .modal-circle,
+    .success-modal[open] .modal-check {
       stroke-dashoffset: 0;
     }
   }
