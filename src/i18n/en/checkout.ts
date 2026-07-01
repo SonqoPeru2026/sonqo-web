@@ -21,18 +21,10 @@ export default {
   phoneLabel: "Phone",
   phonePlaceholder: "+51 999 999 999",
 
-<<<<<<< HEAD
-  // Payment method
-  paymentHeading: "Payment method",
-  methodCard: "Card",
-  methodTransfer: "Bank transfer",
-  methodYape: "Yape/Plin",
-=======
   firstNameError: "Enter your first name",
   lastNameError: "Enter your last name",
   emailError: "Invalid email",
   contactIncompleteError: "Complete your first name, last name and email before paying.",
->>>>>>> develop
 
   cardNumberLabel: "Card number",
   cardNumberPlaceholder: "0000 0000 0000 0000",
@@ -43,12 +35,6 @@ export default {
   cardCvvLabel: "CVV",
   cardCvvPlaceholder: "123",
 
-<<<<<<< HEAD
-  transferNote: "In the next step we'll show you the bank details to complete your transfer.",
-  yapeNote: "In the next step you'll be able to scan the Yape or Plin QR to complete your donation.",
-
-=======
->>>>>>> develop
   secureLabel: "100% secure payment",
   submit: "Complete donation",
   termsBefore: "By continuing, you accept our ",
