@@ -3,6 +3,7 @@ import { withinRateLimit } from "@/lib/rate-limit";
 import { paymentSchema } from "@/lib/validation/payment";
 import { resolveAmount } from "@/lib/donation";
 import { getPaymentClient } from "@/lib/mercadopago";
+import { insertDonation } from "@/lib/donations";
 import { fail } from "@/lib/responses";
 
 export const prerender = false;
@@ -58,6 +59,28 @@ export const POST: APIRoute = async ({ request }) => {
       },
       requestOptions: { idempotencyKey: data.token },
     });
+
+    // 7. Registrar el intento (pending/approved/rejected según MP) con el contacto
+    // del donante. Best-effort: el pago ya se creó, esto no debe romper la respuesta.
+    if (result.id) {
+      try {
+        await insertDonation({
+          paymentId: String(result.id),
+          amount,
+          currency: "PEN",
+          status: result.status ?? "unknown",
+          payerEmail: data.payer.email,
+          paymentMethod: data.paymentMethodId,
+          approvedAt: result.date_approved ?? null,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phone: data.phone ?? null,
+          packageId: data.packageId ?? null,
+        });
+      } catch (err) {
+        console.error("[create-payment] error registrando donación:", err);
+      }
+    }
 
     return new Response(
       JSON.stringify({ ok: true, status: result.status, paymentId: result.id }),

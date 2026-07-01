@@ -39,14 +39,17 @@ const paymentsReady = Boolean(PUBLIC_MP_PUBLIC_KEY);
 const brickPackageId = isCustom ? undefined : selectedId;
 
 const inputClass =
-  "w-full rounded-lg border border-ink-200 bg-white px-4 py-3 font-body text-burgundy-900 placeholder:text-ink-400 transition-colors focus:border-primary focus:outline-none";
+  "w-full rounded-lg border border-ink-200 bg-white px-4 py-3 font-body text-burgundy-900 placeholder:text-ink-400 transition-colors focus:border-primary focus:outline-none aria-[invalid=true]:border-primary";
 const labelClass = "mb-2 block font-body text-sm font-medium text-ink-500";
+const errorClass = "mt-1 hidden font-body text-xs text-primary";
 
-const methods = [
-  { id: "card", label: t.methodCard, icon: "checkout-card" },
-  { id: "transfer", label: t.methodTransfer, icon: "checkout-transfer" },
-  { id: "yape", label: t.methodYape, icon: "checkout-yape" },
-];
+// Mensajes de error de contacto → validación en vivo con el mismo schema zod del server
+// (lib/validation/checkout-contact.ts).
+const contactMessages = {
+  firstName: t.firstNameError,
+  lastName: t.lastNameError,
+  email: t.emailError,
+};
 
 // Indicador de progreso del checkout. "done" = paso completado (link de vuelta),
 // "current" = paso actual (aria-current="step"), "upcoming" = pendiente.
@@ -103,27 +106,30 @@ const steps: Step[] = [
 
     <div class="grid gap-10 md:grid-cols-[1.5fr_1fr] md:gap-14">
       <!-- ============ Columna izquierda: formulario ============ -->
-      <form data-checkout-form novalidate>
+      <form data-checkout-form novalidate data-messages={JSON.stringify(contactMessages)}>
         <!-- Información de contacto -->
         <h2 class="font-heading text-xl font-bold text-burgundy">{t.contactHeading}</h2>
 
         <div class="mt-6 grid gap-6 sm:grid-cols-2">
           <div>
             <label class={labelClass} for="firstName">{t.firstNameLabel}</label>
-            <input id="firstName" name="firstName" type="text" required
+            <input id="firstName" name="firstName" type="text" required aria-describedby="firstName-error"
               placeholder={t.firstNamePlaceholder} class={inputClass} />
+            <p id="firstName-error" data-error="firstName" class={errorClass}></p>
           </div>
           <div>
             <label class={labelClass} for="lastName">{t.lastNameLabel}</label>
-            <input id="lastName" name="lastName" type="text" required
+            <input id="lastName" name="lastName" type="text" required aria-describedby="lastName-error"
               placeholder={t.lastNamePlaceholder} class={inputClass} />
+            <p id="lastName-error" data-error="lastName" class={errorClass}></p>
           </div>
         </div>
 
         <div class="mt-6">
           <label class={labelClass} for="email">{t.emailLabel}</label>
-          <input id="email" name="email" type="email" required
+          <input id="email" name="email" type="email" required aria-describedby="email-error"
             placeholder={t.emailPlaceholder} class={inputClass} />
+          <p id="email-error" data-error="email" class={errorClass}></p>
         </div>
 
         <div class="mt-6">
@@ -132,61 +138,27 @@ const steps: Step[] = [
             placeholder={t.phonePlaceholder} class={inputClass} />
         </div>
 
+        <p data-contact-form-error role="alert" class="mt-4 hidden font-body text-sm text-primary">
+          {t.contactIncompleteError}
+        </p>
+
         <hr class="my-10 border-ink-200" />
 
-        <!-- Método de pago -->
-        <h2 class="font-heading text-xl font-bold text-burgundy">{t.paymentHeading}</h2>
-
-        <div class="mt-6 flex flex-wrap gap-3" role="tablist" data-method-tabs>
-          {
-            methods.map((m, i) => (
-              <button
-                type="button"
-                role="tab"
-                data-method={m.id}
-                aria-selected={i === 0 ? "true" : "false"}
-                class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-heading text-sm font-bold text-ink-500 ring-1 ring-ink-200 transition-all hover:text-burgundy aria-selected:text-primary aria-selected:ring-2 aria-selected:ring-primary"
-              >
-                <Icon name={m.icon} class="h-4 w-auto" />
-                {m.label}
-              </button>
-            ))
-          }
-        </div>
-
-        <!-- Panel: tarjeta. Con keys MP → Card Brick (tokeniza en el navegador, PCI seguro).
-             Sin keys → placeholder visual del Brick. -->
-        <div data-method-panel="card" class="mt-8">
-          {
-            paymentsReady ? (
-              <PaymentBrick
-                client:only="react"
-                publicKey={PUBLIC_MP_PUBLIC_KEY ?? ""}
-                amount={summary.price}
-                packageId={brickPackageId}
-                thanksHref={thanksHref}
-              />
-            ) : (
-              <p class="rounded-xl bg-white p-5 text-center font-body text-sm text-ink-500 ring-1 ring-ink-200">
-                {t.cardComingSoon}
-              </p>
-            )
-          }
-        </div>
-
-        <!-- Panel: transferencia -->
-        <div data-method-panel="transfer" class="mt-8 hidden">
-          <p class="rounded-xl bg-white p-5 font-body text-sm leading-relaxed text-ink ring-1 ring-ink-200">
-            {t.transferNote}
-          </p>
-        </div>
-
-        <!-- Panel: Yape/Plin -->
-        <div data-method-panel="yape" class="mt-8 hidden">
-          <p class="rounded-xl bg-white p-5 font-body text-sm leading-relaxed text-ink ring-1 ring-ink-200">
-            {t.yapeNote}
-          </p>
-        </div>
+        {
+          paymentsReady ? (
+            <PaymentBrick
+              client:only="react"
+              publicKey={PUBLIC_MP_PUBLIC_KEY ?? ""}
+              amount={summary.price}
+              packageId={brickPackageId}
+              thanksHref={thanksHref}
+            />
+          ) : (
+            <p class="rounded-xl bg-white p-5 text-center font-body text-sm text-ink-500 ring-1 ring-ink-200">
+              {t.cardComingSoon}
+            </p>
+          )
+        }
 
         <!-- Sellos de confianza -->
         <div class="mt-8 flex flex-wrap items-center justify-between gap-4">
@@ -200,13 +172,6 @@ const steps: Step[] = [
             <Icon name="donate-ssl" class="h-6 w-auto" />
           </div>
         </div>
-
-        <!-- CTA -->
-        <button type="submit"
-          class="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-primary px-6 py-4 font-heading text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600">
-          <Icon name="purpose-heart" class="h-5 w-auto" />
-          {t.submit}
-        </button>
 
         <p class="mt-4 text-center font-body text-sm text-ink-400">
           {t.termsBefore}<a href="#" class="font-medium text-primary underline">{t.termsLink}</a>
@@ -262,30 +227,89 @@ const steps: Step[] = [
 </section>
 
 <script>
-  // Cambia el método de pago (tarjeta / transferencia / yape) mostrando su panel.
-  function initCheckout() {
-    const form = document.querySelector<HTMLElement>("[data-checkout-form]");
-    if (!form) return;
+  import { makeCheckoutContactSchema, type CheckoutContactMessages } from "@/lib/validation/checkout-contact";
+  import { CONTACT_CHANGE_EVENT, CONTACT_INVALID_EVENT } from "@/components/checkout/checkout-contact";
+  import type { CheckoutContact } from "@/components/checkout/checkout-contact";
 
-    const tabs = form.querySelectorAll<HTMLButtonElement>("[data-method]");
-    const panels = form.querySelectorAll<HTMLElement>("[data-method-panel]");
+  function initCheckoutContact() {
+    const form = document.querySelector<HTMLFormElement>("[data-checkout-form]");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const method = tab.dataset.method;
-        tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
-        panels.forEach((panel) => {
-          panel.classList.toggle("hidden", panel.dataset.methodPanel !== method);
-        });
+    const fields = {
+      firstName: form.querySelector<HTMLInputElement>("#firstName"),
+      lastName: form.querySelector<HTMLInputElement>("#lastName"),
+      email: form.querySelector<HTMLInputElement>("#email"),
+      phone: form.querySelector<HTMLInputElement>("#phone"),
+    };
+    const formErrorEl = form.querySelector<HTMLElement>("[data-contact-form-error]");
+    const errorEls = form.querySelectorAll<HTMLElement>("[data-error]");
+
+    // Mismo schema que el server (paymentSchema lo extiende) — una sola fuente de verdad.
+    const messages = JSON.parse(form.dataset.messages ?? "{}") as CheckoutContactMessages;
+    const schema = makeCheckoutContactSchema(messages);
+
+    const readValues = (): CheckoutContact => ({
+      firstName: fields.firstName?.value.trim() ?? "",
+      lastName: fields.lastName?.value.trim() ?? "",
+      email: fields.email?.value.trim() ?? "",
+      phone: fields.phone?.value.trim() ?? "",
+    });
+
+    // Valida con zod. Si showErrors, pinta los mensajes por campo (no bloquea nada acá:
+    // el Brick trae su propio botón "Pagar", ver PaymentBrick.tsx / CONTACT_INVALID_EVENT).
+    function validate(showErrors: boolean): boolean {
+      const result = schema.safeParse(readValues());
+      const errors: Record<string, string> = {};
+      if (!result.success) {
+        for (const issue of result.error.issues) {
+          const field = issue.path[0];
+          if (typeof field === "string" && !(field in errors)) errors[field] = issue.message;
+        }
+      }
+
+      errorEls.forEach((el) => {
+        const field = el.dataset.error!;
+        const msg = errors[field];
+        const input = form!.querySelector<HTMLElement>(`#${field}`);
+        if (showErrors && msg) {
+          el.textContent = msg;
+          el.classList.remove("hidden");
+          input?.setAttribute("aria-invalid", "true");
+        } else {
+          el.classList.add("hidden");
+          input?.removeAttribute("aria-invalid");
+        }
       });
+
+      return result.success;
+    }
+
+    const sync = () => {
+      const contact = readValues();
+      window.__checkoutContact = contact;
+      document.dispatchEvent(new CustomEvent(CONTACT_CHANGE_EVENT, { detail: contact }));
+      validate(false); // limpia errores mientras escribe
+    };
+
+    Object.values(fields).forEach((field) => {
+      field?.addEventListener("input", sync);
+      field?.addEventListener("blur", () => validate(true));
+    });
+    sync();
+
+    // Sin submit propio: el Brick trae su botón "Pagar" (ver PaymentBrick.tsx). Si el
+    // donante hace click en "Pagar" con el contacto incompleto, el Brick dispara esto
+    // en vez de cobrar: pintamos los errores y llevamos la vista al formulario.
+    document.addEventListener(CONTACT_INVALID_EVENT, () => {
+      validate(true);
+      formErrorEl?.classList.remove("hidden");
+      form?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
-    // El pago real (MercadoPago) aún no está integrado: ver /api/create-preference.
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      console.info("[checkout] envío pendiente de integración de pagos");
-    });
+    form.addEventListener("input", () => formErrorEl?.classList.add("hidden"));
+    form.addEventListener("submit", (e) => e.preventDefault());
   }
 
-  document.addEventListener("astro:page-load", initCheckout);
+  document.addEventListener("astro:page-load", initCheckoutContact);
 </script>
