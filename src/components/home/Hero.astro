@@ -116,7 +116,7 @@ const total = String(slides.length).padStart(2, "0");
 
     <!-- Tarjeta de impacto centrada -->
     <dl
-      class="hero-fade-up mt-14 flex items-center gap-10 rounded-2xl bg-black/30 px-10 py-5 ring-1 ring-inset ring-white/10 backdrop-blur-md sm:gap-12"
+      class="hero-fade-up mt-14 flex w-full max-w-md items-center justify-center gap-10 rounded-2xl bg-black/30 px-5 py-5 ring-1 ring-inset ring-white/10 backdrop-blur-md sm:px-10 sm:gap-12"
       style="animation-delay: 300ms"
     >
       <div class="flex flex-col items-center">
@@ -140,19 +140,19 @@ const total = String(slides.length).padStart(2, "0");
 
     <!-- CTAs -->
     <div
-      class="hero-fade-up mt-10 flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
+      class="hero-fade-up mt-10 flex w-full max-w-sm flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4"
       style="animation-delay: 400ms"
     >
       <a
         href={localizePath("/donate", lang)}
-        class="group inline-flex items-center justify-center gap-2.5 rounded-full bg-primary px-10 py-4 font-heading text-sm font-bold text-white shadow-[0_20px_50px_-12px_rgb(228_0_63/0.6)] transition-[background-color,transform,box-shadow] duration-300 hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgb(228_0_63/0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        class="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-10 py-4 font-heading text-sm font-bold text-white shadow-[0_20px_50px_-12px_rgb(228_0_63/0.6)] transition-[background-color,transform,box-shadow] duration-300 hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgb(228_0_63/0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
       >
         <Icon name="hero-donate" class="h-5 w-auto text-white transition-transform duration-300 group-hover:scale-110" />
         {hero.ctaPrimary}
       </a>
       <a
         href="#proposito"
-        class="inline-flex items-center justify-center rounded-full border border-white/30 px-9 py-4 font-heading text-sm font-bold text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        class="inline-flex w-full items-center justify-center rounded-full border border-white/30 px-9 py-4 font-heading text-sm font-bold text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
       >
         {hero.ctaSecondary}
       </a>

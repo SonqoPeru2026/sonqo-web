@@ -60,7 +60,7 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
           </span>
         </div>
 
-        <div class="relative mt-9 h-4 w-full rounded-full bg-black/[0.06] sm:mt-6">
+        <div class="relative mt-10 h-4 w-full rounded-full bg-black/[0.06]">
           {[25, 50, 75].map((tick) => (
             <span class="absolute top-0 h-full w-0.5 bg-black/10" style={`left:${tick}%`} />
           ))}
@@ -86,7 +86,7 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
               "absolute -top-8 -translate-x-1/2 rounded-full px-2.5 py-0.5 font-heading text-xs font-bold text-white transition-[left] duration-1000 ease-out",
               bar.pill,
             ]}
-            style={`left:${bar.pct}%`}
+            style={`left:clamp(1.75rem, ${bar.pct}%, calc(100% - 1.75rem))`}
           >
             {bar.pct}%
           </span>
@@ -101,28 +101,77 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
   // este es el único trabajo en runtime del lado del cliente.
   const root = document.querySelector("[data-campaign-progress]");
   if (root) {
-    const fmt = (n) => n.toLocaleString("en-US");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fmt = (n) => Math.round(n).toLocaleString("en-US");
     const pctOf = (current, goal) =>
       goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
 
-    const paint = (key, current, goal) => {
+    // Barra + píldora: mueve vía transición CSS (width/left). El número cuenta 0->valor.
+    const render = (key, current, goal, animate) => {
       const bar = root.querySelector(`[data-bar="${key}"]`);
       if (!bar) return;
       const pct = pctOf(current, goal);
-      bar.querySelector('[data-role="value"]').textContent = fmt(current);
+      const valueEl = bar.querySelector('[data-role="value"]');
       bar.querySelector('[data-role="fill"]').style.width = `${pct}%`;
       const pill = bar.querySelector('[data-role="pill"]');
-      pill.style.left = `${pct}%`;
+      // Clamp: la píldora nunca se desborda del borde (evita choque con el label a % bajos).
+      pill.style.left = `clamp(1.75rem, ${pct}%, calc(100% - 1.75rem))`;
       pill.textContent = `${pct}%`;
+
+      if (!animate) {
+        valueEl.textContent = fmt(current);
+        return;
+      }
+      // Count-up sincronizado con el llenado de la barra (easeOutExpo).
+      const dur = 1300;
+      const ease = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+      const start = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - start) / dur);
+        valueEl.textContent = fmt(current * ease(p));
+        if (p < 1) requestAnimationFrame(tick);
+        else valueEl.textContent = fmt(current);
+      };
+      requestAnimationFrame(tick);
     };
+
+    // Espera a tener el dato real Y a que la sección sea visible antes de animar.
+    let targets = null; // { raised, kids }
+    let visible = false;
+    let done = false;
+
+    const run = () => {
+      if (done || !targets || (!visible && !reduced)) return;
+      done = true;
+      render("raised", targets.raised, goalRaised, !reduced);
+      render("kids", targets.kids, goalKids, !reduced);
+    };
+
+    if ("IntersectionObserver" in window && !reduced) {
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            visible = true;
+            obs.disconnect();
+            run();
+          }
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(root);
+    } else {
+      visible = true;
+    }
 
     fetch("/api/campaign-progress")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!data || data.raised == null) return; // conserva el respaldo del build
-        const raised = data.raised;
-        paint("raised", raised, goalRaised);
-        paint("kids", Math.round((raised / goalRaised) * goalKids), goalKids);
+        targets = {
+          raised: data.raised,
+          kids: Math.round((data.raised / goalRaised) * goalKids),
+        };
+        run();
       })
       .catch(() => {});
   }
