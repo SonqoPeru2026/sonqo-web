@@ -19,6 +19,19 @@ export function packagePrice(id: PackageId): number {
   return PACKAGES[id].price;
 }
 
+// Nombres legibles en español (emails transaccionales son solo-español, igual que
+// los demás templates en components/emails/).
+const PACKAGE_NAMES: Record<PackageId, string> = {
+  aliado: "Aliado Sonqo",
+  ninos: "Niños Felices",
+  corazon: "Corazón Solidario",
+  comunidad: "Comunidad Sonqo",
+};
+
+export function packageName(id: string | null | undefined): string {
+  return isPackageId(id) ? PACKAGE_NAMES[id] : "Donación personalizada";
+}
+
 // Monto autoritativo en soles desde un paquete o un monto libre. null si es inválido.
 // El server SIEMPRE usa esto; nunca el monto que envía el cliente.
 export function resolveAmount(input: {

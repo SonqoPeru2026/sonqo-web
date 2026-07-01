@@ -21,11 +21,10 @@ export default {
   phoneLabel: "Teléfono",
   phonePlaceholder: "+51 999 999 999",
 
-  // Método de pago
-  paymentHeading: "Método de pago",
-  methodCard: "Tarjeta",
-  methodTransfer: "Transferencia",
-  methodYape: "Yape/Plin",
+  firstNameError: "Ingresa tu nombre",
+  lastNameError: "Ingresa tus apellidos",
+  emailError: "Correo inválido",
+  contactIncompleteError: "Completa tu nombre, apellidos y correo antes de pagar.",
 
   cardNumberLabel: "Número de tarjeta",
   cardNumberPlaceholder: "0000 0000 0000 0000",
@@ -35,9 +34,6 @@ export default {
   cardExpiryPlaceholder: "MM/AA",
   cardCvvLabel: "CVV",
   cardCvvPlaceholder: "123",
-
-  transferNote: "En el siguiente paso te mostramos los datos bancarios para completar tu transferencia.",
-  yapeNote: "En el siguiente paso podrás escanear el QR de Yape o Plin para completar tu donación.",
 
   secureLabel: "Pago 100% seguro",
   submit: "Realizar donación",

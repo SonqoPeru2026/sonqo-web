@@ -35,7 +35,7 @@ const lang = Astro.currentLocale ?? "es";
     <!-- Navegación suave entre páginas/idiomas, sin recarga completa -->
     <ClientRouter />
   </head>
-  <body class="font-body text-burgundy-900 antialiased">
+  <body class="font-body text-burgundy-900 antialiased overflow-x-hidden">
     <Navbar />
     <main transition:animate={fade({ duration: "0.4s" })}>
       <slot />

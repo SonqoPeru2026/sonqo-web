@@ -27,7 +27,7 @@
         "zod": "^4.4.3",
       },
       "devDependencies": {
-        "@react-email/ui": "6.6.4",
+        "@react-email/ui": "6.6.5",
         "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
       },
@@ -338,7 +338,7 @@
 
     "@react-email/text": ["@react-email/text@0.1.6", "", { "peerDependencies": { "react": "^18.0 || ^19.0 || ^19.0.0-rc" } }, "sha512-TYqkioRS45wTR5il3dYk/SbUjjEdhSwh9BtRNB99qNH1pXAwA45H7rAuxehiu8iJQJH0IyIr+6n62gBz9ezmsw=="],
 
-    "@react-email/ui": ["@react-email/ui@6.6.4", "", { "dependencies": { "esbuild": "0.28.0", "next": "16.2.6" } }, "sha512-e3Aqk0Y649X4AY3YNxAZJP8emLJuIAJf0BjTph/utCVO0gmvNJBdmWnhuhbZExedODaIZeNt8un/9j2BhoanFA=="],
+    "@react-email/ui": ["@react-email/ui@6.6.5", "", { "dependencies": { "esbuild": "0.28.0", "next": "16.2.6" } }, "sha512-LoPALZc9TVsaBsJhZnFMFjhoCN+UeL5xEMsjkSEcK3OvAF2bJdL8tvi+zMVc/VapmR1JJqr7LHuR6wCYlXt7lg=="],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.1.2", "", { "os": "android", "cpu": "arm64" }, "sha512-2cZ+7xRS+DBcuJBJKnfzsbleumJhBqSlJVpuzHC0nTqfd3QQ7Vx2/x5YR/D7cBamKSeWplwo82Fn9lqYUDEMfA=="],
 
