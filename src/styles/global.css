@@ -95,6 +95,13 @@
     font-weight: 700;
   }
 
+  /* Checkboxes y radios: color rojo primario, sin anillo azul */
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--color-primary);
+    outline: none;
+  }
+
   /* Scroll suave al navegar por las anclas del navbar.
      scroll-padding-top compensa el navbar fixed (no tapa el título). */
   html {
