@@ -199,92 +199,67 @@ const total = String(slides.length).padStart(2, "0");
   </div>
 </section>
 
-<script is:inline>
-/**
- * Hero Carousel
- * - Alterna slides (texto + fondo) con auto-play
- * - Pausa en hover/focus
- * - Barra de progreso sincronizada
- * - Fix: reanuda correctamente tras bfcache (navegar atrás/logo)
- */
-(function () {
-  const root = document.querySelector("[data-hero]");
-  if (!root || root.dataset.bound) return;
-  root.dataset.bound = "true";
+<script>
+function initHero() {
+  const root = document.querySelector<HTMLElement>("[data-hero]");
+  if (!root) return;
 
-  // --- DOM refs ---
-  const bgs = [...root.querySelectorAll("[data-bg]")];
-  const titleEl = root.querySelector("[data-hero-title]");
-  const textEl = root.querySelector("[data-hero-text]");
-  const counter = root.querySelector("[data-hero-current]");
-  const progress = root.querySelector("[data-hero-progress]");
-  const nextBtn = root.querySelector("[data-hero-next]");
-  const prevBtn = root.querySelector("[data-hero-prev]");
+  // Limpiar interval global anterior
+  if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
 
-  // --- Slide data (desde data-attributes, sin JSON) ---
-  const slideEls = [...root.querySelectorAll("[data-slide]")];
+  const bgs = [...root.querySelectorAll<HTMLElement>("[data-bg]")];
+  const titleEl = root.querySelector<HTMLElement>("[data-hero-title]");
+  const textEl = root.querySelector<HTMLElement>("[data-hero-text]");
+  const counter = root.querySelector<HTMLElement>("[data-hero-current]");
+  const progress = root.querySelector<HTMLElement>("[data-hero-progress]");
+
+  const slideEls = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
   const slides = slideEls.map((el) => ({
-    title: el.dataset.title,
-    text: el.dataset.text,
+    title: el.dataset.title ?? "",
+    text: el.dataset.text ?? "",
   }));
 
   const count = slides.length;
   if (count <= 1 || !titleEl || !textEl) return;
 
-  // --- Config ---
   const MS = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6000;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // --- State ---
   let index = 0;
-  let timer = null;
 
-  // --- Progress bar ---
   function restartProgress() {
     if (!progress || reducedMotion) return;
     progress.classList.remove("run");
-    // Forzar reflow para reiniciar animación CSS
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        progress.classList.add("run");
-      });
+      requestAnimationFrame(() => { progress.classList.add("run"); });
     });
   }
 
-  // --- Mostrar slide ---
-  function show(i) {
+  function show(i: number) {
     index = (i + count) % count;
-
-    // Fondo: alternar opacidad
     bgs.forEach((bg, j) => {
       bg.classList.toggle("opacity-100", j === index);
       bg.classList.toggle("opacity-0", j !== index);
     });
-
-    // Texto: swap directo
     const slide = slides[index];
-    titleEl.innerHTML = slide.title;
-    textEl.innerHTML = slide.text;
-
-    // Contador
+    if (titleEl) titleEl.innerHTML = slide.title;
+    if (textEl) textEl.innerHTML = slide.text;
     if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-
     restartProgress();
   }
 
-  // --- Auto-play ---
   function start() {
     if (reducedMotion) return;
-    stop();
-    timer = setInterval(() => show(index + 1), MS);
+    if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
+    (window as any).__heroTimer = setInterval(() => show(index + 1), MS);
   }
 
   function stop() {
-    if (timer) clearInterval(timer);
-    timer = null;
+    if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
+    (window as any).__heroTimer = null;
   }
 
-  // --- Eventos ---
+  const nextBtn = root.querySelector<HTMLButtonElement>("[data-hero-next]");
+  const prevBtn = root.querySelector<HTMLButtonElement>("[data-hero-prev]");
   nextBtn?.addEventListener("click", () => { show(index + 1); start(); });
   prevBtn?.addEventListener("click", () => { show(index - 1); start(); });
 
@@ -293,30 +268,18 @@ const total = String(slides.length).padStart(2, "0");
   root.addEventListener("focusin", stop);
   root.addEventListener("focusout", start);
 
-  // --- Fix bfcache: reanuda cuando el browser restaura la página ---
-  window.addEventListener("pageshow", (e) => {
-    if (e.persisted) start();
-  });
-
-  // --- Typewriter (solo primer slide) ---
-  // Escribe el título char-por-char preservando el <span> resaltado (HTML).
-  // En los swaps del carrusel se usa el fade normal (show()).
-  function typewriter(el) {
-    // Capturar segmentos conservando la clase del resaltado.
+  function typewriter(el: HTMLElement) {
     const segments = [...el.childNodes].map((node) =>
       node.nodeType === 1
-        ? { text: node.textContent, cls: node.getAttribute("class") }
-        : { text: node.textContent, cls: null }
+        ? { text: node.textContent ?? "", cls: (node as HTMLElement).getAttribute("class") }
+        : { text: node.textContent ?? "", cls: null }
     );
     const total = segments.reduce((n, s) => n + s.text.length, 0);
     if (!total) return;
-
-    // Reservar altura para evitar salto de layout (CLS) al vaciar el título.
     el.style.minHeight = el.getBoundingClientRect().height + "px";
-
-    const build = (count) => {
+    const build = (charCount: number) => {
       el.textContent = "";
-      let remaining = count;
+      let remaining = charCount;
       for (const seg of segments) {
         if (remaining <= 0) break;
         const part = seg.text.slice(0, Math.min(remaining, seg.text.length));
@@ -331,31 +294,31 @@ const total = String(slides.length).padStart(2, "0");
         remaining -= part.length;
       }
     };
-
     build(0);
     el.classList.add("tw-cursor");
-    let i = 0;
-    let last = 0;
-    const speed = 75; // ms por carácter (ritmo pausado, legible)
-    function tick(now) {
+    let i = 0, last = 0;
+    const speed = 75;
+    function tick(now: number) {
       if (!last) last = now;
-      if (now - last >= speed) {
-        i++;
-        build(i);
-        last = now;
-      }
+      if (now - last >= speed) { i++; build(i); last = now; }
       if (i < total) requestAnimationFrame(tick);
       else el.classList.remove("tw-cursor");
     }
-    // Pequeña espera para que el fade-up de entrada se asiente antes de escribir.
     setTimeout(() => requestAnimationFrame(tick), 350);
   }
 
-  // --- Init ---
+  root.querySelectorAll<HTMLElement>(".hero-fade-up").forEach((el) => {
+    el.classList.remove("hero-fade-up");
+    void el.offsetWidth;
+    el.classList.add("hero-fade-up");
+  });
+
   if (!reducedMotion) typewriter(titleEl);
   restartProgress();
   start();
-})();
+}
+
+document.addEventListener("astro:page-load", initHero);
 </script>
 
 <style>
