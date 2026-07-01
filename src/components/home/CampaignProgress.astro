@@ -97,16 +97,15 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
 </div>
 
 <script define:vars={{ goalRaised: metaRecaudada, goalKids: metaNinos }}>
-  // Trae el total recaudado real y anima las dos barras. La home sigue estática:
-  // este es el único trabajo en runtime del lado del cliente.
-  const root = document.querySelector("[data-campaign-progress]");
-  if (root) {
+  function initCampaignProgress() {
+    const root = document.querySelector("[data-campaign-progress]");
+    if (!root) return;
+
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fmt = (n) => Math.round(n).toLocaleString("en-US");
     const pctOf = (current, goal) =>
       goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
 
-    // Barra + píldora: mueve vía transición CSS (width/left). El número cuenta 0->valor.
     const render = (key, current, goal, animate) => {
       const bar = root.querySelector(`[data-bar="${key}"]`);
       if (!bar) return;
@@ -114,7 +113,6 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
       const valueEl = bar.querySelector('[data-role="value"]');
       bar.querySelector('[data-role="fill"]').style.width = `${pct}%`;
       const pill = bar.querySelector('[data-role="pill"]');
-      // Clamp: la píldora nunca se desborda del borde (evita choque con el label a % bajos).
       pill.style.left = `clamp(1.75rem, ${pct}%, calc(100% - 1.75rem))`;
       pill.textContent = `${pct}%`;
 
@@ -122,7 +120,6 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
         valueEl.textContent = fmt(current);
         return;
       }
-      // Count-up sincronizado con el llenado de la barra (easeOutExpo).
       const dur = 1300;
       const ease = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
       const start = performance.now();
@@ -135,8 +132,7 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
       requestAnimationFrame(tick);
     };
 
-    // Espera a tener el dato real Y a que la sección sea visible antes de animar.
-    let targets = null; // { raised, kids }
+    let targets = null;
     let visible = false;
     let done = false;
 
@@ -166,7 +162,7 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
     fetch("/api/campaign-progress")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!data || data.raised == null) return; // conserva el respaldo del build
+        if (!data || data.raised == null) return;
         targets = {
           raised: data.raised,
           kids: Math.round((data.raised / goalRaised) * goalKids),
@@ -175,4 +171,6 @@ const progress = bars.map((b) => ({ ...b, pct: pctOf(b.current, b.goal) }));
       })
       .catch(() => {});
   }
+
+  document.addEventListener("astro:page-load", initCampaignProgress);
 </script>

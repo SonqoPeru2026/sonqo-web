@@ -249,7 +249,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
   document.addEventListener("astro:after-swap", () => {
     const y = sessionStorage.getItem("langScrollY");
     if (y !== null) {
-      window.scrollTo(0, Number(y));
+      window.scrollTo({ top: Number(y), behavior: "instant" });
       sessionStorage.removeItem("langScrollY");
     }
   });
