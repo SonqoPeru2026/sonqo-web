@@ -1,0 +1,203 @@
+---
+import { Icon } from "astro-icon/components";
+
+// Documento legal presentacional. El contenido llega estructurado desde i18n
+// (terms / privacy); aquí solo vive la maqueta, el estilo y el índice activo.
+interface ListItem {
+  term?: string;
+  desc: string;
+}
+interface Section {
+  id: string;
+  heading: string;
+  paragraphs?: readonly string[];
+  list?: readonly ListItem[];
+}
+interface LegalDocData {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  updatedLabel: string;
+  lastUpdated: string;
+  tocLabel: string;
+  backLabel: string;
+  sections: readonly Section[];
+  help: { title: string; text: string; cta: string; email: string };
+}
+
+interface Props {
+  doc: LegalDocData;
+  backHref: string;
+}
+
+const { doc, backHref } = Astro.props;
+const num = (i: number) => String(i + 1).padStart(2, "0");
+---
+
+<div class="bg-mist">
+  <!-- Encabezado -->
+  <header class="mx-auto max-w-[1280px] px-6 pt-32 pb-10 sm:px-8 lg:pt-40">
+    <a
+      href={backHref}
+      class="inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink transition-colors hover:text-primary"
+    >
+      <span aria-hidden="true">←</span>{doc.backLabel}
+    </a>
+
+    <div class="mt-8 flex items-center gap-4">
+      <span class="h-0.5 w-8 bg-primary"></span>
+      <span class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+        {doc.eyebrow}
+      </span>
+    </div>
+
+    <h1 class="mt-5 max-w-3xl font-heading text-4xl font-bold leading-tight text-burgundy sm:text-5xl">
+      {doc.title}
+    </h1>
+    <p class="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink">{doc.subtitle}</p>
+
+    <p
+      class="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-body text-sm font-medium text-burgundy shadow-[0_2px_8px_-2px_rgb(0_0_0/0.1)]"
+    >
+      <span class="h-2 w-2 rounded-full bg-primary"></span>
+      {doc.updatedLabel}: {doc.lastUpdated}
+    </p>
+  </header>
+
+  <!-- Índice + documento -->
+  <div
+    class="mx-auto grid max-w-[1280px] gap-10 px-6 pb-24 sm:px-8 lg:grid-cols-[240px_1fr] lg:gap-16"
+  >
+    <!-- Índice (sticky, solo desktop) -->
+    <aside class="hidden lg:block">
+      <nav class="sticky top-28" aria-label={doc.tocLabel}>
+        <p class="mb-4 font-heading text-xs font-bold uppercase tracking-[0.7px] text-ink-300">
+          {doc.tocLabel}
+        </p>
+        <ol class="space-y-1 border-l border-ink-100">
+          {
+            doc.sections.map((s, i) => (
+              <li>
+                <a
+                  href={`#${s.id}`}
+                  data-toc-link={s.id}
+                  class="group -ml-px flex items-baseline gap-2.5 border-l-2 border-transparent py-1.5 pl-4 font-body text-sm text-ink transition-colors hover:text-primary"
+                >
+                  <span class="toc-num font-heading text-xs font-bold tabular-nums text-ink-300 transition-colors">
+                    {num(i)}
+                  </span>
+                  <span class="leading-snug">{s.heading}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+    </aside>
+
+    <!-- Documento -->
+    <div class="min-w-0">
+      <article
+        class="rounded-3xl bg-white px-6 py-8 shadow-[0_20px_50px_-24px_rgb(84_5_69/0.25)] sm:px-12 sm:py-12"
+      >
+        {
+          doc.sections.map((s, i) => (
+            <section id={s.id} data-section class="scroll-mt-28 py-8 first:pt-0 last:pb-0">
+              {i > 0 && <hr class="mb-8 border-ink-100" />}
+              <div class="flex items-baseline gap-3">
+                <span class="font-heading text-sm font-bold tabular-nums text-primary">
+                  {num(i)}
+                </span>
+                <h2 class="font-heading text-xl font-bold text-burgundy sm:text-2xl">
+                  {s.heading}
+                </h2>
+              </div>
+
+              {s.paragraphs?.map((p) => (
+                <p class="mt-4 max-w-[65ch] font-body leading-relaxed text-ink">{p}</p>
+              ))}
+
+              {s.list && (
+                <ul class="mt-5 max-w-[65ch] space-y-3">
+                  {s.list.map((item) => (
+                    <li class="flex gap-3 font-body leading-relaxed text-ink">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                      <span>
+                        {item.term && (
+                          <strong class="font-bold text-burgundy">{item.term}: </strong>
+                        )}
+                        {item.desc}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </article>
+
+      <!-- Ayuda -->
+      <div
+        class="mt-8 flex flex-col items-start gap-5 rounded-3xl bg-[linear-gradient(145deg,var(--color-primary)_0%,#e11d48_100%)] px-8 py-9 text-white shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1)] sm:flex-row sm:items-center sm:justify-between sm:px-10"
+      >
+        <div>
+          <h2 class="font-heading text-xl font-bold sm:text-2xl">{doc.help.title}</h2>
+          <p class="mt-1.5 font-body text-white/90">{doc.help.text}</p>
+        </div>
+        <a
+          href={`mailto:${doc.help.email}`}
+          class="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-white/90"
+        >
+          <Icon name="contact-mail" class="h-4 w-auto" />
+          {doc.help.cta}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Sección activa del índice (la marca el observer del script). */
+  [data-toc-link].is-active {
+    color: var(--color-primary);
+    border-left-color: var(--color-primary);
+    font-weight: 500;
+  }
+  [data-toc-link].is-active .toc-num {
+    color: var(--color-primary);
+  }
+</style>
+
+<script>
+  // Resalta en el índice la sección visible al hacer scroll. Progresivo: sin JS,
+  // el índice sigue siendo navegable por anclas.
+  function initLegalToc() {
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
+    );
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-section]"));
+    if (!links.length || !sections.length) return;
+
+    const byId = new Map(links.map((l) => [l.getAttribute("data-toc-link"), l]));
+    const activate = (id: string | null) => {
+      links.forEach((l) => l.classList.remove("is-active"));
+      const link = id ? byId.get(id) : null;
+      if (link) link.classList.add("is-active");
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (visible) activate(visible.target.id);
+      },
+      { rootMargin: "-30% 0px -60% 0px", threshold: 0 },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+  }
+
+  document.addEventListener("astro:page-load", initLegalToc);
+</script>

@@ -17,8 +17,8 @@ const explore = [
 ];
 
 const info = [
-  { href: "/terminos.pdf", label: t.terms, external: true },
-  { href: "/privacidad.pdf", label: t.privacy, external: true },
+  { href: localizePath("/terms", lang), label: t.terms, external: false },
+  { href: localizePath("/privacy", lang), label: t.privacy, external: false },
   { href: `${home}#faq`, label: t.faq, external: false },
 ];
 

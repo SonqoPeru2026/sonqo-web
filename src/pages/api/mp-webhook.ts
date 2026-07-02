@@ -105,6 +105,9 @@ export const POST: APIRoute = async ({ request, url }) => {
             last4,
             paymentId,
             approvedAt,
+            consentAccepted: contact?.consentAccepted ?? false,
+            consentAt: contact?.consentAt ?? null,
+            consentIp: contact?.consentIp ?? null,
           }),
         );
         const { error } = await resend.emails.send({

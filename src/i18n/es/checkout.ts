@@ -37,8 +37,11 @@ export default {
 
   secureLabel: "Pago 100% seguro",
   submit: "Realizar donación",
-  termsBefore: "Al continuar, aceptas nuestros ",
+  termsBefore: "Acepto los",
   termsLink: "Términos y Condiciones",
+  termsAnd: "y la",
+  privacyLink: "Política de Privacidad",
+  consentError: "Debes aceptar los Términos y la Política de Privacidad para donar.",
 
   // Resumen de la donación
   cardComingSoon: "El pago con tarjeta estará disponible muy pronto.",

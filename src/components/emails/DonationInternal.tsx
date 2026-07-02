@@ -1,5 +1,5 @@
 import { Heading, Text } from "@react-email/components";
-import { EmailLayout, Button, brand, InternalHeader } from "./EmailLayout";
+import { EmailLayout, Button, brand, InternalHeader, ConsentNotice } from "./EmailLayout";
 import { packageName } from "@/lib/donation";
 
 export interface DonationInternalProps {
@@ -12,6 +12,9 @@ export interface DonationInternalProps {
   last4: string | null;
   paymentId: string;
   approvedAt: string;
+  consentAccepted: boolean;
+  consentAt: string | null;
+  consentIp: string | null;
 }
 
 function formatApprovedAt(approvedAt: string): string {
@@ -38,6 +41,9 @@ export function DonationInternal({
   last4,
   paymentId,
   approvedAt,
+  consentAccepted,
+  consentAt,
+  consentIp,
 }: DonationInternalProps) {
   const fullName = `${firstName} ${lastName}`.trim();
 
@@ -133,6 +139,15 @@ export function DonationInternal({
         </tbody>
       </table>
 
+      {/* Constancia de consentimiento (prueba legal) */}
+      {consentAccepted ? (
+        <ConsentNotice
+          text="Aceptó los Términos y Condiciones y la Política de Privacidad"
+          at={consentAt ? formatApprovedAt(consentAt) : approvedAt}
+          ip={consentIp}
+        />
+      ) : null}
+
       {/* Acción */}
       <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
         <tbody>
@@ -178,6 +193,9 @@ DonationInternal.PreviewProps = {
   last4: "4589",
   paymentId: "8923123456",
   approvedAt: "25 de junio de 2026, 09:15 PE",
+  consentAccepted: true,
+  consentAt: "2026-06-25T14:15:00.000Z",
+  consentIp: "190.234.12.45",
 } satisfies DonationInternalProps;
 
 export default DonationInternal;

@@ -1,5 +1,5 @@
 import { Heading, Text } from "@react-email/components";
-import { EmailLayout, Button, brand, InternalHeader } from "./EmailLayout";
+import { EmailLayout, Button, brand, InternalHeader, ConsentNotice } from "./EmailLayout";
 
 export interface LeadInternalProps {
   name: string;
@@ -7,9 +7,10 @@ export interface LeadInternalProps {
   phone: string;
   source?: string;
   receivedAt: string;
+  consentIp?: string | null;
 }
 
-export function LeadInternal({ name, email, phone, source, receivedAt }: LeadInternalProps) {
+export function LeadInternal({ name, email, phone, source, receivedAt, consentIp }: LeadInternalProps) {
   return (
     <EmailLayout
       preview={`Nuevo lead de infografía: ${name}`}
@@ -87,6 +88,13 @@ export function LeadInternal({ name, email, phone, source, receivedAt }: LeadInt
         </tbody>
       </table>
 
+      {/* Constancia de consentimiento (prueba legal) */}
+      <ConsentNotice
+        text="Aceptó recibir la infografía y la Política de Privacidad"
+        at={receivedAt}
+        ip={consentIp}
+      />
+
       {/* Acción */}
       <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
         <tbody>
@@ -128,6 +136,7 @@ LeadInternal.PreviewProps = {
   phone: "+51 999 888 777",
   source: "Instagram",
   receivedAt: "25 de junio de 2026, 09:15 PE",
+  consentIp: "190.234.12.45",
 } satisfies LeadInternalProps;
 
 export default LeadInternal;

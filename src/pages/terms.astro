@@ -1,0 +1,14 @@
+---
+export const prerender = true;
+
+import Layout from "@/layouts/Layout.astro";
+import Terms from "@/components/legal/Terms.astro";
+import { getLang, useTranslations } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const meta = useTranslations(lang, "meta");
+---
+
+<Layout title={meta.termsTitle}>
+  <Terms />
+</Layout>

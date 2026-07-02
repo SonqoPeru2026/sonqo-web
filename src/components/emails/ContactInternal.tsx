@@ -1,5 +1,5 @@
 import { Heading, Text } from "@react-email/components";
-import { EmailLayout, Button, brand, InternalHeader } from "./EmailLayout";
+import { EmailLayout, Button, brand, InternalHeader, ConsentNotice } from "./EmailLayout";
 
 export interface ContactInternalProps {
   name: string;
@@ -7,9 +7,10 @@ export interface ContactInternalProps {
   phone?: string;
   message: string;
   receivedAt: string;
+  consentIp?: string | null;
 }
 
-export function ContactInternal({ name, email, phone, message, receivedAt }: ContactInternalProps) {
+export function ContactInternal({ name, email, phone, message, receivedAt, consentIp }: ContactInternalProps) {
   return (
     <EmailLayout
       preview={`Nuevo mensaje de contacto de ${name}`}
@@ -112,6 +113,9 @@ export function ContactInternal({ name, email, phone, message, receivedAt }: Con
         </tbody>
       </table>
 
+      {/* Constancia de consentimiento (prueba legal) */}
+      <ConsentNotice text="Aceptó la Política de Privacidad" at={receivedAt} ip={consentIp} />
+
       {/* Acciones */}
       <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
         <tbody>
@@ -160,6 +164,7 @@ ContactInternal.PreviewProps = {
   message:
     "Represento a una agencia de turismo sostenible en Cusco. Nos encantaría organizar una jornada con nuestros guías para apoyar en la distribución de casacas térmicas en las comunidades de altura. ¿Podríamos agendar una reunión?",
   receivedAt: "24 de junio de 2026, 14:30 PE",
+  consentIp: "190.234.12.45",
 } satisfies ContactInternalProps;
 
 export default ContactInternal;

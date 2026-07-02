@@ -19,6 +19,8 @@ import infographic from "./infographic";
 import thanks from "./thanks";
 import notFound from "./notFound";
 import faq from "./faq";
+import terms from "./terms";
+import privacy from "./privacy";
 
 // Sección nueva → 1 import + 1 línea aquí (y su gemelo en en/index.ts).
 export default {
@@ -43,4 +45,6 @@ export default {
   thanks,
   notFound,
   faq,
+  terms,
+  privacy,
 } as const;

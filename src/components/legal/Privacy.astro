@@ -1,0 +1,10 @@
+---
+import LegalDoc from "./LegalDoc.astro";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+
+const lang = getLang(Astro.url);
+const doc = useTranslations(lang, "privacy");
+const home = localizePath("/", lang);
+---
+
+<LegalDoc doc={doc} backHref={home} />

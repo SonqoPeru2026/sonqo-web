@@ -202,11 +202,11 @@ function LightFooter({ note }: { note?: string }) {
         © {new Date().getFullYear()} Sonqo Perú. Desde el corazón del Perú.
       </Text>
       <Text style={{ margin: "0 0 6px", fontSize: "12px", color: brand.primary }}>
-        <Link href={`${SITE}/privacidad.pdf`} style={{ color: brand.primary }}>
+        <Link href={`${SITE}/privacy`} style={{ color: brand.primary }}>
           Privacidad
         </Link>
         <span style={{ opacity: 0.5 }}> · </span>
-        <Link href={`${SITE}/terminos.pdf`} style={{ color: brand.primary }}>
+        <Link href={`${SITE}/terms`} style={{ color: brand.primary }}>
           Términos
         </Link>
         <span style={{ opacity: 0.5 }}> · </span>
@@ -235,11 +235,11 @@ function BrandFooter({ note }: { note?: string }) {
         © {new Date().getFullYear()} Sonqo Perú. Desde el corazón del Perú.
       </Text>
       <Text style={{ margin: "0 0 6px", fontSize: "12px", color: "#ffffff" }}>
-        <Link href={`${SITE}/privacidad.pdf`} style={{ color: "#ffffff" }}>
+        <Link href={`${SITE}/privacy`} style={{ color: "#ffffff" }}>
           Privacidad
         </Link>
         <span style={{ opacity: 0.5 }}> · </span>
-        <Link href={`${SITE}/terminos.pdf`} style={{ color: "#ffffff" }}>
+        <Link href={`${SITE}/terms`} style={{ color: "#ffffff" }}>
           Términos
         </Link>
         <span style={{ opacity: 0.5 }}> · </span>
@@ -310,6 +310,49 @@ export function Button({
       ) : null}
       {label}
     </REButton>
+  );
+}
+
+/**
+ * Constancia de consentimiento para los correos internos (prueba legal).
+ * Muestra qué aceptó el usuario + fecha/hora y, si se registró, la IP.
+ */
+export function ConsentNotice({ text, at, ip }: { text: string; at: string; ip?: string | null }) {
+  return (
+    <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
+      <tbody>
+        <tr>
+          <td
+            style={{
+              backgroundColor: brand.cardBg,
+              border: `1px solid ${brand.cardBorder}`,
+              borderRadius: "12px",
+              padding: "16px 20px",
+            }}
+          >
+            <Text
+              style={{
+                margin: "0 0 4px",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.8px",
+                textTransform: "uppercase",
+                color: brand.body,
+              }}
+            >
+              Consentimiento
+            </Text>
+            <Text style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: brand.ink }}>
+              ✓ {text}
+            </Text>
+            <Text style={{ margin: "4px 0 0", fontSize: "12px", color: brand.body }}>
+              {at}
+              {ip ? ` · IP ${ip}` : ""}
+            </Text>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 }
 

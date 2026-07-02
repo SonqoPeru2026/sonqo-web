@@ -13,7 +13,15 @@ import { nowInLima } from "@/lib/datetime";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // IP para la constancia de consentimiento (prueba legal). Getter puede lanzar → null.
+  let consentIp: string | null = null;
+  try {
+    consentIp = clientAddress ?? null;
+  } catch {
+    consentIp = null;
+  }
+
   // 1. Solo JSON.
   let body: unknown;
   try {
@@ -55,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
   // 6. Email interno al equipo (best-effort: el lead ya quedó guardado).
   try {
     const html = await render(
-      LeadInternal({ name, email, phone, source, receivedAt: nowInLima() }),
+      LeadInternal({ name, email, phone, source, receivedAt: nowInLima(), consentIp }),
     );
     const { error } = await resend.emails.send({
       from: RESEND_FROM,

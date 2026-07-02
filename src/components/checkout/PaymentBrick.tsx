@@ -76,6 +76,7 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
               firstName: contact.firstName,
               lastName: contact.lastName,
               phone: contact.phone || undefined,
+              consent: contact.consent,
             }),
           });
           const data = (await res.json()) as { status?: string };

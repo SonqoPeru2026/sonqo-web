@@ -8,7 +8,16 @@ import { fail } from "@/lib/responses";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // IP del donante para la constancia de consentimiento (prueba legal). El getter
+  // puede lanzar si el runtime no la expone → degradamos a null sin romper.
+  let consentIp: string | null = null;
+  try {
+    consentIp = clientAddress ?? null;
+  } catch {
+    consentIp = null;
+  }
+
   // 1. Solo JSON.
   let body: unknown;
   try {
@@ -76,6 +85,9 @@ export const POST: APIRoute = async ({ request }) => {
           lastName: data.lastName,
           phone: data.phone ?? null,
           packageId: data.packageId ?? null,
+          consentAccepted: data.consent,
+          consentAt: new Date().toISOString(),
+          consentIp,
         });
       } catch (err) {
         console.error("[create-payment] error registrando donación:", err);

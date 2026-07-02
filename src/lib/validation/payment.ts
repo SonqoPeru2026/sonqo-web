@@ -23,6 +23,8 @@ export const paymentSchema = z
     // Selector de donación (uno de los dos). El server decide el monto real.
     packageId: z.string().max(20).optional(),
     amount: z.number().optional(),
+    // Consentimiento obligatorio: debe llegar en true o el pago se rechaza.
+    consent: z.literal(true),
   })
   .extend(makeCheckoutContactSchema().omit({ email: true }).shape);
 

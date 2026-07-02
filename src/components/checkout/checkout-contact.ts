@@ -5,6 +5,7 @@ export interface CheckoutContact {
   lastName: string;
   email: string;
   phone: string;
+  consent: boolean;
 }
 
 export const CONTACT_CHANGE_EVENT = "checkout:contact-change";
@@ -17,9 +18,12 @@ declare global {
 }
 
 export function readContact(): CheckoutContact {
-  return window.__checkoutContact ?? { firstName: "", lastName: "", email: "", phone: "" };
+  return (
+    window.__checkoutContact ?? { firstName: "", lastName: "", email: "", phone: "", consent: false }
+  );
 }
 
+// Válido = datos de contacto correctos (schema) Y consentimiento marcado.
 export function isContactValid(contact: CheckoutContact): boolean {
-  return makeCheckoutContactSchema().safeParse(contact).success;
+  return makeCheckoutContactSchema().safeParse(contact).success && contact.consent === true;
 }
