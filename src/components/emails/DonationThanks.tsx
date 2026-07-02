@@ -98,27 +98,36 @@ function Field({
   highlight?: boolean;
 }) {
   return (
-    <div
+    <table
+      width="100%"
+      cellPadding="0"
+      cellSpacing="0"
       style={{
-        display: "flex",
-        justifyContent: "space-between",
         paddingBottom: last ? 0 : "12px",
         marginBottom: last ? 0 : "12px",
         borderBottom: last ? "none" : `1px solid ${brand.cardBorder}`,
       }}
     >
-      <Text style={{ margin: 0, fontSize: "14px", color: brand.label }}>{label}</Text>
-      <Text
-        style={{
-          margin: 0,
-          fontSize: "14px",
-          fontWeight: 700,
-          color: highlight ? brand.primary : brand.ink,
-        }}
-      >
-        {value}
-      </Text>
-    </div>
+      <tbody>
+        <tr>
+          <td style={{ fontSize: "14px", color: brand.label, margin: 0, padding: 0 }}>
+            {label}
+          </td>
+          <td
+            style={{
+              fontSize: "14px",
+              fontWeight: 700,
+              color: highlight ? brand.primary : brand.ink,
+              margin: 0,
+              padding: 0,
+              textAlign: "right",
+            }}
+          >
+            {value}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 }
 

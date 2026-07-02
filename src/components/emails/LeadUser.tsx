@@ -9,7 +9,7 @@ const HERO_SRC =
   "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301008/Hero_Image_frskni.png";
 
 // PDF de la infografía. Colócalo en public/ y ajusta la URL cuando esté en producción.
-const PDF_URL = `${SITE}/infografia-sonqo.pdf`;
+const PDF_URL = `${SITE}/docs/infografic_sonqo.pdf`;
 
 const items = [
   "El origen del nombre Sonqo",
@@ -25,7 +25,7 @@ export function LeadUser({ name }: LeadUserProps) {
       preview="Tu infografía de Sonqo está lista"
       heroSrc={HERO_SRC}
       heroAlt="Niños abrigados con casacas térmicas de Sonqo"
-      footer="light"
+      footer="brand"
       footerNote="Recibes este correo porque pediste la infografía en nuestro sitio."
     >
       <Heading style={{ color: brand.burgundy, fontSize: "26px", fontWeight: 700, margin: "0 0 12px" }}>
@@ -41,23 +41,34 @@ export function LeadUser({ name }: LeadUserProps) {
         <Button href={PDF_URL} label="Descargar infografía" variant="primary" />
       </Section>
 
-      <Section
-        style={{
-          backgroundColor: brand.cardBg,
-          borderRadius: "12px",
-          padding: "24px",
-          margin: "0 0 28px",
-        }}
-      >
-        <Text style={{ margin: "0 0 12px", fontSize: "12px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: brand.body }}>
-          Esto encontrarás dentro
-        </Text>
-        {items.map((item) => (
-          <Text key={item} style={{ margin: "0 0 8px", fontSize: "15px", color: brand.ink }}>
-            {item}
-          </Text>
-        ))}
-      </Section>
+      <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
+        <tbody>
+          <tr>
+            <td
+              style={{
+                backgroundColor: brand.cardBg,
+                borderRadius: "12px",
+                padding: "24px",
+              }}
+            >
+              <Text style={{ margin: "0 0 12px", fontSize: "12px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: brand.body }}>
+                Esto encontrarás dentro
+              </Text>
+              <table width="100%" cellPadding="0" cellSpacing="0">
+                <tbody>
+                  {items.map((item) => (
+                    <tr key={item}>
+                      <td style={{ padding: "0 0 8px", fontSize: "15px", color: brand.ink }}>
+                        {item}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <Text style={{ textAlign: "center", color: brand.body, fontSize: "14px", margin: "0 0 2px" }}>
         Con gratitud,

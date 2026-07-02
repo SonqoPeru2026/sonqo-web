@@ -176,22 +176,6 @@ function Wordmark({ color }: { color: string }) {
   );
 }
 
-const footerLinks = (
-  <Text style={{ margin: "0 0 6px", fontSize: "12px" }}>
-    <Link href={`${SITE}/privacidad.pdf`} style={{ color: "inherit" }}>
-      Privacidad
-    </Link>
-    <span style={{ opacity: 0.5 }}> · </span>
-    <Link href={`${SITE}/terminos.pdf`} style={{ color: "inherit" }}>
-      Términos
-    </Link>
-    <span style={{ opacity: 0.5 }}> · </span>
-    <Link href={`${SITE}/#contacto`} style={{ color: "inherit" }}>
-      Contacto
-    </Link>
-  </Text>
-);
-
 function SocialIcon({ src, href }: { src: string; href: string }) {
   return (
     <Link href={href} style={{ display: "inline-block", margin: "0 8px" }}>
@@ -217,7 +201,19 @@ function LightFooter({ note }: { note?: string }) {
       <Text style={{ margin: "0 0 8px", fontSize: "13px", fontWeight: 700, color: brand.ink }}>
         © {new Date().getFullYear()} Sonqo Perú. Desde el corazón del Perú.
       </Text>
-      <div style={{ color: brand.primary }}>{footerLinks}</div>
+      <Text style={{ margin: "0 0 6px", fontSize: "12px", color: brand.primary }}>
+        <Link href={`${SITE}/privacidad.pdf`} style={{ color: brand.primary }}>
+          Privacidad
+        </Link>
+        <span style={{ opacity: 0.5 }}> · </span>
+        <Link href={`${SITE}/terminos.pdf`} style={{ color: brand.primary }}>
+          Términos
+        </Link>
+        <span style={{ opacity: 0.5 }}> · </span>
+        <Link href={`${SITE}/#contacto`} style={{ color: brand.primary }}>
+          Contacto
+        </Link>
+      </Text>
       {note ? (
         <Text style={{ margin: "12px 0 0", fontSize: "12px", color: brand.bodySoft }}>{note}</Text>
       ) : null}
@@ -228,13 +224,31 @@ function LightFooter({ note }: { note?: string }) {
 function BrandFooter({ note }: { note?: string }) {
   return (
     <Section style={{ backgroundColor: brand.primary, padding: "32px", textAlign: "center" }}>
-      <Wordmark color={brand.white} />
-      <Text style={{ color: "rgba(255,255,255,0.85)", fontSize: "13px", margin: "12px 0 8px" }}>
+      <Img
+        src="https://res.cloudinary.com/dpoihx1r5/image/upload/v1782970198/Grupo_2018_hnyvp8.png"
+        alt="Sonqo Perú"
+        width="120"
+        height="40"
+        style={{ display: "block", margin: "0 auto" }}
+      />
+      <Text style={{ color: "#ffffff", fontSize: "13px", margin: "12px 0 8px" }}>
         © {new Date().getFullYear()} Sonqo Perú. Desde el corazón del Perú.
       </Text>
-      <div style={{ color: brand.white }}>{footerLinks}</div>
+      <Text style={{ margin: "0 0 6px", fontSize: "12px", color: "#ffffff" }}>
+        <Link href={`${SITE}/privacidad.pdf`} style={{ color: "#ffffff" }}>
+          Privacidad
+        </Link>
+        <span style={{ opacity: 0.5 }}> · </span>
+        <Link href={`${SITE}/terminos.pdf`} style={{ color: "#ffffff" }}>
+          Términos
+        </Link>
+        <span style={{ opacity: 0.5 }}> · </span>
+        <Link href={`${SITE}/#contacto`} style={{ color: "#ffffff" }}>
+          Contacto
+        </Link>
+      </Text>
       {note ? (
-        <Text style={{ margin: "12px 0 0", fontSize: "12px", color: "rgba(255,255,255,0.75)" }}>
+        <Text style={{ margin: "12px 0 0", fontSize: "12px", color: "#ffffff" }}>
           {note}
         </Text>
       ) : null}

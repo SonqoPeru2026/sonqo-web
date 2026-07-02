@@ -1,4 +1,4 @@
-import { Column, Heading, Link, Row, Text } from "@react-email/components";
+import { Heading, Text } from "@react-email/components";
 import { EmailLayout, Button, brand, InternalHeader } from "./EmailLayout";
 
 export interface LeadInternalProps {
@@ -9,13 +9,12 @@ export interface LeadInternalProps {
   receivedAt: string;
 }
 
-// Notificación al equipo cuando alguien descarga la infografía (nuevo lead).
 export function LeadInternal({ name, email, phone, source, receivedAt }: LeadInternalProps) {
   return (
     <EmailLayout
       preview={`Nuevo lead de infografía: ${name}`}
       header={<InternalHeader badge="Nuevo lead" />}
-      footer="light"
+      footer="brand"
       footerNote="Correo automático del portal de Sonqo Perú. Información confidencial para uso interno del equipo."
     >
       <Text
@@ -40,39 +39,68 @@ export function LeadInternal({ name, email, phone, source, receivedAt }: LeadInt
         {receivedAt} · vía formulario de infografía
       </Text>
 
-      <Row>
-        <Column style={{ verticalAlign: "top", width: "50%", paddingRight: "16px" }}>
-          <Label>Correo electrónico</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
-            <Link href={`mailto:${email}`} style={{ color: brand.ink }}>
-              {email}
-            </Link>
-          </Text>
-        </Column>
-        <Column style={{ verticalAlign: "top", width: "50%" }}>
-          <Label>Celular</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
-            <Link href={`tel:${phone.replace(/\s+/g, "")}`} style={{ color: brand.ink }}>
-              {phone}
-            </Link>
-          </Text>
-        </Column>
-      </Row>
+      {/* Datos de contacto en card */}
+      <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
+        <tbody>
+          <tr>
+            <td
+              style={{
+                backgroundColor: brand.cardBg,
+                borderRadius: "12px",
+                padding: "24px",
+              }}
+            >
+              <table width="100%" cellPadding="0" cellSpacing="0">
+                <tbody>
+                  <tr>
+                    <td style={{ padding: "0 0 16px" }}>
+                      <Label>Correo electrónico</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
+                        <a href={`mailto:${email}`} style={{ color: brand.ink, textDecoration: "none" }}>
+                          {email}
+                        </a>
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: "0 0 16px" }}>
+                      <Label>Celular</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
+                        <a href={`tel:${phone.replace(/\s+/g, "")}`} style={{ color: brand.ink, textDecoration: "none" }}>
+                          {phone}
+                        </a>
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: 0 }}>
+                      <Label>Cómo nos conoció</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
+                        {source ?? "No especificado"}
+                      </Text>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div style={{ marginTop: "20px" }}>
-        <Label>Cómo nos conoció</Label>
-        <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
-          {source ?? "No especificado"}
-        </Text>
-      </div>
-
-      <div style={{ height: "32px" }} />
-
-      <Button
-        href={`mailto:${email}?subject=${encodeURIComponent("Gracias por tu interés en Sonqo Perú")}`}
-        label="Escribir al lead"
-        variant="primary"
-      />
+      {/* Acción */}
+      <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
+        <tbody>
+          <tr>
+            <td>
+              <Button
+                href={`mailto:${email}?subject=${encodeURIComponent("Gracias por tu interés en Sonqo Perú")}`}
+                label="Escribir al lead"
+                variant="primary"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </EmailLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { Heading, Section, Text } from "@react-email/components";
-import { EmailLayout, Button, brand, SITE, HEART_SRC } from "./EmailLayout";
+import { EmailLayout, Button, brand, SITE } from "./EmailLayout";
 
 export interface ContactUserProps {
   name: string;
@@ -18,19 +18,22 @@ export function ContactUser({ name, email, phone, message }: ContactUserProps) {
       preview="Hemos recibido tu mensaje · Sonqo Perú"
       heroSrc={HERO_SRC}
       heroAlt="Niños abrigados con casacas térmicas de Sonqo"
-      footer="light"
+      footer="brand"
       footerNote="Estás recibiendo este correo porque nos contactaste a través de nuestro sitio web."
     >
-      <Heading style={{ color: brand.ink, fontSize: "22px", fontWeight: 700, margin: "0 0 12px" }}>
+      <Heading style={{ color: brand.burgundy, fontSize: "26px", fontWeight: 700, margin: "0 0 12px" }}>
         Hemos recibido tu información
       </Heading>
       <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 24px" }}>
-        Gracias por escribir a Sonqo. Tu mensaje ya está con nuestro equipo y te responderemos
+        Gracias por escribir a Sonqo, {name}. Tu mensaje ya está con nuestro equipo y te responderemos
         muy pronto. Cada conversación nos ayuda a abrigar a más niños de las comunidades de Cusco
         y Huancavelica con casacas térmicas de calidad.
       </Text>
+      <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 28px" }}>
+        Mientras tanto, puedes conocer más sobre nuestro impacto visitando nuestro sitio web.
+      </Text>
 
-      {/* Tarjeta resumen con badge */}
+      {/* Tarjeta resumen */}
       <Section
         style={{
           backgroundColor: brand.cardBg,
@@ -40,38 +43,17 @@ export function ContactUser({ name, email, phone, message }: ContactUserProps) {
           margin: "0 0 28px",
         }}
       >
-        <Text style={{ margin: "0 0 16px", textAlign: "right" }}>
-          <span
-            style={{
-              backgroundColor: "rgba(228,0,63,0.08)",
-              color: brand.primary,
-              fontSize: "12px",
-              fontWeight: 700,
-              padding: "5px 12px",
-              borderRadius: "9999px",
-            }}
-          >
-            ✓ Solicitud recibida
-          </span>
+        <Text style={{ margin: "0 0 12px", fontSize: "12px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: brand.body }}>
+          Resumen de tu mensaje
         </Text>
-
         <Field label="Nombre" value={name} />
         <Field label="Correo" value={email} />
         {phone ? <Field label="Teléfono" value={phone} /> : null}
         <Field label="Mensaje" value={`"${message}"`} last />
       </Section>
 
-      {/* CTAs */}
-      <Section style={{ margin: "0 0 12px" }}>
-        <Button href={SITE} label="Visitar sitio web" variant="primary" />
-      </Section>
       <Section style={{ margin: "0 0 28px" }}>
-        <Button
-          href={`${SITE}/donate`}
-          label="Realizar una donación"
-          variant="outline"
-          iconSrc={HEART_SRC}
-        />
+        <Button href={SITE} label="Visitar sitio web" variant="primary" />
       </Section>
 
       <Text style={{ textAlign: "center", color: brand.body, fontSize: "14px", margin: "0 0 2px" }}>
@@ -88,16 +70,36 @@ export function ContactUser({ name, email, phone, message }: ContactUserProps) {
 
 function Field({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
-    <div
+    <table
+      width="100%"
+      cellPadding="0"
+      cellSpacing="0"
       style={{
-        paddingBottom: last ? 0 : "14px",
-        marginBottom: last ? 0 : "14px",
+        paddingBottom: last ? 0 : "12px",
+        marginBottom: last ? 0 : "12px",
         borderBottom: last ? "none" : `1px solid ${brand.cardBorder}`,
       }}
     >
-      <Text style={{ margin: "0 0 4px", fontSize: "12px", color: brand.label }}>{label}</Text>
-      <Text style={{ margin: 0, fontSize: "15px", color: brand.ink, lineHeight: "23px" }}>{value}</Text>
-    </div>
+      <tbody>
+        <tr>
+          <td style={{ fontSize: "14px", color: brand.label, margin: 0, padding: 0 }}>
+            {label}
+          </td>
+          <td
+            style={{
+              fontSize: "14px",
+              fontWeight: 700,
+              color: brand.ink,
+              margin: 0,
+              padding: 0,
+              textAlign: "right",
+            }}
+          >
+            {value}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 }
 
