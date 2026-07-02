@@ -12,8 +12,8 @@ export default {
   placeholderPhone: "+51",
   labelMessage: "Mensaje",
   placeholderMessage: "Cuéntanos cómo quieres sumarte",
-  termsBefore: "Acepto los",
-  termsLink: "términos y condiciones",
+  termsBefore: "He leído y acepto la",
+  privacyLink: "política de privacidad",
   submit: "Enviar mensaje",
   sending: "Enviando...",
   successTitle: "¡Mensaje enviado!",
@@ -23,5 +23,5 @@ export default {
   errName: "Ingresa tu nombre (mín. 2 caracteres).",
   errEmail: "Ingresa un correo válido.",
   errMessage: "El mensaje debe tener al menos 10 caracteres.",
-  errTerms: "Debes aceptar los términos y condiciones.",
+  errTerms: "Debes aceptar la política de privacidad.",
 } as const;

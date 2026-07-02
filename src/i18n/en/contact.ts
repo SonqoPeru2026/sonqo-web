@@ -12,8 +12,8 @@ export default {
   placeholderPhone: "+51",
   labelMessage: "Message",
   placeholderMessage: "Tell us how you want to join",
-  termsBefore: "I accept the",
-  termsLink: "terms and conditions",
+  termsBefore: "I have read and accept the",
+  privacyLink: "privacy policy",
   submit: "Send message",
   sending: "Sending...",
   successTitle: "Message sent!",
@@ -23,5 +23,5 @@ export default {
   errName: "Enter your name (min. 2 characters).",
   errEmail: "Enter a valid email.",
   errMessage: "The message must be at least 10 characters.",
-  errTerms: "You must accept the terms and conditions.",
+  errTerms: "You must accept the privacy policy.",
 } as const;

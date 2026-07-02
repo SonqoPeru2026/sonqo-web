@@ -1,5 +1,5 @@
-import { Column, Heading, Link, Row, Text } from "@react-email/components";
-import { EmailLayout, Button, brand, InternalHeader } from "./EmailLayout";
+import { Heading, Text } from "@react-email/components";
+import { EmailLayout, Button, brand, InternalHeader, ConsentNotice } from "./EmailLayout";
 import { packageName } from "@/lib/donation";
 
 export interface DonationInternalProps {
@@ -12,6 +12,9 @@ export interface DonationInternalProps {
   last4: string | null;
   paymentId: string;
   approvedAt: string;
+  consentAccepted: boolean;
+  consentAt: string | null;
+  consentIp: string | null;
 }
 
 function formatApprovedAt(approvedAt: string): string {
@@ -28,7 +31,6 @@ function formatApprovedAt(approvedAt: string): string {
   );
 }
 
-// Notificación al equipo cuando se aprueba una donación (disparado desde mp-webhook.ts).
 export function DonationInternal({
   firstName,
   lastName,
@@ -39,6 +41,9 @@ export function DonationInternal({
   last4,
   paymentId,
   approvedAt,
+  consentAccepted,
+  consentAt,
+  consentIp,
 }: DonationInternalProps) {
   const fullName = `${firstName} ${lastName}`.trim();
 
@@ -46,7 +51,7 @@ export function DonationInternal({
     <EmailLayout
       preview={`Nueva donación: ${fullName} — S/ ${amount.toFixed(2)}`}
       header={<InternalHeader badge="Nueva donación" />}
-      footer="light"
+      footer="brand"
       footerNote="Correo automático del portal de Sonqo Perú. Información confidencial para uso interno del equipo."
     >
       <Text
@@ -74,51 +79,89 @@ export function DonationInternal({
         {approvedAt} · vía checkout (tarjeta)
       </Text>
 
-      <Row>
-        <Column style={{ verticalAlign: "top", width: "50%", paddingRight: "16px" }}>
-          <Label>Correo electrónico</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
-            <Link href={`mailto:${email}`} style={{ color: brand.ink }}>
-              {email}
-            </Link>
-          </Text>
-        </Column>
-        <Column style={{ verticalAlign: "top", width: "50%" }}>
-          <Label>Celular</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
-            {phone ? (
-              <Link href={`tel:${phone.replace(/\s+/g, "")}`} style={{ color: brand.ink }}>
-                {phone}
-              </Link>
-            ) : (
-              "No especificado"
-            )}
-          </Text>
-        </Column>
-      </Row>
+      {/* Datos de contacto en card */}
+      <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 20px" }}>
+        <tbody>
+          <tr>
+            <td
+              style={{
+                backgroundColor: brand.cardBg,
+                borderRadius: "12px",
+                padding: "24px",
+              }}
+            >
+              <table width="100%" cellPadding="0" cellSpacing="0">
+                <tbody>
+                  <tr>
+                    <td style={{ padding: "0 0 16px" }}>
+                      <Label>Correo electrónico</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
+                        <a href={`mailto:${email}`} style={{ color: brand.ink, textDecoration: "none" }}>
+                          {email}
+                        </a>
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: "0 0 16px" }}>
+                      <Label>Celular</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, lineHeight: "22px" }}>
+                        {phone ? (
+                          <a href={`tel:${phone.replace(/\s+/g, "")}`} style={{ color: brand.ink, textDecoration: "none" }}>
+                            {phone}
+                          </a>
+                        ) : (
+                          "No especificado"
+                        )}
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: "0 0 16px" }}>
+                      <Label>Método de pago</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
+                        {last4 ? `Tarjeta **** ${last4}` : "Tarjeta"}
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: 0 }}>
+                      <Label>ID de transacción</Label>
+                      <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
+                        #{paymentId}
+                      </Text>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <Row style={{ marginTop: "20px" }}>
-        <Column style={{ verticalAlign: "top", width: "50%", paddingRight: "16px" }}>
-          <Label>Método</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
-            {last4 ? `Tarjeta **** ${last4}` : "Tarjeta"}
-          </Text>
-        </Column>
-        <Column style={{ verticalAlign: "top", width: "50%" }}>
-          <Label>Transacción</Label>
-          <Text style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: brand.ink }}>
-            #{paymentId}
-          </Text>
-        </Column>
-      </Row>
+      {/* Constancia de consentimiento (prueba legal) */}
+      {consentAccepted ? (
+        <ConsentNotice
+          text="Aceptó los Términos y Condiciones y la Política de Privacidad"
+          at={consentAt ? formatApprovedAt(consentAt) : approvedAt}
+          ip={consentIp}
+        />
+      ) : null}
 
-      <div style={{ height: "32px" }} />
-
-      <Button
-        href={`mailto:${email}?subject=${encodeURIComponent("Gracias por tu donación a Sonqo Perú")}`}
-        label="Escribir al donante"
-        variant="primary"
-      />
+      {/* Acción */}
+      <table width="100%" cellPadding="0" cellSpacing="0" style={{ margin: "0 0 28px" }}>
+        <tbody>
+          <tr>
+            <td>
+              <Button
+                href={`mailto:${email}?subject=${encodeURIComponent("Gracias por tu donación a Sonqo Perú")}`}
+                label="Escribir al donante"
+                variant="primary"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </EmailLayout>
   );
 }
@@ -150,6 +193,9 @@ DonationInternal.PreviewProps = {
   last4: "4589",
   paymentId: "8923123456",
   approvedAt: "25 de junio de 2026, 09:15 PE",
+  consentAccepted: true,
+  consentAt: "2026-06-25T14:15:00.000Z",
+  consentIp: "190.234.12.45",
 } satisfies DonationInternalProps;
 
 export default DonationInternal;

@@ -7,5 +7,7 @@ export default {
   faqTitle: "Preguntas frecuentes — Sonqo",
   infographicTitle: "Infografía gratuita — Sonqo",
   thanksTitle: "Gracias por tu donación — Sonqo",
+  termsTitle: "Términos y Condiciones — Sonqo",
+  privacyTitle: "Política de Privacidad — Sonqo",
   notFoundTitle: "Página no encontrada — Sonqo",
 } as const;

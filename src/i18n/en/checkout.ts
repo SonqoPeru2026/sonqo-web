@@ -37,8 +37,11 @@ export default {
 
   secureLabel: "100% secure payment",
   submit: "Complete donation",
-  termsBefore: "By continuing, you accept our ",
+  termsBefore: "I accept the",
   termsLink: "Terms and Conditions",
+  termsAnd: "and the",
+  privacyLink: "Privacy Policy",
+  consentError: "You must accept the Terms and the Privacy Policy to donate.",
 
   // Donation summary
   cardComingSoon: "Card payment will be available very soon.",

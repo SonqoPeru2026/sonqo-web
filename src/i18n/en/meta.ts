@@ -6,5 +6,7 @@ export default {
   faqTitle: "Frequently asked questions — Sonqo",
   infographicTitle: "Free infographic — Sonqo",
   thanksTitle: "Thank you for your donation — Sonqo",
+  termsTitle: "Terms and Conditions — Sonqo",
+  privacyTitle: "Privacy Policy — Sonqo",
   notFoundTitle: "Page not found — Sonqo",
 } as const;

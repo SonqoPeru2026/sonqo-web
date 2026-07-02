@@ -6,6 +6,7 @@ export interface LeadMessages {
   email: string;
   phone: string;
   consent: string;
+  privacy: string;
 }
 
 export const DEFAULT_LEAD_MESSAGES: LeadMessages = {
@@ -13,6 +14,7 @@ export const DEFAULT_LEAD_MESSAGES: LeadMessages = {
   email: "Correo inválido",
   phone: "Celular inválido",
   consent: "Debes aceptar para recibir la infografía",
+  privacy: "Debes aceptar la política de privacidad",
 };
 
 // Única definición de reglas. La consumen el cliente (validación en vivo) y el server.
@@ -23,6 +25,7 @@ export function makeLeadSchema(m: LeadMessages = DEFAULT_LEAD_MESSAGES) {
     phone: z.string().trim().min(6, m.phone).max(20, m.phone),
     source: z.string().trim().max(60).optional(),
     consent: z.boolean().refine((v) => v === true, { message: m.consent }),
+    privacy: z.boolean().refine((v) => v === true, { message: m.privacy }),
   });
 }
 

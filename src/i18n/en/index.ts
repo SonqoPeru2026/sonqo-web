@@ -19,6 +19,8 @@ import infographic from "./infographic";
 import thanks from "./thanks";
 import notFound from "./notFound";
 import faq from "./faq";
+import terms from "./terms";
+import privacy from "./privacy";
 
 export default {
   hero,
@@ -42,4 +44,6 @@ export default {
   thanks,
   notFound,
   faq,
+  terms,
+  privacy,
 } as const;

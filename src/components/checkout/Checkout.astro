@@ -144,6 +144,32 @@ const steps: Step[] = [
 
         <hr class="my-10 border-ink-200" />
 
+        <!-- Consentimiento (obligatorio, registrado como prueba legal) -->
+        <label class="flex items-start gap-3 font-body text-sm text-ink-500">
+          <input
+            type="checkbox"
+            name="consent"
+            required
+            class="mt-0.5 size-4 shrink-0 rounded border-ink-300 text-primary focus:ring-primary/30"
+          />
+          <span>
+            {t.termsBefore}{" "}
+            <a
+              href={localizePath("/terms", lang)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-medium text-primary underline">{t.termsLink}</a>{" "}{t.termsAnd}{" "}
+            <a
+              href={localizePath("/privacy", lang)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-medium text-primary underline">{t.privacyLink}</a>
+          </span>
+        </label>
+        <p data-consent-error class:list={[errorClass, "mt-2"]}>{t.consentError}</p>
+
+        <hr class="my-10 border-ink-200" />
+
         {
           paymentsReady ? (
             <PaymentBrick
@@ -173,9 +199,6 @@ const steps: Step[] = [
           </div>
         </div>
 
-        <p class="mt-4 text-center font-body text-sm text-ink-400">
-          {t.termsBefore}<a href="#" class="font-medium text-primary underline">{t.termsLink}</a>
-        </p>
       </form>
 
       <!-- ============ Columna derecha: resumen ============ -->
@@ -242,6 +265,8 @@ const steps: Step[] = [
       email: form.querySelector<HTMLInputElement>("#email"),
       phone: form.querySelector<HTMLInputElement>("#phone"),
     };
+    const consentInput = form.querySelector<HTMLInputElement>("[name=consent]");
+    const consentErrorEl = form.querySelector<HTMLElement>("[data-consent-error]");
     const formErrorEl = form.querySelector<HTMLElement>("[data-contact-form-error]");
     const errorEls = form.querySelectorAll<HTMLElement>("[data-error]");
 
@@ -254,6 +279,7 @@ const steps: Step[] = [
       lastName: fields.lastName?.value.trim() ?? "",
       email: fields.email?.value.trim() ?? "",
       phone: fields.phone?.value.trim() ?? "",
+      consent: consentInput?.checked ?? false,
     });
 
     // Valida con zod. Si showErrors, pinta los mensajes por campo (no bloquea nada acá:
@@ -282,7 +308,12 @@ const steps: Step[] = [
         }
       });
 
-      return result.success;
+      // Consentimiento: casilla obligatoria, aparte del schema de contacto.
+      const consentOk = consentInput?.checked ?? false;
+      if (showErrors && !consentOk) consentErrorEl?.classList.remove("hidden");
+      else consentErrorEl?.classList.add("hidden");
+
+      return result.success && consentOk;
     }
 
     const sync = () => {
@@ -295,6 +326,10 @@ const steps: Step[] = [
     Object.values(fields).forEach((field) => {
       field?.addEventListener("input", sync);
       field?.addEventListener("blur", () => validate(true));
+    });
+    consentInput?.addEventListener("change", () => {
+      sync();
+      validate(true);
     });
     sync();
 

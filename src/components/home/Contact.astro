@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { getLang, useTranslations } from "@/i18n/utils";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import SuccessModal from "@/components/common/SuccessModal.astro";
 
 const lang = getLang(Astro.url);
@@ -148,7 +148,11 @@ const fieldMessages = {
         />
         <span>
           {t.termsBefore}{" "}
-          <a href="#" class="font-medium text-primary hover:underline">{t.termsLink}</a>
+          <a
+            href={localizePath("/privacy", lang)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-medium text-primary hover:underline">{t.privacyLink}</a>
         </span>
       </label>
       <p data-error="terms" class={errorClass}></p>

@@ -12,6 +12,9 @@ export interface DonationRecord {
   lastName: string | null;
   phone: string | null;
   packageId: string | null;
+  consentAccepted: boolean;
+  consentAt: string | null;
+  consentIp: string | null;
 }
 
 /**
@@ -42,6 +45,9 @@ export async function insertDonation(donation: DonationRecord): Promise<boolean>
       last_name: donation.lastName,
       phone: donation.phone,
       package_id: donation.packageId,
+      consent_accepted: donation.consentAccepted,
+      consent_at: donation.consentAt,
+      consent_ip: donation.consentIp,
     },
     { onConflict: "payment_id" },
   );
@@ -90,6 +96,9 @@ export interface DonationContact {
   lastName: string | null;
   phone: string | null;
   packageId: string | null;
+  consentAccepted: boolean;
+  consentAt: string | null;
+  consentIp: string | null;
 }
 
 export async function getDonationContact(paymentId: string): Promise<DonationContact | null> {
@@ -98,7 +107,7 @@ export async function getDonationContact(paymentId: string): Promise<DonationCon
 
   const { data, error } = await db
     .from("donations")
-    .select("payer_email, first_name, last_name, phone, package_id")
+    .select("payer_email, first_name, last_name, phone, package_id, consent_accepted, consent_at, consent_ip")
     .eq("payment_id", paymentId)
     .maybeSingle();
 
@@ -112,6 +121,9 @@ export async function getDonationContact(paymentId: string): Promise<DonationCon
     lastName: data.last_name,
     phone: data.phone,
     packageId: data.package_id,
+    consentAccepted: data.consent_accepted ?? false,
+    consentAt: data.consent_at,
+    consentIp: data.consent_ip,
   };
 }
 
