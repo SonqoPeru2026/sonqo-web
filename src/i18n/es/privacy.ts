@@ -13,7 +13,7 @@ export default {
       id: "responsable",
       heading: "Responsable del tratamiento",
       paragraphs: [
-        "Los datos personales que nos facilites quedarán incorporados en un banco de datos cuyo titular es [RAZÓN SOCIAL], con RUC [RUC] y domicilio en [DIRECCIÓN]. Para cualquier asunto relacionado con tus datos, escríbenos a contacto@sonqoperu.com.",
+        "Los datos personales que nos facilites quedarán incorporados en un banco de datos cuyo titular es Sonqo Perú. Para cualquier asunto relacionado con tus datos, escríbenos a contacto@sonqoperu.com.",
         "Tratamos tus datos con apego a los principios y requisitos de la Ley N.° 29733, Ley de Protección de Datos Personales, su Reglamento aprobado por D.S. 003-2013-JUS y las normas que las modifiquen o sustituyan.",
       ],
     },

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@astrojs/react": "6.0.0",
+    "@astrojs/sitemap": "^3.7.3",
     "@astrojs/vercel": "11.0.0",
     "@fontsource/ubuntu": "^5.2.8",
     "@mercadopago/sdk-react": "^1.0.7",

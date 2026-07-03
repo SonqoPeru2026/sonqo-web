@@ -19,7 +19,7 @@ export default {
       id: "definiciones",
       heading: "Definitions",
       list: [
-        { term: "Sonqo", desc: "the organization [LEGAL NAME], tax ID [RUC]." },
+        { term: "Sonqo", desc: "the organization Sonqo Perú." },
         { term: "User", desc: "any person who accesses the site." },
         { term: "Donation", desc: "a voluntary financial contribution made in favor of Sonqo." },
         { term: "Site", desc: "the website sonqoperu.com and its subdomains." },
@@ -106,7 +106,7 @@ export default {
       id: "contacto",
       heading: "Contact",
       paragraphs: [
-        "For any question about these terms, write to contacto@sonqoperu.com — [LEGAL NAME], tax ID [RUC], [ADDRESS].",
+        "For any question about these terms, write to contacto@sonqoperu.com — Sonqo Perú.",
       ],
     },
   ],

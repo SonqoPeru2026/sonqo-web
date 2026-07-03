@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Páginas transaccionales — sin valor de indexación
+Disallow: /checkout
+Disallow: /thanks
+Disallow: /en/checkout
+Disallow: /en/thanks
+
+Sitemap: https://www.sonqoperu.com/sitemap-index.xml

@@ -12,7 +12,7 @@ export default {
       id: "responsable",
       heading: "Data controller",
       paragraphs: [
-        "The personal data you provide will be incorporated into a database owned by [LEGAL NAME], tax ID [RUC], with address at [ADDRESS]. For any matter related to your data, write to contacto@sonqoperu.com.",
+        "The personal data you provide will be incorporated into a database owned by Sonqo Perú. For any matter related to your data, write to contacto@sonqoperu.com.",
         "We process your data in accordance with the principles and requirements of Law No. 29733, the Personal Data Protection Law, its Regulation approved by D.S. 003-2013-JUS, and any rules that amend or replace them.",
       ],
     },
