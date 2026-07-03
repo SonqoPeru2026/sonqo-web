@@ -9,9 +9,11 @@ import icon from 'astro-icon';
 
 import react from '@astrojs/react';
 
+import sitemap from '@astrojs/sitemap';
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sonqoperu.com',
+  site: 'https://www.sonqoperu.com',
   trailingSlash: 'never',
 
   output: 'server',
@@ -23,7 +25,18 @@ export default defineConfig({
   server: { port: 8090 },
   security: { checkOrigin: true },
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
-  integrations: [icon(), react()],
+  integrations: [
+    icon(),
+    react(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'es',
+        locales: { es: 'es-PE', en: 'en-US' },
+      },
+      filter: (page) =>
+        !/\/(checkout|thanks)(\/|$)/.test(new URL(page).pathname),
+    }),
+  ],
 
   i18n: {
     defaultLocale: 'es',

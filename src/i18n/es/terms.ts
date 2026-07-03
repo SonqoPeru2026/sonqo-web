@@ -21,7 +21,7 @@ export default {
       id: "definiciones",
       heading: "Definiciones",
       list: [
-        { term: "Sonqo", desc: "la organización [RAZÓN SOCIAL], con RUC [RUC]." },
+        { term: "Sonqo", desc: "la organización Sonqo Perú." },
         { term: "Usuario", desc: "cualquier persona que accede al sitio." },
         { term: "Donación", desc: "aporte económico voluntario realizado a favor de Sonqo." },
         { term: "Sitio", desc: "el sitio web sonqoperu.com y sus subdominios." },
@@ -108,7 +108,7 @@ export default {
       id: "contacto",
       heading: "Contacto",
       paragraphs: [
-        "Para cualquier consulta sobre estos términos, escríbenos a contacto@sonqoperu.com — [RAZÓN SOCIAL], RUC [RUC], [DIRECCIÓN].",
+        "Para cualquier consulta sobre estos términos, escríbenos a contacto@sonqoperu.com — Sonqo Perú.",
       ],
     },
   ],

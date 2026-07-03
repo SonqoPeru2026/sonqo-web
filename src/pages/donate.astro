@@ -12,7 +12,7 @@ const lang = getLang(Astro.url);
 const meta = useTranslations(lang, "meta");
 ---
 
-<Layout title={meta.donateTitle}>
+<Layout title={meta.donateTitle} description={meta.donateDescription}>
   <DonateHero />
   <PackageCard />
   <BankTransfers />

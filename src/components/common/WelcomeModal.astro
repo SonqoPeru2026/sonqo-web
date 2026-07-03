@@ -92,6 +92,7 @@ const donateHref = localizePath("/donate", lang);
     function showModal() {
       if (triggered || !modal) return;
       triggered = true;
+      localStorage.setItem("sonqo-welcome", "1");
       modal.showModal();
     }
 

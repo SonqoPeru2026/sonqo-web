@@ -11,7 +11,7 @@ const lang = getLang(Astro.url);
 const meta = useTranslations(lang, "meta");
 ---
 
-<Layout title={meta.infographicTitle}>
+<Layout title={meta.infographicTitle} description={meta.infographicDescription}>
   <InfographicHero />
   <InfographicForm />
   <Faq />
