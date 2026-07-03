@@ -7,6 +7,7 @@ import { resend } from "@/lib/resend";
 import { RESEND_FROM, RESEND_TO } from "astro:env/server";
 import { DonationThanks } from "@/components/emails/DonationThanks";
 import { DonationInternal } from "@/components/emails/DonationInternal";
+import { captureError } from "@/lib/observability";
 
 export const prerender = false;
 
@@ -125,6 +126,7 @@ export const POST: APIRoute = async ({ request, url }) => {
     await redis.set(key, 1, { ex: 86400 }); // marca procesado (24h)
   } catch (err) {
     console.error("[mp-webhook] error consultando el pago:", err);
+    captureError(err, { scope: "mp-webhook", extra: { step: "process-payment" } });
     return new Response("error", { status: 500 }); // MP reintentará
   }
 

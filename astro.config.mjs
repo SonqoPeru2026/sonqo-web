@@ -11,6 +11,8 @@ import react from '@astrojs/react';
 
 import sitemap from '@astrojs/sitemap';
 
+import sentry from '@sentry/astro';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.sonqoperu.com',
@@ -35,6 +37,13 @@ export default defineConfig({
       },
       filter: (page) =>
         !/\/(checkout|thanks)(\/|$)/.test(new URL(page).pathname),
+    }),
+    sentry({
+      sourceMapsUploadOptions: {
+        org: 'sonqo-web',
+        project: 'javascript-astro',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      },
     }),
   ],
 
@@ -65,6 +74,10 @@ export default defineConfig({
 
       // Google Tag Manager — contenedor que carga GA4/pixels. Opcional: vacío en
       PUBLIC_GTM_ID: envField.string({ context: 'client', access: 'public', optional: true }),
+
+      // Sentry — DSN público del proyecto. Opcional: sin DSN, Sentry no arranca
+      // (degrada). El SENTRY_AUTH_TOKEN (source maps) es build-time, no va aquí.
+      PUBLIC_SENTRY_DSN: envField.string({ context: 'client', access: 'public', optional: true }),
 
       // Supabase — anon (leads) requeridas. Service key (donaciones, bypass RLS) opcional:
       // el webhook degrada sin romper hasta que se configure.

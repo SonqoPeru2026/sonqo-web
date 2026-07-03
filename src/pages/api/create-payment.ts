@@ -5,6 +5,7 @@ import { resolveAmount } from "@/lib/donation";
 import { getPaymentClient } from "@/lib/mercadopago";
 import { insertDonation } from "@/lib/donations";
 import { fail } from "@/lib/responses";
+import { captureError } from "@/lib/observability";
 
 export const prerender = false;
 
@@ -91,6 +92,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         });
       } catch (err) {
         console.error("[create-payment] error registrando donación:", err);
+        captureError(err, {
+          scope: "create-payment",
+          extra: { step: "insert-donation", paymentId: result.id, status: result.status },
+        });
       }
     }
 
@@ -100,6 +105,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     );
   } catch (err) {
     console.error("[create-payment] error:", err);
+    captureError(err, { scope: "create-payment", extra: { step: "payment-create" } });
     return fail(502, "No se pudo procesar el pago");
   }
 };
