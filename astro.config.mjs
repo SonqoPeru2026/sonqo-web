@@ -50,8 +50,8 @@ export default defineConfig({
       RESEND_FROM: envField.string({ context: 'server', access: 'public' }),
       RESEND_TO: envField.string({ context: 'server', access: 'public' }),
 
-      // Google Analytics — pendiente para el final. Descomentar al configurar GA4.
-      // PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: 'client', access: 'public' }),
+      // Google Tag Manager — contenedor que carga GA4/pixels. Opcional: vacío en
+      PUBLIC_GTM_ID: envField.string({ context: 'client', access: 'public', optional: true }),
 
       // Supabase — anon (leads) requeridas. Service key (donaciones, bypass RLS) opcional:
       // el webhook degrada sin romper hasta que se configure.
