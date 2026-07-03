@@ -10,6 +10,7 @@ import { LeadInternal } from "@/components/emails/LeadInternal";
 import { LeadUser } from "@/components/emails/LeadUser";
 import { ok, fail } from "@/lib/responses";
 import { nowInLima } from "@/lib/datetime";
+import { captureError } from "@/lib/observability";
 
 export const prerender = false;
 
@@ -53,10 +54,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const { error } = await supabase.from("leads").insert({ name, email, phone, source });
     if (error) {
       console.error("[infographic] Supabase error:", error);
+      captureError(error, { scope: "infographic", extra: { step: "supabase-insert" } });
       return fail(500, "No se pudo registrar tu solicitud");
     }
   } catch (err) {
     console.error("[infographic] error (supabase):", err);
+    captureError(err, { scope: "infographic", extra: { step: "supabase-insert" } });
     return fail(500, "No se pudo registrar tu solicitud");
   }
 

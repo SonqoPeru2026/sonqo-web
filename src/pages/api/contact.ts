@@ -9,6 +9,7 @@ import { ContactInternal } from "@/components/emails/ContactInternal";
 import { ContactUser } from "@/components/emails/ContactUser";
 import { ok, fail } from "@/lib/responses";
 import { nowInLima } from "@/lib/datetime";
+import { captureError } from "@/lib/observability";
 
 export const prerender = false;
 
@@ -61,10 +62,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     });
     if (error) {
       console.error("[contact] Resend (interno) error:", error);
+      captureError(error, { scope: "contact", extra: { step: "resend-internal" } });
       return fail(500, "No se pudo enviar el mensaje");
     }
   } catch (err) {
     console.error("[contact] error (interno):", err);
+    captureError(err, { scope: "contact", extra: { step: "resend-internal" } });
     return fail(500, "No se pudo enviar el mensaje");
   }
 
