@@ -9,4 +9,5 @@ export default {
   yapeScan: "Escanea el QR con tu app Yape",
   copy: "Copiar",
   copied: "Copiado",
+  comingSoon: "Muy pronto",
 } as const;
