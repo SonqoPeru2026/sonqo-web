@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import { INSTAGRAM_POSTS } from "@/data/instagram";
 
 // Grid de publicaciones de Instagram (sin carrusel). embed.js se carga en lazy
@@ -15,10 +16,15 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
   <ul class="flex flex-wrap justify-center gap-6">
     {
       posts.map((code) => (
-        <li class="w-[320px] max-w-full h-auto shrink-0">
-          <div class="overflow-hidden rounded-2xl shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+        <li class="w-[320px] max-w-full shrink-0">
+          {/* min-height reserva el espacio del embed → sin salto (CLS) al cargar.
+              El skeleton (logo IG + pulso) queda detrás; el iframe lo cubre al cargar. */}
+          <div class="relative min-h-[580px] overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+            <span class="pointer-events-none absolute inset-0 flex animate-pulse items-center justify-center">
+              <Icon name="logo-instagram" class="size-9 text-ink-300" />
+            </span>
             <blockquote
-              class="instagram-media"
+              class="instagram-media relative"
               data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
               data-instgrm-version="14"
               style="margin:0;width:100%;min-width:0"
