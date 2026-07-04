@@ -1,0 +1,118 @@
+---
+import { Icon } from "astro-icon/components";
+import { INSTAGRAM_POSTS } from "@/data/instagram";
+
+// Carrusel manual (scroll-snap + flechas, sin autoplay) de publicaciones de
+// Instagram. embed.js se carga en lazy (al entrar en viewport) para no penalizar
+// el load inicial del home. Comparte el guard #ig-embed-js con /gallery.
+interface Props {
+  limit?: number; // cuántos posts mostrar (por defecto todos)
+}
+const { limit }: Props = Astro.props;
+const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
+---
+
+<div class="relative mx-auto max-w-[1400px] px-4 sm:px-12" data-ig-carousel>
+  <button
+    type="button"
+    data-ig-prev
+    aria-label="Anterior"
+    class="absolute left-1 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0px_10px_30px_-8px_rgb(0_0_0/0.3)] transition hover:bg-primary hover:text-white sm:flex"
+  >
+    <Icon name="chevron-left" class="size-6" />
+  </button>
+
+  <ul
+    data-ig-track
+    class="ig-track flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2"
+  >
+    {
+      posts.map((code) => (
+        <li class="w-[300px] shrink-0 snap-start sm:w-[340px]">
+          <blockquote
+            class="instagram-media"
+            data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
+            data-instgrm-version="14"
+            style="margin:0;width:100%;min-width:0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px -12px rgb(0 0 0/0.3)"
+          />
+        </li>
+      ))
+    }
+  </ul>
+
+  <button
+    type="button"
+    data-ig-next
+    aria-label="Siguiente"
+    class="absolute right-1 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0px_10px_30px_-8px_rgb(0_0_0/0.3)] transition hover:bg-primary hover:text-white sm:flex"
+  >
+    <Icon name="chevron-right" class="size-6" />
+  </button>
+</div>
+
+<style>
+  /* Oculta la barra de scroll pero mantiene el scroll táctil/rueda. */
+  .ig-track {
+    scrollbar-width: none;
+  }
+  .ig-track::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  interface InstagramGlobal {
+    instgrm?: { Embeds: { process: () => void } };
+  }
+
+  // Carga embed.js una vez y procesa los blockquotes (comparte guard con /gallery).
+  function loadInstagram() {
+    const w = window as Window & InstagramGlobal;
+    if (w.instgrm) {
+      w.instgrm.Embeds.process();
+      return;
+    }
+    if (document.getElementById("ig-embed-js")) return;
+    const s = document.createElement("script");
+    s.id = "ig-embed-js";
+    s.async = true;
+    s.src = "https://www.instagram.com/embed.js";
+    document.body.appendChild(s);
+  }
+
+  function setupCarousel(root: HTMLElement) {
+    if (root.dataset.igReady) return; // no re-enlazar en re-render
+    root.dataset.igReady = "1";
+
+    const track = root.querySelector<HTMLElement>("[data-ig-track]");
+    if (!track) return;
+    const step = () => {
+      const item = track.querySelector<HTMLElement>("li");
+      return item ? item.getBoundingClientRect().width + 24 : 340; // +gap
+    };
+    root.querySelector("[data-ig-prev]")?.addEventListener("click", () =>
+      track.scrollBy({ left: -step(), behavior: "smooth" }),
+    );
+    root.querySelector("[data-ig-next]")?.addEventListener("click", () =>
+      track.scrollBy({ left: step(), behavior: "smooth" }),
+    );
+
+    // Lazy: solo carga IG cuando el carrusel se acerca al viewport.
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          loadInstagram();
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(root);
+  }
+
+  function initIgCarousels() {
+    document.querySelectorAll<HTMLElement>("[data-ig-carousel]").forEach(setupCarousel);
+  }
+
+  document.addEventListener("astro:page-load", initIgCarousels);
+</script>
