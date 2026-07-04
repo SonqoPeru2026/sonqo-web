@@ -2,9 +2,9 @@ export default {
   eyebrow: "What we do?",
   title: "We bring warmth where it's coldest",
   paragraph1:
-    "At Sonqo we bring warmth to as many children as possible in the coldest, highest places of Peru. Every winter the frosts drop below -20 °C and hit the high-Andean communities hard.",
+    "At Sonqo we bring warmth to children in the coldest, highest places of Peru. Every winter the cold season drops below −20 °C and hits the high-Andean communities hardest — the ones with the least help.",
   paragraph2:
-    "We are a 100% Ad Honorem organization with no political interference. Every cent we receive becomes a thermal jacket.",
+    "We are 100% Ad Honorem, with no political flag. Every cent you trust us becomes, in full, the making and delivery of a thermal jacket. No middlemen.",
   chipHonorem: "100% Ad Honorem",
   chipNonprofit: "Non-profit",
   chipJackets: "Every sol goes to jackets",

@@ -33,8 +33,8 @@ export function LeadUser({ name }: LeadUserProps) {
       </Heading>
       <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 24px" }}>
         Hola {name}, gracias por tu interés en Sonqo. Descarga la infografía y conoce el origen de
-        nuestro nombre, nuestra misión y cómo abrigamos a los niños de las comunidades de Cusco y
-        Huancavelica con casacas térmicas de calidad.
+        nuestro nombre, nuestra misión y cómo abrigamos a los niños de las comunidades altoandinas
+        de todo el Perú con casacas térmicas de calidad.
       </Text>
 
       <Section style={{ margin: "0 0 28px" }}>

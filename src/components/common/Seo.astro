@@ -8,6 +8,7 @@ import {
   buildAlternates,
   organizationSchema,
   websiteSchema,
+  faqSchema,
 } from "@/lib/seo";
 
 interface Props {
@@ -37,11 +38,11 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const alternates = buildAlternates(site, Astro.url.pathname);
 const imageUrl = new URL(image, site).href;
 
-// El schema de organización va en todo el sitio; el de WebSite solo en la home.
+
 const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/en";
 const schemas = [
   organizationSchema(site),
-  ...(isHome ? [websiteSchema(site)] : []),
+  ...(isHome ? [websiteSchema(site), faqSchema(lang)] : []),
 ];
 ---
 

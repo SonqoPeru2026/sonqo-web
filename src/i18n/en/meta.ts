@@ -1,17 +1,20 @@
 export default {
-  homeTitle: "Sonqo Perú | NGO that warms children in the Andes",
+  homeTitle: "Sonqo Perú | NGO warming children from the Andes cold",
   homeDescription:
-    "Sonqo Perú is a non-profit NGO delivering quality jackets to children in Andean communities of Cusco and Huancavelica. Donate and warm with the heart.",
-  donateTitle: "Donate jackets to children in Peru | Sonqo Perú",
+    "Peruvian non-profit NGO: your donation makes and hand-delivers thermal jackets to children facing the cold season in high-Andean communities across Peru. Warm with the heart.",
+  donateTitle: "Donate jackets to children in the Andes | Sonqo Perú",
   donateDescription:
-    "Donate from S/10 and warm an Andean child against the cold season. Choose a package or a custom amount. Bank transfer, Yape or card.",
+    "Donate from S/10: we make and hand-deliver a thermal jacket to a child facing the Andean cold. Choose a package or custom amount. Yape, transfer or card.",
   checkoutTitle: "Complete your donation — Sonqo",
   faqTitle: "Frequently asked questions | Sonqo Perú",
   faqDescription:
-    "Answers about Sonqo Perú: how to donate, where the jackets go, transparency and how to contact our NGO.",
+    "How to donate to Sonqo Perú, how we make and deliver each jacket, transparency and how to contact our NGO.",
   infographicTitle: "Free cold-season infographic | Sonqo Perú",
   infographicDescription:
-    "Download our free infographic about the cold season in the Peruvian Andes and see how your donation warms children in Cusco and Huancavelica.",
+    "Download our free infographic about the cold season in the Peruvian Andes and see how your donation makes and delivers thermal jackets to children across Peru.",
+  galleryTitle: "Gallery | Sonqo Perú",
+  galleryDescription:
+    "Real photos and videos: how we make and hand-deliver thermal jackets, child by child, across the Peruvian Andes. See your donation's impact.",
   thanksTitle: "Thank you for your donation — Sonqo",
   termsTitle: "Terms and Conditions — Sonqo",
   privacyTitle: "Privacy Policy — Sonqo",

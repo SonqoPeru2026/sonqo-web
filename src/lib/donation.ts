@@ -11,6 +11,14 @@ export type PackageId = keyof typeof PACKAGES;
 export const MIN_DONATION = 10;
 export const MAX_DONATION = 50_000;
 
+// Moneda de todas las donaciones (soles peruanos).
+export const DEFAULT_CURRENCY = "PEN";
+
+// Formato de monto en soles para texto (emails, subjects, logs): "S/ 1234.56".
+export function formatSoles(amount: number): string {
+  return `S/ ${amount.toFixed(2)}`;
+}
+
 export function isPackageId(id: unknown): id is PackageId {
   return typeof id === "string" && id in PACKAGES;
 }

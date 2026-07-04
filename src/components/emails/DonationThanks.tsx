@@ -1,6 +1,6 @@
 import { Heading, Section, Text } from "@react-email/components";
 import { EmailLayout, Button, brand, SITE } from "./EmailLayout";
-import { packageName } from "@/lib/donation";
+import { packageName, formatSoles } from "@/lib/donation";
 
 export interface DonationThanksProps {
   firstName: string;
@@ -66,7 +66,7 @@ export function DonationThanks({
           Resumen de tu donación
         </Text>
         <Field label="Paquete" value={packageName(packageId)} />
-        <Field label="Monto" value={`S/ ${amount.toFixed(2)}`} highlight />
+        <Field label="Monto" value={formatSoles(amount)} highlight />
         <Field label="Fecha" value={formatApprovedAt(approvedAt)} />
         {last4 ? <Field label="Método" value={`Tarjeta terminada en **** ${last4}`} /> : null}
         <Field label="Transacción" value={`#${paymentId}`} last />

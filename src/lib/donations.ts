@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { PAYMENT_STATUS } from "@/lib/payment";
 
 export interface DonationRecord {
   paymentId: string;
@@ -145,4 +146,55 @@ export async function sumApprovedDonations(): Promise<number | null> {
     return null;
   }
   return Number(data) || 0;
+}
+
+/** Fila de donación para el reporte mensual en Excel. */
+export interface DonationRow {
+  approved_at: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  payer_email: string | null;
+  phone: string | null;
+  package_id: string | null;
+  amount: number;
+  currency: string;
+  payment_method: string | null;
+  payment_id: string;
+}
+
+// Donaciones aprobadas con approved_at en [start, end). Solo desde el cron del reporte.
+export async function getApprovedDonationsByMonth(start: string, end: string): Promise<DonationRow[]> {
+  const db = getSupabaseAdmin();
+  if (!db) {
+    console.warn("[donations] SUPABASE_SERVICE_KEY ausente, reporte sin datos");
+    return [];
+  }
+
+  const { data, error } = await db
+    .from("donations")
+    .select(
+      "approved_at, first_name, last_name, payer_email, phone, package_id, amount, currency, payment_method, payment_id",
+    )
+    .eq("status", PAYMENT_STATUS.approved)
+    .gte("approved_at", start)
+    .lt("approved_at", end)
+    .order("approved_at", { ascending: true });
+
+  if (error) {
+    console.error("[donations] error consultando donaciones del mes:", error);
+    return [];
+  }
+  return (data ?? []) as DonationRow[];
+}
+
+/** Ping trivial para mantener activo el proyecto Supabase (keepalive). */
+export async function pingDatabase(): Promise<boolean> {
+  const db = getSupabaseAdmin();
+  if (!db) return false;
+  const { error } = await db.from("donations").select("payment_id", { head: true, count: "exact" }).limit(1);
+  if (error) {
+    console.error("[donations] keepalive falló:", error);
+    return false;
+  }
+  return true;
 }

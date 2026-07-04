@@ -14,6 +14,9 @@ const links = [
   { href: `${home}#contacto`, label: t.contact },
 ];
 
+// Galería es page aparte → solo en el menú móvil, en su propia card.
+const galleryHref = localizePath("/gallery", lang);
+
 // Switcher de idioma: misma ruta en el otro locale.
 const path = Astro.url.pathname.replace(/^\/en/, "") || "/";
 const langOption = (code: "es" | "en", label: string) => ({
@@ -129,8 +132,21 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
       }
     </nav>
 
+    <!-- Grupo: galería (card propia, resaltada) -->
+    <a
+      href={galleryHref}
+      class="menu-card mt-4 flex items-center gap-3 rounded-2xl bg-white px-4 py-4 font-heading text-lg font-bold text-primary transition-colors hover:bg-white/90"
+      style="--i:1"
+    >
+      <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <Icon name="gallery" class="size-5" />
+      </span>
+      {t.gallery}
+      <Icon name="arrow" class="ml-auto h-4 w-auto text-primary/70" />
+    </a>
+
     <!-- Grupo: idioma -->
-    <div class="menu-card mt-4 rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:1">
+    <div class="menu-card mt-4 rounded-2xl border border-white/15 bg-white/10 p-2" style="--i:2">
       <p class="px-3 pb-1 pt-2 font-heading text-xs font-bold uppercase tracking-[0.15em] text-white/50">
         {t.menuGroupLang}
       </p>

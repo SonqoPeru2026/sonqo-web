@@ -4,7 +4,7 @@
 
 // Metas por defecto: recaudación en soles y niños abrigados.
 export const CAMPAIGN_GOAL_RAISED = 165_000;
-export const CAMPAIGN_GOAL_KIDS = 5_000;
+export const CAMPAIGN_GOAL_KIDS = 5_500;
 
 // Clave en Redis del total recaudado "caliente" (cache de la suma de Supabase).
 export const CAMPAIGN_RAISED_KEY = "campaign:raised";

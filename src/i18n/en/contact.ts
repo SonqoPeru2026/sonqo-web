@@ -2,7 +2,7 @@ export default {
   eyebrow: "Contact us",
   title: "Let's add up hearts",
   description:
-    "Want to donate, volunteer or propose a collaborative project? Write to us.",
+    "Want to donate, volunteer or bring your company to the cause? Write to us: every message can warm one more child.",
   note: "We are also interested in collaborative projects and sustainable, solidarity tourism in the high-Andean communities.",
   labelName: "Name",
   placeholderName: "Your name",

@@ -13,6 +13,7 @@ const explore = [
   { href: `${home}#proposito`, label: nav.purpose },
   { href: `${home}#logros`, label: nav.achievements },
   { href: `${home}#nosotros`, label: nav.about },
+  { href: localizePath("/gallery", lang), label: nav.gallery },
   { href: `${home}#contacto`, label: nav.contact },
 ];
 
@@ -100,7 +101,7 @@ const socials = [
                 rel="noopener noreferrer"
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-white transition hover:-translate-y-0.5 hover:bg-white/90"
               >
-                <Icon name={s.icon} class="h-7 w-7 text-primary" />
+                <Icon name={s.icon} class="h-6 w-auto text-primary" />
               </a>
             </li>
           ))

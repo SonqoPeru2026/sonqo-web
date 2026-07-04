@@ -79,9 +79,12 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
               consent: contact.consent,
             }),
           });
-          const data = (await res.json()) as { status?: string };
+          const data = (await res.json()) as { status?: string; statusDetail?: string };
           const status = res.ok ? (data.status ?? "error") : "error";
-          window.location.href = `${thanksHref}?status=${status}`;
+          const params = new URLSearchParams({ status });
+          // Motivo del rechazo (solo código MP, sin PII) para mensaje específico en /thanks.
+          if (res.ok && data.statusDetail) params.set("reason", data.statusDetail);
+          window.location.href = `${thanksHref}?${params.toString()}`;
         } catch {
           submitting.current = false; // falló la red: permitir reintento
           window.location.href = `${thanksHref}?status=error`;

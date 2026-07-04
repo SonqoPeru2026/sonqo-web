@@ -1,11 +1,16 @@
 ---
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import { isApproved } from "@/lib/payment";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "thanks");
 
-const status = Astro.url.searchParams.get("status") ?? "approved";
-const approved = status === "approved";
+// Sin ?status (o cualquier valor != approved) → NO aprobado. Nunca fingir éxito.
+const approved = isApproved(Astro.url.searchParams.get("status"));
+
+// Mensaje del rechazo: código MP de la URL → texto amigable. Key desconocida → rejectedText.
+const reason = Astro.url.searchParams.get("reason") ?? "";
+const rejectedMsg = (t.rejectReasons as Record<string, string>)[reason] ?? t.rejectedText;
 
 const homeHref = localizePath("/", lang);
 const donateHref = localizePath("/donate", lang);
@@ -55,7 +60,7 @@ const CL = 48;
       {approved ? t.approvedTitle : t.rejectedTitle}
     </h1>
     <p class="mt-4 max-w-md font-body text-base text-ink-500 sm:text-lg">
-      {approved ? t.approvedText : t.rejectedText}
+      {approved ? t.approvedText : rejectedMsg}
     </p>
 
     <div class="mt-10 flex flex-col gap-4 sm:flex-row">

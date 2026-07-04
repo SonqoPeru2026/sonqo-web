@@ -2,7 +2,7 @@ export default {
   eyebrow: "Contáctanos",
   title: "Sumemos corazones",
   description:
-    "¿Quieres donar, ser voluntario o proponer un proyecto colaborativo? Escríbenos.",
+    "¿Quieres donar, ser voluntario o sumar tu empresa a la causa? Escríbenos: cada mensaje puede abrigar a un niño más.",
   note: "También nos interesan proyectos colaborativos y de turismo sostenible y solidario en las comunidades altoandinas.",
   labelName: "Nombre",
   placeholderName: "Tu nombre",

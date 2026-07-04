@@ -1,4 +1,8 @@
 {
+  "crons": [
+    { "path": "/api/reports/donations-monthly", "schedule": "0 13 1 * *" },
+    { "path": "/api/health/db", "schedule": "0 12 */3 * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

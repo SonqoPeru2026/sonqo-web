@@ -1,4 +1,4 @@
-import type { Language } from "@/i18n/dictionaries";
+import { dictionaries, type Language } from "@/i18n/dictionaries";
 import { defaultLang } from "@/i18n/config";
 
 export const SITE_NAME = "Sonqo Perú";
@@ -69,25 +69,52 @@ export function organizationSchema(site: URL | undefined) {
     "@type": "NGO",
     name: SITE_NAME,
     legalName: LEGAL_NAME,
+    alternateName: "Sonqo",
     url: site?.href,
     logo: abs("/logo-sonqo.svg"),
     image: abs(DEFAULT_OG_IMAGE),
     slogan: "Desde el corazón del Perú",
+    description:
+      "ONG peruana sin fines de lucro fundada en 2016. Confeccionamos y entregamos casacas térmicas a niños del friaje en las comunidades altoandinas de todo el Perú. Todo el equipo trabaja ad honorem.",
     foundingDate: "2016",
+    foundingLocation: { "@type": "Place", name: "Perú" },
     email: CONTACT_EMAIL,
-    areaServed: [
-      { "@type": "AdministrativeArea", name: "Cusco, Perú" },
-      { "@type": "AdministrativeArea", name: "Huancavelica, Perú" },
+    areaServed: { "@type": "Country", name: "Perú" },
+    knowsAbout: [
+      "Friaje",
+      "Donación de abrigo",
+      "Casacas térmicas",
+      "Niños en situación de pobreza",
+      "Comunidades altoandinas del Perú",
     ],
     knowsLanguage: ["es", "en"],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: CONTACT_EMAIL,
+      contactType: "customer support",
+      availableLanguage: ["Spanish", "English"],
+    },
     sameAs: [...SOCIAL_LINKS],
   };
 }
 
-/**
- * JSON-LD del sitio (schema WebSite). Habilita el sitelinks searchbox y refuerza
- * la identidad de marca. Solo se inyecta en la home.
- */
+export function faqSchema(lang: Language) {
+  const faq = dictionaries[lang].faq as Record<string, string>;
+  const pairs = [1, 2, 3, 4, 5, 6].map((i) => ({
+    q: faq[`q${i}`],
+    a: faq[`a${i}`],
+  }));
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: pairs.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+}
+
 export function websiteSchema(site: URL | undefined) {
   return {
     "@context": "https://schema.org",

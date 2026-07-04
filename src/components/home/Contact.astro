@@ -9,6 +9,8 @@ const t = useTranslations(lang, "contact");
 // Datos de contacto (no traducibles).
 const email = "sonqoperusolidario@gmail.com";
 const instagram = "sonqoperusolidario";
+const facebookUrl = "https://www.facebook.com/SonqoPeruSolidario/";
+const linkedinUrl = "https://www.linkedin.com/company/sonqo-peru-solidario/";
 
 // Estilos compartidos de los inputs.
 const fieldClass =
@@ -61,6 +63,28 @@ const fieldMessages = {
             <Icon name="logo-instagram" class="h-5 w-auto" />
           </span>
           @{instagram}
+        </a>
+        <a
+          href={facebookUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-4 font-body text-[#1b1c1c] transition-colors hover:text-primary"
+        >
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
+            <Icon name="logo-facebook" class="h-5 w-auto" />
+          </span>
+          Facebook
+        </a>
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-4 font-body text-[#1b1c1c] transition-colors hover:text-primary"
+        >
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
+            <Icon name="logo-linkedln" class="h-5 w-auto" />
+          </span>
+          LinkedIn
         </a>
       </div>
 

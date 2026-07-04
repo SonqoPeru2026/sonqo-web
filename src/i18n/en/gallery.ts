@@ -1,6 +1,17 @@
 export default {
   eyebrow: "Visual testimonials",
   title: "What we achieved together",
-  subtitle: "Every photo is a life kept warm in the Andes",
+  subtitle: "Every video, a life kept warm in the Andes",
   imageAlt: "Children kept warm with Sonqo jackets in the Andes",
+  viewAll: "See full gallery",
+  pageEyebrow: "Gallery",
+  pageTitle: "Every jacket, a story",
+  pageSubtitle: "Real moments from our deliveries high in the Peruvian Andes",
+  lightboxHint: "Tap a photo to see it larger",
+  igEyebrow: "Follow us on Instagram",
+  igTitle: "In motion",
+  igSubtitle: "Videos and posts from our deliveries",
+  igCta: "See more at @sonqoperusolidario",
+  igOpen: "Open post on Instagram",
+  igLoad: "Play",
 } as const;

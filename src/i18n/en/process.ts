@@ -1,15 +1,15 @@
 export default {
   eyebrow: "How do we do it?",
-  title: "Three steps, one warm embrace",
+  title: "From your donation to their hands, in three steps",
   step1Title: "We raise",
-  step1Text: "We gather funds through donations and charity events throughout the year.",
+  step1Text: "Every donation and charity event of the year adds up to clothe more children.",
   step2Title: "We make",
-  step2Text: "We produce, at cost, blue thermal jackets designed to withstand the frosts.",
+  step2Text: "We make them at cost, no profit — blue thermal jackets built to beat the cold.",
   step3Title: "We deliver",
-  step3Text: "We bring and hand out each jacket directly, one by one, to every child.",
+  step3Text: "We climb up to the communities and place each jacket in its child's hands. One by one.",
   mapEyebrow: "Where we reach",
   mapTitle: "All the way to the last community",
   mapText:
-    "We travel to the most remote areas of Cusco and Huancavelica to deliver each jacket in person, child by child.",
+    "We travel to the highest, most remote communities of Peru, where no one else reaches, to deliver each jacket in person, child by child.",
   mapImageAlt: "Andean children receiving Sonqo thermal jackets",
 } as const;

@@ -1,6 +1,6 @@
 import { Heading, Text } from "@react-email/components";
 import { EmailLayout, Button, brand, InternalHeader, ConsentNotice } from "./EmailLayout";
-import { packageName } from "@/lib/donation";
+import { packageName, formatSoles } from "@/lib/donation";
 
 export interface DonationInternalProps {
   firstName: string;
@@ -49,7 +49,7 @@ export function DonationInternal({
 
   return (
     <EmailLayout
-      preview={`Nueva donación: ${fullName} — S/ ${amount.toFixed(2)}`}
+      preview={`Nueva donación: ${fullName} — ${formatSoles(amount)}`}
       header={<InternalHeader badge="Nueva donación" />}
       footer="brand"
       footerNote="Correo automático del portal de Sonqo Perú. Información confidencial para uso interno del equipo."
@@ -73,7 +73,7 @@ export function DonationInternal({
         {fullName || "Donante"}
       </Heading>
       <Text style={{ textAlign: "center", margin: "0 0 4px", fontSize: "28px", fontWeight: 700, color: brand.primary }}>
-        S/ {amount.toFixed(2)}
+        {formatSoles(amount)}
       </Text>
       <Text style={{ textAlign: "center", margin: "0 0 32px", fontSize: "13px", color: brand.body }}>
         {approvedAt} · vía checkout (tarjeta)

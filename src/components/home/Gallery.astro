@@ -1,28 +1,11 @@
 ---
-import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
-import { getLang, useTranslations } from "@/i18n/utils";
+import { Icon } from "astro-icon/components";
+import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import InstagramEmbeds from "@/components/common/InstagramEmbeds.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "gallery");
-
-// Importa las 8 imágenes de la galería para que Astro las optimice (srcset + webp/avif).
-const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
-  "../../assets/images/gallery/*.webp",
-  { eager: true },
-);
-const images = Object.entries(galleryModules)
-  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-  .map(([, mod]) => mod.default);
-
-const half = Math.ceil(images.length / 2);
-const rowTop = images.slice(0, half);
-const rowBottom = images.slice(half);
-
-const rows = [
-  { items: [...rowTop, ...rowTop], direction: "left" },
-  { items: [...rowBottom, ...rowBottom], direction: "right" },
-];
+const galleryHref = localizePath("/gallery", lang);
 ---
 
 <section id="gallery" class="overflow-hidden bg-mist py-24">
@@ -37,77 +20,17 @@ const rows = [
     <p class="mt-4 font-body text-ink sm:text-lg">{t.subtitle}</p>
   </div>
 
-  <!-- Carrusel: 2 filas en direcciones opuestas -->
-  <div class="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 sm:px-8">
-    {
-      rows.map((row) => (
-        <div class="marquee">
-          <ul class:list={["marquee__track", row.direction === "right" && "marquee__track--reverse"]}>
-            {row.items.map((src) => (
-              <li class="marquee__item">
-                <Image
-                  src={src}
-                  alt={t.imageAlt}
-                  loading="lazy"
-                  width={340}
-                  height={240}
-                  sizes="340px"
-                  class="h-full w-full rounded-2xl object-cover shadow-[0px_10px_30px_-10px_rgb(0_0_0/0.2)]"
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
-    }
+  <!-- Grid de Instagram: 3 publicaciones reales como testimonio visual -->
+  <InstagramEmbeds limit={3} />
+
+  <!-- CTA a la galería completa -->
+  <div class="mt-12 text-center">
+    <a
+      href={galleryHref}
+      class="group inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-3.5 font-heading text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600"
+    >
+      {t.viewAll}
+      <Icon name="arrow" class="h-4 w-auto transition-transform group-hover:translate-x-1" />
+    </a>
   </div>
 </section>
-
-<style>
-  .marquee {
-    overflow: hidden;
-  }
-  .marquee__track {
-    display: flex;
-    width: max-content;
-    gap: 1.5rem;
-    padding-inline: 0.75rem;
-    animation: marquee-scroll 45s linear infinite;
-  }
-  .marquee__track--reverse {
-    animation-direction: reverse;
-  }
-  /* Pausa al pasar el mouse */
-  .marquee:hover .marquee__track {
-    animation-play-state: paused;
-  }
-  .marquee__item {
-    flex: none;
-    width: 200px;
-    height: 150px;
-  }
-
-  @media (min-width: 640px) {
-    .marquee__item {
-      width: 320px;
-      height: 220px;
-    }
-  }
-
-  /* Se desplaza la mitad: como el contenido está duplicado, el bucle es continuo */
-  @keyframes marquee-scroll {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  /* Accesibilidad: sin movimiento si el usuario lo prefiere */
-  @media (prefers-reduced-motion: reduce) {
-    .marquee__track {
-      animation: none;
-    }
-  }
-</style>

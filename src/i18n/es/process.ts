@@ -1,15 +1,15 @@
 export default {
   eyebrow: "¿Cómo lo hacemos?",
-  title: "Tres pasos, un abrazo de calor",
+  title: "De tu donación a sus manos, en tres pasos",
   step1Title: "Recaudamos",
-  step1Text: "Reunimos fondos a través de donaciones y eventos solidarios a lo largo del año.",
+  step1Text: "Cada donación y evento solidario del año se suma para vestir a más niños.",
   step2Title: "Confeccionamos",
-  step2Text: "Producimos a costo casacas térmicas azules, diseñadas para resistir las heladas.",
+  step2Text: "Fabricamos a costo, sin ganancia, casacas térmicas azules hechas para vencer el friaje.",
   step3Title: "Entregamos",
-  step3Text: "Llevamos y repartimos cada casaca directamente, una por una, a cada niño.",
-  mapEyebrow: "Dónde llegamos",
+  step3Text: "Subimos a las comunidades y ponemos cada casaca en las manos de su niño. Una por una.",
+  mapEyebrow: "¿Dónde llegamos?",
   mapTitle: "Hasta la última comunidad",
   mapText:
-    "Viajamos a las zonas más remotas de Cusco y Huancavelica para entregar cada casaca en persona, niño por niño.",
+    "Viajamos hasta las comunidades más altas y remotas del Perú, donde nadie más llega, para entregar cada casaca en persona, niño por niño.",
   mapImageAlt: "Niños andinos recibiendo casacas térmicas Sonqo",
 } as const;
