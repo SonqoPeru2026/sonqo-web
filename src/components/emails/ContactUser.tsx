@@ -26,8 +26,8 @@ export function ContactUser({ name, email, phone, message }: ContactUserProps) {
       </Heading>
       <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 24px" }}>
         Gracias por escribir a Sonqo, {name}. Tu mensaje ya está con nuestro equipo y te responderemos
-        muy pronto. Cada conversación nos ayuda a abrigar a más niños de las comunidades de Cusco
-        y Huancavelica con casacas térmicas de calidad.
+        muy pronto. Cada conversación nos ayuda a abrigar a más niños de las comunidades altoandinas
+        de todo el Perú con casacas térmicas de calidad.
       </Text>
       <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 28px" }}>
         Mientras tanto, puedes conocer más sobre nuestro impacto visitando nuestro sitio web.

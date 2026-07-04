@@ -1,21 +1,21 @@
 // SEO por página (title de la pestaña + Google). Lo consumen las pages, no los componentes.
 export default {
-  homeTitle: "Sonqo Perú | ONG que abriga niños de comunidades andinas",
+  homeTitle: "Sonqo Perú | ONG que abriga a niños del friaje en el Perú",
   homeDescription:
-    "Sonqo Perú es una ONG sin fines de lucro que entrega casacas de calidad a niños de comunidades andinas de Cusco y Huancavelica. Dona y abriga con el corazón.",
-  donateTitle: "Donar casacas a niños del Perú | Sonqo Perú",
+    "ONG peruana sin fines de lucro: con tu donación confeccionamos y entregamos casacas térmicas a niños del friaje en las comunidades altoandinas de todo el Perú. Abriga con el corazón.",
+  donateTitle: "Dona casacas a niños del friaje | Sonqo Perú",
   donateDescription:
-    "Dona desde S/10 y abriga a un niño andino contra el friaje. Aliado Sonqo, Ninos Felices, Corazón Solidario o monto libre. Transferencia, Yape o tarjeta.",
+    "Dona desde S/10: confeccionamos y entregamos una casaca térmica a un niño del friaje andino. Elige un paquete o monto libre. Yape, transferencia o tarjeta.",
   checkoutTitle: "Completa tu donación — Sonqo",
   faqTitle: "Preguntas frecuentes | Sonqo Perú",
   faqDescription:
-    "Resuelve tus dudas sobre Sonqo Perú: cómo donar, a dónde llegan las casacas, transparencia y contacto de nuestra ONG.",
+    "Cómo donar a Sonqo Perú, cómo confeccionamos y entregamos cada casaca, transparencia y contacto de nuestra ONG.",
   infographicTitle: "Infografía gratuita del friaje | Sonqo Perú",
   infographicDescription:
-    "Descarga gratis la infografía del friaje en los Andes del Perú y conoce cómo tu donación abriga a niños de Cusco y Huancavelica.",
+    "Descarga gratis la infografía del friaje en los Andes del Perú y conoce cómo tu donación confecciona y entrega casacas térmicas a niños de todo el país.",
   galleryTitle: "Galería | Sonqo Perú",
   galleryDescription:
-    "Fotos y videos reales de las entregas de casacas térmicas de Sonqo Perú a niños de comunidades andinas. Mira el impacto de cada donación.",
+    "Fotos y videos reales: cómo confeccionamos y entregamos casacas térmicas, niño por niño, en los Andes del Perú. Mira el impacto de tu donación.",
   thanksTitle: "Gracias por tu donación — Sonqo",
   termsTitle: "Términos y Condiciones — Sonqo",
   privacyTitle: "Política de Privacidad — Sonqo",

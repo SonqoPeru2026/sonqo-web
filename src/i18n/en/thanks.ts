@@ -1,7 +1,7 @@
 export default {
   approvedTitle: "Thank you for your donation!",
   approvedText:
-    "Your support is on its way to warm a child from the communities of Cusco and Huancavelica. We sent the confirmation to your email.",
+    "Your support is on its way to warm a child from the high-Andean communities of Peru. We sent the confirmation to your email.",
   rejectedTitle: "The payment didn't go through",
   rejectedText:
     "We couldn't process your payment. No charge was made. You can try again whenever you want.",

@@ -2,7 +2,7 @@ export default {
   eyebrow: "Our achievements",
   title: "Every figure is a child kept warm",
   subtitle:
-    "Ten years bringing warmth to the heights of Peru. These are the numbers we built together.",
+    "Ten years climbing where others don't reach. These numbers aren't statistics: they're warm embraces we gave together.",
   label1: "Cost per jacket",
   label2: "Communities reached",
   label3: "Children kept warm",
