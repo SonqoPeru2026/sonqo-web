@@ -71,6 +71,10 @@ export default defineConfig({
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
       RESEND_FROM: envField.string({ context: 'server', access: 'public' }),
       RESEND_TO: envField.string({ context: 'server', access: 'public' }),
+      // Destino del reporte mensual. Sin setear, cae a RESEND_TO.
+      REPORT_TO: envField.string({ context: 'server', access: 'public', optional: true }),
+      // Protege el endpoint del reporte. Vercel Cron lo manda como Bearer.
+      CRON_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
 
       // Google Tag Manager — contenedor que carga GA4/pixels. Opcional: vacío en
       PUBLIC_GTM_ID: envField.string({ context: 'client', access: 'public', optional: true }),

@@ -8,6 +8,8 @@ import { RESEND_FROM, RESEND_TO } from "astro:env/server";
 import { DonationThanks } from "@/components/emails/DonationThanks";
 import { DonationInternal } from "@/components/emails/DonationInternal";
 import { captureError } from "@/lib/observability";
+import { PAYMENT_STATUS, isApproved } from "@/lib/payment";
+import { formatSoles } from "@/lib/donation";
 
 export const prerender = false;
 
@@ -59,11 +61,11 @@ export const POST: APIRoute = async ({ request, url }) => {
 
     // Actualiza solo el status (la fila y el contacto ya los creó create-payment.ts).
     const paymentId = String(payment.id ?? dataId);
-    await updateDonationStatus(paymentId, payment.status ?? "unknown", payment.date_approved ?? null);
+    await updateDonationStatus(paymentId, payment.status ?? PAYMENT_STATUS.unknown, payment.date_approved ?? null);
 
     // Emails de donación aprobada: agradecimiento al donante + aviso al equipo.
     // Best-effort (try/catch propio cada uno; no deben romper el 200 a MP).
-    if (payment.status === "approved") {
+    if (isApproved(payment.status)) {
       const contact = await getDonationContact(paymentId);
       const payerEmail = contact?.payerEmail ?? payment.payer?.email ?? null;
       const approvedAt = payment.date_approved ?? new Date().toISOString();
@@ -114,7 +116,7 @@ export const POST: APIRoute = async ({ request, url }) => {
         const { error } = await resend.emails.send({
           from: RESEND_FROM,
           to: RESEND_TO,
-          subject: `Nueva donación: ${contact?.firstName ?? "Donante"} — S/ ${amount.toFixed(2)}`,
+          subject: `Nueva donación: ${contact?.firstName ?? "Donante"} — ${formatSoles(amount)}`,
           html,
         });
         if (error) console.warn("[mp-webhook] Resend (interno) no entregado:", error);

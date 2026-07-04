@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
 import { withinRateLimit } from "@/lib/rate-limit";
 import { paymentSchema } from "@/lib/validation/payment";
-import { resolveAmount } from "@/lib/donation";
+import { resolveAmount, DEFAULT_CURRENCY } from "@/lib/donation";
+import { PAYMENT_STATUS } from "@/lib/payment";
 import { getPaymentClient } from "@/lib/mercadopago";
 import { insertDonation } from "@/lib/donations";
 import { fail } from "@/lib/responses";
@@ -77,8 +78,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         await insertDonation({
           paymentId: String(result.id),
           amount,
-          currency: "PEN",
-          status: result.status ?? "unknown",
+          currency: DEFAULT_CURRENCY,
+          status: result.status ?? PAYMENT_STATUS.unknown,
           payerEmail: data.payer.email,
           paymentMethod: data.paymentMethodId,
           approvedAt: result.date_approved ?? null,
@@ -100,7 +101,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     }
 
     return new Response(
-      JSON.stringify({ ok: true, status: result.status, paymentId: result.id }),
+      JSON.stringify({
+        ok: true,
+        status: result.status,
+        statusDetail: result.status_detail, // motivo MP (p.ej. cc_rejected_insufficient_amount)
+        paymentId: result.id,
+      }),
       { status: 200, headers: { "content-type": "application/json" } },
     );
   } catch (err) {
