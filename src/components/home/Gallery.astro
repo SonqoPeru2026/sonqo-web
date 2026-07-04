@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
-import PhotoStrip from "@/components/common/PhotoStrip.astro";
+import InstagramEmbeds from "@/components/common/InstagramEmbeds.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "gallery");
@@ -20,10 +20,8 @@ const galleryHref = localizePath("/gallery", lang);
     <p class="mt-4 font-body text-ink sm:text-lg">{t.subtitle}</p>
   </div>
 
-  <!-- Carrusel: 1 fila -->
-  <div class="mx-auto max-w-[1400px] px-4 sm:px-8">
-    <PhotoStrip direction="left" />
-  </div>
+  <!-- Grid de Instagram: 3 publicaciones reales como testimonio visual -->
+  <InstagramEmbeds limit={3} />
 
   <!-- CTA a la galería completa -->
   <div class="mt-12 text-center">

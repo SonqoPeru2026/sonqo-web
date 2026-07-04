@@ -1,7 +1,7 @@
 export default {
   eyebrow: "Testimonios visuales",
   title: "Lo que logramos juntos",
-  subtitle: "Cada foto es una vida abrigada en los Andes",
+  subtitle: "Cada video, una vida abrigada en los Andes",
   imageAlt: "Niños abrigados con casacas Sonqo en los Andes",
   viewAll: "Ver galería completa",
   pageEyebrow: "Galería",

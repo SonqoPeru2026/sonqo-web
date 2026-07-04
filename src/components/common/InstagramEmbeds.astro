@@ -1,0 +1,72 @@
+---
+import { INSTAGRAM_POSTS } from "@/data/instagram";
+
+// Grid de publicaciones de Instagram (sin carrusel). embed.js se carga en lazy
+// (al entrar en viewport) para no penalizar el load inicial del home. Comparte el
+// guard #ig-embed-js con /gallery. Alto natural del embed (sin recorte).
+interface Props {
+  limit?: number; // cuántos posts mostrar (por defecto todos)
+}
+const { limit }: Props = Astro.props;
+const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
+---
+
+<div class="mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
+  <ul class="flex flex-wrap justify-center gap-6">
+    {
+      posts.map((code) => (
+        <li class="w-[320px] max-w-full h-auto shrink-0">
+          <div class="overflow-hidden rounded-2xl shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+            <blockquote
+              class="instagram-media"
+              data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
+              data-instgrm-version="14"
+              style="margin:0;width:100%;min-width:0"
+            />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  interface InstagramGlobal {
+    instgrm?: { Embeds: { process: () => void } };
+  }
+
+  // Carga embed.js una vez y procesa los blockquotes (comparte guard con /gallery).
+  function loadInstagram() {
+    const w = window as Window & InstagramGlobal;
+    if (w.instgrm) {
+      w.instgrm.Embeds.process();
+      return;
+    }
+    if (document.getElementById("ig-embed-js")) return;
+    const s = document.createElement("script");
+    s.id = "ig-embed-js";
+    s.async = true;
+    s.src = "https://www.instagram.com/embed.js";
+    document.body.appendChild(s);
+  }
+
+  function initIgEmbeds() {
+    document.querySelectorAll<HTMLElement>("[data-ig-embeds]").forEach((root) => {
+      if (root.dataset.igReady) return;
+      root.dataset.igReady = "1";
+      // Lazy: solo carga IG cuando la sección se acerca al viewport.
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            loadInstagram();
+            obs.disconnect();
+          }
+        },
+        { rootMargin: "200px" },
+      );
+      io.observe(root);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initIgEmbeds);
+</script>
