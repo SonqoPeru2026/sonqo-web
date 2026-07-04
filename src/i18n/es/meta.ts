@@ -13,6 +13,9 @@ export default {
   infographicTitle: "Infografía gratuita del friaje | Sonqo Perú",
   infographicDescription:
     "Descarga gratis la infografía del friaje en los Andes del Perú y conoce cómo tu donación abriga a niños de Cusco y Huancavelica.",
+  galleryTitle: "Galería | Sonqo Perú",
+  galleryDescription:
+    "Fotos y videos reales de las entregas de casacas térmicas de Sonqo Perú a niños de comunidades andinas. Mira el impacto de cada donación.",
   thanksTitle: "Gracias por tu donación — Sonqo",
   termsTitle: "Términos y Condiciones — Sonqo",
   privacyTitle: "Política de Privacidad — Sonqo",

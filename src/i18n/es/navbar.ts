@@ -2,6 +2,7 @@ export default {
   purpose: "Propósito",
   achievements: "Logros",
   about: "Nosotros",
+  gallery: "Galería",
   contact: "Contáctanos",
   cta: "Dona aquí",
   menuGroupNav: "Navegación",

@@ -4,7 +4,7 @@ export default {
   paragraph1:
     "Sonqo was born in 2016 from a group of Markham College alumni, united by one conviction: no Peruvian child should be cold.",
   paragraph2:
-    "We are a formal non-profit organization. Our whole team works ad honorem, so every sol donated goes entirely to the jackets.",
+    "We are a formal non-profit organization. Our whole team works ad honorem, so every sol donated goes entirely to making and delivering the jackets.",
   paragraph3:
     "We are committed to full transparency: we account for every campaign and every community we visit.",
   highlight1: "Since 2016",

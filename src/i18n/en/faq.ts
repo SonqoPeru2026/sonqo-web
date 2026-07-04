@@ -15,5 +15,5 @@ export default {
   q5: "Can I make a recurring donation?",
   a5: "Yes. You can schedule a monthly donation to keep more children warm every winter.",
   q6: "What if I want to donate an amount different from the packages?",
-  a6: "You can choose a custom amount from S/10. Every sol goes entirely to the thermal jackets.",
+  a6: "You can choose a custom amount from S/10. Every sol goes entirely to making and delivering the thermal jackets.",
 } as const;

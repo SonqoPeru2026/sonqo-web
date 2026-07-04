@@ -10,6 +10,6 @@ export default {
   mapEyebrow: "Where we reach",
   mapTitle: "All the way to the last community",
   mapText:
-    "We travel to the most remote areas of Cusco and Huancavelica to deliver each jacket in person, child by child.",
+    "We travel to the most remote areas of Peru —Cusco, Huancavelica, Ayacucho, Puno and Trujillo— to deliver each jacket in person, child by child.",
   mapImageAlt: "Andean children receiving Sonqo thermal jackets",
 } as const;

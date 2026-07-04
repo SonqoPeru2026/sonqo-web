@@ -1,5 +1,5 @@
 export default {
-  tagline: "Abriga con el corazón. Juntos, un invierno sin frío para los niños del Perú.",
+  tagline: "Abriga con el corazón. Juntos, por un invierno sin frío para los niños del Perú.",
   exploreHeading: "Explora",
   infoHeading: "Información",
   terms: "Términos",

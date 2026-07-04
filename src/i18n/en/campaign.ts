@@ -9,7 +9,7 @@ export default {
   footnote: "Together we can. Every sol becomes warmth.",
   welcomeEyebrow: "Winter campaign 2026",
   welcomeTitle: "This winter, give warmth from the heart",
-  welcomeText: "Join our 2026 campaign and help protect 5,000 children from the cold in the heights of Peru.",
+  welcomeText: "Join our 2026 campaign and help protect 5,500 children from the cold in the heights of Peru.",
   welcomeCta: "Donate now",
   dismiss: "Keep exploring",
 } as const;

@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import PhotoStrip from "@/components/common/PhotoStrip.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "purpose");
@@ -12,7 +13,7 @@ const chips = [
 ];
 ---
 
-<section id="proposito" class="bg-cream py-24">
+<section id="proposito" class="overflow-hidden bg-cream py-24">
   <div class="mx-auto grid w-full max-w-[1280px] items-center gap-10 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
     <!-- Columna texto -->
     <div>
@@ -60,5 +61,10 @@ const chips = [
         <Icon name="purpose-download" class="h-4 w-auto" />
       </a>
     </div>
+  </div>
+
+  <!-- Banda de fotos: cierra la sección como prueba visual del mensaje -->
+  <div class="mx-auto mt-20 max-w-[1400px] border-t border-ink-100/70 px-4 pt-16 sm:px-8">
+    <PhotoStrip direction="right" />
   </div>
 </section>

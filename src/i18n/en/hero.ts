@@ -11,7 +11,7 @@ export default {
   slide1Alt: "Children from an Andean community waving in their Sonqo thermal jackets",
 
   slide2Title: 'Let\'s add up <span class="text-primary">hearts</span>',
-  slide2Text: "Since 2016 we bring warmth to the highest communities of Cusco and Huancavelica.",
+  slide2Text: "Since 2016 we bring warmth to the communities that need it most.",
   slide2Alt: "Group of happy children raising their hands in their Sonqo jackets",
 
   slide3Title: 'Your warmth, their <span class="text-primary">winter</span>',

@@ -13,7 +13,7 @@ export default {
   slide1Alt: "Niños de una comunidad andina saludando con sus casacas térmicas Sonqo",
 
   slide2Title: 'Sumemos <span class="text-primary">corazones</span>',
-  slide2Text: "Desde 2016 llevamos abrigo a las comunidades más altas de Cusco y Huancavelica.",
+  slide2Text: "Desde 2016 llevamos abrigo a las comunidades que más lo necesitan.",
   slide2Alt: "Grupo de niños felices con sus casacas Sonqo levantando las manos",
 
   slide3Title: 'Tu abrigo, su <span class="text-primary">invierno</span>',

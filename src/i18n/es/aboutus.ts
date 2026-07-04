@@ -4,7 +4,7 @@ export default {
   paragraph1:
     "Sonqo nació en 2016 de la mano de exalumnos del Colegio Markham, unidos por una convicción: ningún niño peruano debería pasar frío.",
   paragraph2:
-    "Somos una organización formal y sin fines de lucro. Todo nuestro equipo trabaja ad honorem, por lo que cada sol donado se destina íntegramente a las casacas.",
+    "Somos una organización formal y sin fines de lucro. Todo nuestro equipo trabaja ad honorem, por lo que cada sol donado se destina íntegramente a la confección y entrega de las casacas.",
   paragraph3:
     "Nos comprometemos con la transparencia total: rendimos cuentas de cada campaña y de cada comunidad que visitamos.",
   highlight1: "Desde 2016",

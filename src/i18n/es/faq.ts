@@ -15,5 +15,5 @@ export default {
   q5: "¿Puedo hacer una donación recurrente?",
   a5: "Sí. Puedes programar una donación mensual para abrigar a más niños cada invierno.",
   q6: "¿Qué pasa si quiero donar un monto diferente a los paquetes?",
-  a6: "Puedes elegir un monto libre desde S/10. Cada sol se destina íntegramente a las casacas térmicas.",
+  a6: "Puedes elegir un monto libre desde S/10. Cada sol se destina íntegramente a la confección y entrega de las casacas térmicas.",
 } as const;

@@ -12,6 +12,9 @@ export default {
   infographicTitle: "Free cold-season infographic | Sonqo Perú",
   infographicDescription:
     "Download our free infographic about the cold season in the Peruvian Andes and see how your donation warms children in Cusco and Huancavelica.",
+  galleryTitle: "Gallery | Sonqo Perú",
+  galleryDescription:
+    "Real photos and videos of Sonqo Perú delivering thermal jackets to children in Andean communities. See the impact of every donation.",
   thanksTitle: "Thank you for your donation — Sonqo",
   termsTitle: "Terms and Conditions — Sonqo",
   privacyTitle: "Privacy Policy — Sonqo",
