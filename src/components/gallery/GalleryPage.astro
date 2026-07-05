@@ -1,39 +1,21 @@
 ---
-import { Image, getImage } from "astro:assets";
+import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
 import { INSTAGRAM_HANDLE } from "@/data/instagram";
 import { GALLERY_ITEMS } from "@/data/gallery";
+import { CATEGORY, countByCategory, createPhotoResolver, buildLightboxData } from "@/lib/gallery";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "gallery");
 
-// Fotos locales optimizadas por Astro. La key es el nombre sin extensión.
-const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
-  "../../assets/images/gallery/*.webp",
-  { eager: true },
+// Fotos locales optimizadas por Astro (el glob debe vivir aquí: es relativo).
+const photoMeta = createPhotoResolver(
+  import.meta.glob<{ default: ImageMetadata }>("../../assets/images/gallery/*.webp", {
+    eager: true,
+  }),
 );
-const photosByName = new Map<string, ImageMetadata>(
-  Object.entries(galleryModules).map(([path, mod]) => [
-    path.split("/").pop()!.replace(".webp", ""),
-    mod.default,
-  ]),
-);
-const photoMeta = (name: string) => {
-  const meta = photosByName.get(name);
-  if (!meta) throw new Error(`Gallery photo not found: ${name}.webp`);
-  return meta;
-};
-
-// Categoría de filtro por tipo de item.
-const CATEGORY = {
-  photo: "photos",
-  album: "photos",
-  reel: "reels",
-  igpost: "reels",
-  video: "videos",
-} as const;
 
 // Espacio que ocupa cada item en el mosaico (grid dense re-empaca los huecos).
 const PHOTO_SPAN = {
@@ -42,8 +24,7 @@ const PHOTO_SPAN = {
   big: "col-span-2 row-span-2",
 } as const;
 
-const counts = { photos: 0, reels: 0, videos: 0 };
-for (const item of GALLERY_ITEMS) counts[CATEGORY[item.type]]++;
+const counts = countByCategory(GALLERY_ITEMS);
 
 // Sin "Todo": Fotos activo por defecto (desktop y mobile).
 const filters = [
@@ -60,44 +41,11 @@ const statsLine = [
   .filter(Boolean)
   .join(" · ");
 
-// Grupos del lightbox: "main" = todas las fotos sueltas, en orden; cada álbum
-// navega solo sus propias fotos. Se generan URLs grandes con getImage para no
-// reusar las miniaturas del grid.
-const fullSize = (name: string) =>
-  getImage({ src: photoMeta(name), width: 1600, quality: 78, format: "webp" });
-
-interface LightboxSlide {
-  src: string;
-  alt: string;
-  caption?: string;
-  location?: string;
-}
-const lbGroups: Record<string, LightboxSlide[]> = { main: [] };
-// Posición dentro de su grupo, indexada por posición en GALLERY_ITEMS.
-const lbIndexByItem = new Map<number, { group: string; index: number }>();
-
-for (const [i, item] of GALLERY_ITEMS.entries()) {
-  if (item.type === "photo") {
-    lbIndexByItem.set(i, { group: "main", index: lbGroups.main.length });
-    lbGroups.main.push({
-      src: (await fullSize(item.src)).src,
-      alt: item.caption ?? t.imageAlt,
-      caption: item.caption,
-      location: item.location,
-    });
-  } else if (item.type === "album") {
-    const group = `album-${i}`;
-    lbIndexByItem.set(i, { group, index: 0 });
-    lbGroups[group] = await Promise.all(
-      item.photos.map(async (name) => ({
-        src: (await fullSize(name)).src,
-        alt: item.caption ?? t.imageAlt,
-        caption: item.caption,
-        location: item.location,
-      })),
-    );
-  }
-}
+const { groups: lbGroups, indexByItem: lbIndexByItem } = await buildLightboxData(
+  GALLERY_ITEMS,
+  photoMeta,
+  t.imageAlt,
+);
 
 const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 
@@ -231,24 +179,8 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
             );
           }
 
-          if (item.type === "reel" || item.type === "igpost") {
-            return (
-              <li
-                class:list={["gallery-item hidden", item.type === "reel" && "row-span-2"]}
-                data-cat={cat}
-                {...reveal}
-              >
-                <div class="gallery-ig-card group relative h-full w-full overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
-                  <blockquote
-                    class="instagram-media"
-                    data-instgrm-permalink={`https://www.instagram.com/p/${item.code}/`}
-                    data-instgrm-version="14"
-                    style="margin:0;width:100%;min-width:0;height:100%"
-                  />
-                </div>
-              </li>
-            );
-          }
+          {/* Reels/posts de IG no van en el mosaico: viven en el carrusel de abajo */}
+          if (item.type === "reel" || item.type === "igpost") return null;
 
           // item.type === "video" (YouTube)
           return (
@@ -292,18 +224,17 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
     </ul>
   </div>
 
-  <!-- Carrusel de reels (solo mobile): 1 card, flechas para navegar.
-       En desktop este bloque se elimina del DOM antes de cargar embed.js;
-       en mobile se eliminan los reels del mosaico (sin doble embed). -->
-  <div class="relative mx-auto hidden max-w-[1280px] px-4 sm:hidden" data-reels-carousel>
+  <!-- Carrusel de reels (tab "Reels"): cards embed como el home.
+       1 por vista en mobile, 3 en desktop; flechas para desplazarse. -->
+  <div class="relative mx-auto hidden max-w-[1280px] px-4 sm:px-8" data-reels-carousel>
     <ul
       data-reels-track
       class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {
         reelCodes.map((code) => (
-          <li class="w-full shrink-0 snap-center px-1">
-            <div class="relative min-h-[580px] overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+          <li class="w-full shrink-0 snap-start px-1 sm:w-1/3 sm:px-3">
+            <div class="relative min-h-[460px] overflow-hidden rounded-2xl bg-white shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
               <span class="pointer-events-none absolute inset-0 flex animate-pulse items-center justify-center">
                 <Icon name="logo-instagram" class="size-9 text-ink-300" />
               </span>
@@ -311,34 +242,37 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
                 class="instagram-media relative"
                 data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
                 data-instgrm-version="14"
-                style="margin:0;width:100%;min-width:0"
+                style="margin:0;width:100%;min-width:0;height:100%;min-height:540px;"
               />
             </div>
           </li>
         ))
       }
     </ul>
-    <button
-      type="button"
-      data-reels-prev
-      aria-label={t.lbPrev}
-      class="absolute -left-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
-    >
-      <Icon name="chevron-left" class="size-5" />
-    </button>
-    <button
-      type="button"
-      data-reels-next
-      aria-label={t.lbNext}
-      class="absolute -right-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
-    >
-      <Icon name="chevron-right" class="size-5" />
-    </button>
-    <p class="mt-4 text-center font-heading text-sm font-bold text-ink-600">
-      <span data-reels-counter>1</span>
-      <span class="text-ink-300">{t.lightboxOf}</span>
-      {reelCodes.length}
-    </p>
+    <!-- Controles debajo del carrusel -->
+    <div class="mt-6 flex items-center justify-center gap-5">
+      <button
+        type="button"
+        data-reels-prev
+        aria-label={t.lbPrev}
+        class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition hover:text-primary disabled:opacity-35"
+      >
+        <Icon name="chevron-left" class="size-5" />
+      </button>
+      <p class="font-heading text-sm font-bold text-ink-600">
+        <span data-reels-counter>1</span>
+        <span class="mx-1.5 text-ink-300">{t.lightboxOf}</span>
+        <span data-reels-total>1</span>
+      </p>
+      <button
+        type="button"
+        data-reels-next
+        aria-label={t.lbNext}
+        class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition hover:text-primary disabled:opacity-35"
+      >
+        <Icon name="chevron-right" class="size-5" />
+      </button>
+    </div>
   </div>
 
   <!-- CTA Instagram -->
@@ -421,41 +355,12 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
       animation: none;
     }
   }
-
-  /* Instagram embeds: contener dentro del card */
-  .gallery-ig-card {
-    container-type: inline-size;
-  }
-  .gallery-ig-card .instagram-media {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-  }
 </style>
 
 <script>
-  interface LightboxSlide {
-    src: string;
-    alt: string;
-    caption?: string;
-    location?: string;
-  }
-
-  const isMobile = () => matchMedia("(max-width: 639px)").matches;
-
-  // ---- Layout por dispositivo: sin embeds duplicados ----
-  // Mobile: los reels salen del mosaico (viven en el carrusel).
-  // Desktop: el carrusel se elimina del DOM. Corre ANTES de cargar embed.js.
-  function adaptLayout() {
-    const carousel = document.querySelector<HTMLElement>("[data-reels-carousel]");
-    if (isMobile()) {
-      document
-        .querySelectorAll('#gallery-grid .gallery-item[data-cat="reels"]')
-        .forEach((el) => el.remove());
-    } else {
-      carousel?.remove();
-    }
-  }
+  import { loadInstagramEmbeds, reprocessInstagramEmbeds } from "@/scripts/instagram-embed";
+  import { initSnapSlider } from "@/scripts/snap-slider";
+  import type { LightboxSlide } from "@/lib/gallery";
 
   // ---- Filtros ----
   function initFilters() {
@@ -488,17 +393,19 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
             el.classList.add("filter-in");
           }
         });
-        // Mobile: "Reels" muestra el carrusel y oculta el mosaico.
+        // "Reels" muestra el carrusel y oculta el mosaico (todos los tamaños).
         const carousel = document.querySelector<HTMLElement>("[data-reels-carousel]");
         if (carousel) {
-          const showReels = isMobile() && cat === "reels";
+          const showReels = cat === "reels";
           carousel.classList.toggle("hidden", !showReels);
           grid.classList.toggle("hidden", showReels);
         }
         // Los embeds procesados mientras estaban ocultos pueden quedar sin alto:
-        // re-procesar al mostrarlos.
+        // re-procesar al mostrarlos y re-sincronizar el contador del slider
+        // (clientWidth era 0 mientras estaba display:none).
         if (cat === "reels") {
-          (window as Window & { instgrm?: { Embeds: { process: () => void } } }).instgrm?.Embeds.process();
+          reprocessInstagramEmbeds();
+          window.dispatchEvent(new Event("resize"));
         }
       });
     });
@@ -507,33 +414,14 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
   // ---- Carrusel de reels (mobile): 1 card + flechas ----
   function initReelsCarousel() {
     const root = document.querySelector<HTMLElement>("[data-reels-carousel]");
-    if (!root || root.dataset.ready) return;
-    root.dataset.ready = "1";
-
-    const track = root.querySelector<HTMLElement>("[data-reels-track]");
-    const prev = root.querySelector<HTMLButtonElement>("[data-reels-prev]");
-    const next = root.querySelector<HTMLButtonElement>("[data-reels-next]");
-    const counter = root.querySelector<HTMLElement>("[data-reels-counter]");
-    if (!track || !prev || !next) return;
-
-    const count = track.children.length;
-    const current = () => Math.round(track.scrollLeft / track.clientWidth);
-    const goTo = (i: number) => {
-      const target = Math.max(0, Math.min(count - 1, i));
-      track.scrollTo({ left: target * track.clientWidth, behavior: "smooth" });
-    };
-
-    const sync = () => {
-      const i = current();
-      if (counter) counter.textContent = String(i + 1);
-      prev.disabled = i <= 0;
-      next.disabled = i >= count - 1;
-    };
-
-    prev.addEventListener("click", () => goTo(current() - 1));
-    next.addEventListener("click", () => goTo(current() + 1));
-    track.addEventListener("scroll", sync, { passive: true });
-    sync();
+    if (!root) return;
+    initSnapSlider(root, {
+      track: "[data-reels-track]",
+      prev: "[data-reels-prev]",
+      next: "[data-reels-next]",
+      counter: "[data-reels-counter]",
+      counterTotal: "[data-reels-total]",
+    });
   }
 
   // ---- Facades (IG + YouTube): iframe solo al hacer click ----
@@ -655,27 +543,11 @@ const reelCodes = GALLERY_ITEMS.flatMap((item) =>
     if (e.key === "ArrowRight") lbShow(lbCurrent.group, lbCurrent.index + 1);
   });
 
-  // ---- Instagram embeds ----
-  function loadInstagram() {
-    const w = window as Window & { instgrm?: { Embeds: { process: () => void } } };
-    if (w.instgrm) {
-      w.instgrm.Embeds.process();
-      return;
-    }
-    if (document.getElementById("ig-embed-js")) return;
-    const s = document.createElement("script");
-    s.id = "ig-embed-js";
-    s.async = true;
-    s.src = "https://www.instagram.com/embed.js";
-    document.body.appendChild(s);
-  }
-
   document.addEventListener("astro:page-load", () => {
-    adaptLayout();
     initFilters();
     initFacades();
     initLightbox();
     initReelsCarousel();
-    loadInstagram();
+    loadInstagramEmbeds();
   });
 </script>
