@@ -15,12 +15,9 @@ const slides = [
   { img: slide3, alt: hero.slide3Alt, title: hero.slide3Title, text: hero.slide3Text },
 ];
 
-// Numeros de impacto. TODO V2: traer de Sanity (ninos_atendidos, comunidades).
 const STAT_CHILDREN = "31,877+";
-const STAT_COMMUNITIES = "27";
 
-const SLIDE_MS = 6000;
-const total = String(slides.length).padStart(2, "0");
+const SLIDE_MS = 6500;
 ---
 
 <section
@@ -36,7 +33,7 @@ const total = String(slides.length).padStart(2, "0");
     ))}
   </div>
 
-  <!-- Fondos full-bleed (cross-fade) -->
+  <!-- Fondos full-bleed (cross-fade + Ken Burns sutil) -->
   <div class="absolute inset-0 -z-20">
     {
       slides.map((s, i) => (
@@ -50,99 +47,61 @@ const total = String(slides.length).padStart(2, "0");
           quality={72}
           loading={i === 0 ? "eager" : "lazy"}
           fetchpriority={i === 0 ? "high" : undefined}
-          class={`hero-bg absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-out ${i === 0 ? "opacity-100" : "opacity-0"}`}
+          class={`hero-bg absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-out ${i === 0 ? "is-active opacity-100" : "opacity-0"}`}
         />
       ))
     }
   </div>
 
-  <!-- Capa 1: Gradiente vertical fuerte (base oscura) -->
+  <!-- Overlay direccional (desktop): oscuro a la izquierda, la foto respira a la derecha -->
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-10"
-    style="background: linear-gradient(to top, rgb(15 15 18 / 0.92) 0%, rgb(15 15 18 / 0.7) 25%, rgb(15 15 18 / 0.45) 50%, rgb(15 15 18 / 0.25) 75%, rgb(15 15 18 / 0.1) 100%);"
+    class="absolute inset-0 -z-10 hidden sm:block"
+    style="background: linear-gradient(100deg, rgb(15 15 18 / 0.88) 0%, rgb(15 15 18 / 0.62) 38%, rgb(15 15 18 / 0.22) 68%, rgb(15 15 18 / 0.05) 100%);"
   >
   </div>
-
-  <!-- Capa 2: Radial centrado oscuro (refuerzo detras del texto) -->
+  <!-- Overlay vertical (mobile): legibilidad del texto -->
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-[9]"
-    style="background: radial-gradient(ellipse 80% 60% at 50% 45%, rgb(15 15 18 / 0.65) 0%, transparent 100%);"
+    class="absolute inset-0 -z-10 sm:hidden"
+    style="background: linear-gradient(to top, rgb(15 15 18 / 0.92) 0%, rgb(15 15 18 / 0.62) 45%, rgb(15 15 18 / 0.28) 75%, rgb(15 15 18 / 0.12) 100%);"
   >
   </div>
+  <!-- Calidez sutil de marca -->
+  <div aria-hidden="true" class="absolute inset-0 -z-[9] bg-primary/5 mix-blend-multiply"></div>
 
-  <!-- Capa 3: Vignette superior (oscurece cielo) -->
+  <!-- Contenido: columna editorial a la izquierda -->
   <div
-    aria-hidden="true"
-    class="absolute inset-0 -z-[8]"
-    style="background: linear-gradient(to bottom, rgb(15 15 18 / 0.5) 0%, transparent 40%);"
-  >
-  </div>
-
-  <!-- Capa 4: Calidez sutil -->
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 -z-[7] bg-primary/5 mix-blend-multiply"
-  >
-  </div>
-
-  <!-- Contenido centrado -->
-  <div
-    class="mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col items-center justify-center px-5 pt-28 pb-24 text-center sm:px-8 lg:px-20"
+    class="mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col items-center justify-center px-6 pb-20 pt-40 text-center sm:items-start sm:px-8 sm:text-left"
   >
     <!-- Badge / hashtag -->
     <span
-      class="hero-fade-up inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 font-heading text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white/90 ring-1 ring-inset ring-white/15 backdrop-blur-md"
+      class="hero-fade-up inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 font-heading text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white/90 ring-1 ring-inset ring-white/15 backdrop-blur-md"
     >
       <Icon name="hero-heart" class="h-3.5 w-auto text-primary" />
       {hero.hashtag}
     </span>
 
-    <!-- Titulo principal -->
-    <h1
-      data-hero-title
-      class="hero-title hero-fade-up mt-7 max-w-4xl font-heading text-[2.8rem] font-bold leading-[1.05] text-white sm:text-6xl lg:text-[4.5rem] lg:leading-[1.03]"
-      style="animation-delay: 100ms"
-      set:html={slides[0].title}
-    />
-
-    <!-- Subtitulo -->
-    <p
-      data-hero-text
-      class="hero-fade-up mt-6 max-w-xl font-body text-base leading-relaxed text-white/80 sm:text-lg lg:text-xl"
-      style="animation-delay: 200ms"
-      set:html={slides[0].text}
-    />
-
-    <!-- Tarjeta de impacto centrada -->
-    <dl
-      class="hero-fade-up mt-14 flex w-full max-w-md items-center justify-center gap-10 rounded-2xl bg-black/30 px-5 py-5 ring-1 ring-inset ring-white/10 backdrop-blur-md sm:px-10 sm:gap-12"
-      style="animation-delay: 300ms"
-    >
-      <div class="flex flex-col items-center">
-        <dt class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          {STAT_CHILDREN}
-        </dt>
-        <dd class="mt-1.5 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60">
-          {hero.statChildrenLabel}
-        </dd>
-      </div>
-      <div class="h-12 w-px bg-white/20" aria-hidden="true"></div>
-      <div class="flex flex-col items-center">
-        <dt class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          {STAT_COMMUNITIES}
-        </dt>
-        <dd class="mt-1.5 font-heading text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60">
-          {hero.statCommunitiesLabel}
-        </dd>
-      </div>
-    </dl>
+    <!-- Copy del slide (titulo + texto salen/entran juntos) -->
+    <div data-hero-copy class="hero-copy max-w-2xl">
+      <h1
+        data-hero-title
+        class="hero-title hero-fade-up mt-7 font-heading text-[2.7rem] font-bold leading-[1.06] text-white sm:text-6xl lg:text-[4.6rem] lg:leading-[1.03]"
+        style="animation-delay: 100ms"
+        set:html={slides[0].title}
+      />
+      <p
+        data-hero-text
+        class="hero-fade-up mt-6 max-w-xl font-body text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl"
+        style="animation-delay: 200ms"
+        set:html={slides[0].text}
+      />
+    </div>
 
     <!-- CTAs -->
     <div
-      class="hero-fade-up mt-10 flex w-full max-w-sm flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4"
-      style="animation-delay: 400ms"
+      class="hero-fade-up mt-10 flex w-full max-w-sm flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:gap-4"
+      style="animation-delay: 300ms"
     >
       <a
         href={localizePath("/donate", lang)}
@@ -159,177 +118,245 @@ const total = String(slides.length).padStart(2, "0");
       </a>
     </div>
 
-    <!-- Seguridad -->
+    <!-- Linea de confianza compacta (sin card: los numeros grandes viven en Historia) -->
     <p
-      class="hero-fade-up mt-6 inline-flex items-center justify-center gap-2 font-heading text-xs font-semibold text-white/50"
-      style="animation-delay: 500ms"
+      class="hero-fade-up mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 font-heading text-xs font-semibold text-white/60 sm:justify-start"
+      style="animation-delay: 400ms"
     >
-      <Icon name="hero-lock" class="h-3.5 w-auto" />
-      {hero.secure}
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="hero-lock" class="h-3.5 w-auto" />
+        {hero.secure}
+      </span>
+      <span class="hidden h-3 w-px bg-white/25 sm:block" aria-hidden="true"></span>
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="campaign-heart" class="h-3.5 w-auto text-primary" />
+        <span class="tabular-nums text-white/80">{STAT_CHILDREN}</span>
+        {hero.statChildrenLabel}
+      </span>
     </p>
-  </div>
 
-  <!-- Controles del carrusel (esquina inferior derecha) -->
-  <div class="absolute bottom-8 right-5 z-10 flex items-center gap-4 sm:right-8 lg:right-20">
-    <p class="font-heading text-sm text-white/50" aria-live="polite">
-      <span data-hero-current class="text-base font-bold text-white">01</span>
-      <span class="mx-0.5 text-white/30">/</span>
-      <span class="text-white/30">{total}</span>
-    </p>
-    <div class="hidden h-0.5 w-20 overflow-hidden rounded-full bg-white/15 sm:block" aria-hidden="true">
-      <span data-hero-progress class="hero-progress block h-full w-full origin-left bg-primary"></span>
-    </div>
-    <div class="flex gap-2">
-      <button
-        type="button"
-        data-hero-prev
-        aria-label="Anterior"
-        class="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/70 backdrop-blur-sm transition-[border-color,background-color,color] duration-200 hover:border-white/40 hover:bg-white/10 hover:text-white"
-      >
-        <Icon name="faq-chevron" class="h-3.5 w-auto rotate-90" />
-      </button>
-      <button
-        type="button"
-        data-hero-next
-        aria-label="Siguiente"
-        class="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/70 backdrop-blur-sm transition-[border-color,background-color,color] duration-200 hover:border-white/40 hover:bg-white/10 hover:text-white"
-      >
-        <Icon name="faq-chevron" class="h-3.5 w-auto -rotate-90" />
-      </button>
+    <!-- Navegacion del carrusel: segmentos clicables (indicador + control en uno) -->
+    <div
+      class="hero-fade-up mt-12 flex w-full items-center justify-center gap-3 sm:justify-start"
+      style="animation-delay: 500ms"
+      data-hero-nav
+      role="tablist"
+      aria-label="Slides"
+    >
+      {
+        slides.map((_, i) => (
+          <button
+            type="button"
+            data-hero-goto={i}
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            aria-label={`${i + 1} / ${slides.length}`}
+            class="group flex h-8 w-12 items-center sm:w-16"
+          >
+            <span class="relative h-[3px] w-full overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
+              <span
+                data-hero-seg
+                class="hero-seg absolute inset-0 origin-left scale-x-0 rounded-full bg-primary"
+              />
+            </span>
+          </button>
+        ))
+      }
+      <p class="ml-1 font-heading text-xs text-white/50" aria-live="polite">
+        <span data-hero-current class="font-bold text-white/90">01</span>
+        <span class="mx-0.5 text-white/30">/</span>
+        <span class="text-white/30">{String(slides.length).padStart(2, "0")}</span>
+      </p>
     </div>
   </div>
 </section>
 
 <script>
-function initHero() {
-  const root = document.querySelector<HTMLElement>("[data-hero]");
-  if (!root) return;
+  function initHero() {
+    const root = document.querySelector<HTMLElement>("[data-hero]");
+    if (!root) return;
 
-  // Limpiar interval global anterior
-  if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-
-  const bgs = [...root.querySelectorAll<HTMLElement>("[data-bg]")];
-  const titleEl = root.querySelector<HTMLElement>("[data-hero-title]");
-  const textEl = root.querySelector<HTMLElement>("[data-hero-text]");
-  const counter = root.querySelector<HTMLElement>("[data-hero-current]");
-  const progress = root.querySelector<HTMLElement>("[data-hero-progress]");
-
-  const slideEls = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
-  const slides = slideEls.map((el) => ({
-    title: el.dataset.title ?? "",
-    text: el.dataset.text ?? "",
-  }));
-
-  const count = slides.length;
-  if (count <= 1 || !titleEl || !textEl) return;
-
-  const MS = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6000;
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let index = 0;
-
-  function restartProgress() {
-    if (!progress || reducedMotion) return;
-    progress.classList.remove("run");
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => { progress.classList.add("run"); });
-    });
-  }
-
-  function show(i: number) {
-    index = (i + count) % count;
-    bgs.forEach((bg, j) => {
-      bg.classList.toggle("opacity-100", j === index);
-      bg.classList.toggle("opacity-0", j !== index);
-    });
-    const slide = slides[index];
-    if (titleEl) titleEl.innerHTML = slide.title;
-    if (textEl) textEl.innerHTML = slide.text;
-    if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-    restartProgress();
-  }
-
-  function start() {
-    if (reducedMotion) return;
+    // Limpiar interval global anterior (View Transitions no recarga la pagina)
     if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-    (window as any).__heroTimer = setInterval(() => show(index + 1), MS);
-  }
 
-  function stop() {
-    if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-    (window as any).__heroTimer = null;
-  }
+    const bgs = [...root.querySelectorAll<HTMLElement>("[data-bg]")];
+    const copyEl = root.querySelector<HTMLElement>("[data-hero-copy]");
+    const titleEl = root.querySelector<HTMLElement>("[data-hero-title]");
+    const textEl = root.querySelector<HTMLElement>("[data-hero-text]");
+    const counter = root.querySelector<HTMLElement>("[data-hero-current]");
+    const gotoBtns = [...root.querySelectorAll<HTMLButtonElement>("[data-hero-goto]")];
+    const segs = [...root.querySelectorAll<HTMLElement>("[data-hero-seg]")];
 
-  const nextBtn = root.querySelector<HTMLButtonElement>("[data-hero-next]");
-  const prevBtn = root.querySelector<HTMLButtonElement>("[data-hero-prev]");
-  nextBtn?.addEventListener("click", () => { show(index + 1); start(); });
-  prevBtn?.addEventListener("click", () => { show(index - 1); start(); });
+    const slideEls = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+    const slides = slideEls.map((el) => ({
+      title: el.dataset.title ?? "",
+      text: el.dataset.text ?? "",
+    }));
 
-  root.addEventListener("mouseenter", stop);
-  root.addEventListener("mouseleave", start);
-  root.addEventListener("focusin", stop);
-  root.addEventListener("focusout", start);
+    const count = slides.length;
+    if (count <= 1 || !titleEl || !textEl || !copyEl) return;
 
-  function typewriter(el: HTMLElement) {
-    const segments = [...el.childNodes].map((node) =>
-      node.nodeType === 1
-        ? { text: node.textContent ?? "", cls: (node as HTMLElement).getAttribute("class") }
-        : { text: node.textContent ?? "", cls: null }
-    );
-    const total = segments.reduce((n, s) => n + s.text.length, 0);
-    if (!total) return;
-    el.style.minHeight = el.getBoundingClientRect().height + "px";
-    const build = (charCount: number) => {
-      el.textContent = "";
-      let remaining = charCount;
-      for (const seg of segments) {
-        if (remaining <= 0) break;
-        const part = seg.text.slice(0, Math.min(remaining, seg.text.length));
-        if (seg.cls) {
-          const span = document.createElement("span");
-          span.setAttribute("class", seg.cls);
-          span.textContent = part;
-          el.appendChild(span);
-        } else {
-          el.appendChild(document.createTextNode(part));
+    const MS = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6500;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let index = 0;
+    let swapping = false;
+
+    // Evita salto de layout cuando el titulo del slide ocupa menos lineas.
+    copyEl.style.minHeight = copyEl.getBoundingClientRect().height + "px";
+
+    function paintNav() {
+      segs.forEach((seg, j) => {
+        seg.classList.remove("run");
+        if (j === index && !reducedMotion) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => seg.classList.add("run"));
+          });
         }
-        remaining -= part.length;
-      }
-    };
-    build(0);
-    el.classList.add("tw-cursor");
-    let i = 0, last = 0;
-    const speed = 75;
-    function tick(now: number) {
-      if (!last) last = now;
-      if (now - last >= speed) { i++; build(i); last = now; }
-      if (i < total) requestAnimationFrame(tick);
-      else el.classList.remove("tw-cursor");
+        seg.classList.toggle("scale-x-100", j === index && reducedMotion);
+      });
+      gotoBtns.forEach((b, j) => b.setAttribute("aria-selected", String(j === index)));
+      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
     }
-    setTimeout(() => requestAnimationFrame(tick), 350);
+
+    function swapCopy(i: number) {
+      const apply = () => {
+        titleEl!.innerHTML = slides[i].title;
+        textEl!.innerHTML = slides[i].text;
+        // Reinicia el subrayado del acento (hilo andino)
+        titleEl!.querySelectorAll<HTMLElement>(".text-primary").forEach((el) => {
+          el.classList.remove("accent-draw");
+          void el.offsetWidth;
+          el.classList.add("accent-draw");
+        });
+      };
+      if (reducedMotion) {
+        apply();
+        return;
+      }
+      swapping = true;
+      copyEl!.classList.add("is-leaving");
+      window.setTimeout(() => {
+        apply();
+        copyEl!.classList.remove("is-leaving");
+        copyEl!.classList.add("is-entering");
+        window.setTimeout(() => {
+          copyEl!.classList.remove("is-entering");
+          swapping = false;
+        }, 500);
+      }, 320);
+    }
+
+    function show(i: number) {
+      const next = ((i % count) + count) % count;
+      if (next === index && bgs[next]?.classList.contains("opacity-100")) return;
+      if (swapping) return;
+      index = next;
+      bgs.forEach((bg, j) => {
+        bg.classList.toggle("opacity-100", j === index);
+        bg.classList.toggle("opacity-0", j !== index);
+        bg.classList.toggle("is-active", j === index);
+      });
+      swapCopy(index);
+      paintNav();
+    }
+
+    function start() {
+      if (reducedMotion) return;
+      if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
+      (window as any).__heroTimer = setInterval(() => show(index + 1), MS);
+    }
+
+    function stop() {
+      if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
+      (window as any).__heroTimer = null;
+    }
+
+    gotoBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        show(Number(btn.dataset.heroGoto ?? 0));
+        start();
+      });
+    });
+
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+
+    // Dibuja el subrayado del acento en la primera carga
+    titleEl.querySelectorAll<HTMLElement>(".text-primary").forEach((el) => {
+      el.classList.add("accent-draw");
+    });
+
+    paintNav();
+    start();
   }
 
-  root.querySelectorAll<HTMLElement>(".hero-fade-up").forEach((el) => {
-    el.classList.remove("hero-fade-up");
-    void el.offsetWidth;
-    el.classList.add("hero-fade-up");
-  });
-
-  if (!reducedMotion) typewriter(titleEl);
-  restartProgress();
-  start();
-}
-
-document.addEventListener("astro:page-load", initHero);
+  document.addEventListener("astro:page-load", initHero);
 </script>
 
 <style>
+  /* Ken Burns: la foto activa respira (zoom sutil durante el slide) */
+  .hero-bg.is-active {
+    animation: hero-zoom calc(var(--slide-ms) + 1500ms) ease-out forwards;
+  }
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.06);
+    }
+  }
+
+  /* Acento del titulo: crimson italico + hilo andino que se dibuja debajo */
   .hero-title :global(.text-primary) {
     font-style: italic;
     color: var(--color-primary);
-    text-shadow: 0 0 40px rgb(228 0 63 / 0.3);
+    text-shadow: 0 0 40px rgb(228 0 63 / 0.35);
+    background-image: linear-gradient(
+      90deg,
+      var(--color-primary),
+      var(--color-coral),
+      var(--color-pink)
+    );
+    background-repeat: no-repeat;
+    background-position: 0 96%;
+    background-size: 100% 0.08em;
+  }
+  .hero-title :global(.text-primary.accent-draw) {
+    animation: accent-draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s backwards;
+  }
+  @keyframes accent-draw {
+    from {
+      background-size: 0% 0.08em;
+    }
+    to {
+      background-size: 100% 0.08em;
+    }
   }
 
-  /* Entrada escalonada */
+  /* Salida/entrada del copy sincronizada con el cross-fade del fondo */
+  .hero-copy {
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s ease;
+  }
+  .hero-copy.is-leaving {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  .hero-copy.is-entering {
+    animation: copy-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes copy-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  /* Entrada escalonada inicial */
   .hero-fade-up {
     opacity: 0;
     transform: translateY(24px);
@@ -342,29 +369,35 @@ document.addEventListener("astro:page-load", initHero);
     }
   }
 
-  /* Barra de progreso del carousel */
-  .hero-progress {
-    transform: scaleX(0);
-  }
-  .hero-progress.run {
+  /* Segmentos del carrusel: el activo se llena durante el slide */
+  .hero-seg.run {
     animation: hero-fill var(--slide-ms) linear forwards;
   }
   @keyframes hero-fill {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
   }
 
   /* Respetar reduced-motion */
   @media (prefers-reduced-motion: reduce) {
-    .hero-fade-up {
+    .hero-bg.is-active {
+      animation: none;
+    }
+    .hero-fade-up,
+    .hero-copy.is-entering {
       opacity: 1;
       transform: none;
       animation: none;
     }
-    .hero-progress.run {
+    .hero-title :global(.text-primary.accent-draw) {
       animation: none;
     }
-    .hero-progress {
+    .hero-seg.run {
+      animation: none;
       transform: scaleX(1);
     }
   }

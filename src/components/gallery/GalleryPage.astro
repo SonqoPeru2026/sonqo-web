@@ -1,125 +1,325 @@
 ---
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
-import { INSTAGRAM_HANDLE, INSTAGRAM_POSTS } from "@/data/instagram";
+import { INSTAGRAM_HANDLE } from "@/data/instagram";
+import { GALLERY_ITEMS } from "@/data/gallery";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "gallery");
 
-// Fotos locales: mismas de la galería del home. Astro las optimiza.
+// Fotos locales optimizadas por Astro. La key es el nombre sin extensión.
 const galleryModules = import.meta.glob<{ default: ImageMetadata }>(
   "../../assets/images/gallery/*.webp",
   { eager: true },
 );
-const images = Object.entries(galleryModules)
-  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-  .map(([, mod]) => mod.default);
+const photosByName = new Map<string, ImageMetadata>(
+  Object.entries(galleryModules).map(([path, mod]) => [
+    path.split("/").pop()!.replace(".webp", ""),
+    mod.default,
+  ]),
+);
+const photoMeta = (name: string) => {
+  const meta = photosByName.get(name);
+  if (!meta) throw new Error(`Gallery photo not found: ${name}.webp`);
+  return meta;
+};
+
+// Categoría de filtro por tipo de item.
+const CATEGORY = {
+  photo: "photos",
+  album: "photos",
+  reel: "reels",
+  igpost: "reels",
+  video: "videos",
+} as const;
+
+// Espacio que ocupa cada item en el mosaico (grid dense re-empaca los huecos).
+const PHOTO_SPAN = {
+  wide: "col-span-2",
+  tall: "row-span-2",
+  big: "col-span-2 row-span-2",
+} as const;
+
+const counts = { photos: 0, reels: 0, videos: 0 };
+for (const item of GALLERY_ITEMS) counts[CATEGORY[item.type]]++;
+
+const filters = [
+  { id: "all", label: t.filterAll },
+  { id: "photos", label: t.filterPhotos, count: counts.photos },
+  { id: "reels", label: t.filterReels, count: counts.reels },
+  { id: "videos", label: t.filterVideos, count: counts.videos },
+].filter((f) => f.id === "all" || (f.count ?? 0) > 0);
+
+const statsLine = [
+  counts.photos && `${counts.photos} ${t.statPhotos}`,
+  counts.reels && `${counts.reels} ${t.statReels}`,
+  counts.videos && `${counts.videos} ${t.statVideos}`,
+]
+  .filter(Boolean)
+  .join(" · ");
+
+// Grupos del lightbox: "main" = todas las fotos sueltas, en orden; cada álbum
+// navega solo sus propias fotos. Se generan URLs grandes con getImage para no
+// reusar las miniaturas del grid.
+const fullSize = (name: string) =>
+  getImage({ src: photoMeta(name), width: 1600, quality: 78, format: "webp" });
+
+interface LightboxSlide {
+  src: string;
+  alt: string;
+  caption?: string;
+  location?: string;
+}
+const lbGroups: Record<string, LightboxSlide[]> = { main: [] };
+// Posición dentro de su grupo, indexada por posición en GALLERY_ITEMS.
+const lbIndexByItem = new Map<number, { group: string; index: number }>();
+
+for (const [i, item] of GALLERY_ITEMS.entries()) {
+  if (item.type === "photo") {
+    lbIndexByItem.set(i, { group: "main", index: lbGroups.main.length });
+    lbGroups.main.push({
+      src: (await fullSize(item.src)).src,
+      alt: item.caption ?? t.imageAlt,
+      caption: item.caption,
+      location: item.location,
+    });
+  } else if (item.type === "album") {
+    const group = `album-${i}`;
+    lbIndexByItem.set(i, { group, index: 0 });
+    lbGroups[group] = await Promise.all(
+      item.photos.map(async (name) => ({
+        src: (await fullSize(name)).src,
+        alt: item.caption ?? t.imageAlt,
+        caption: item.caption,
+        location: item.location,
+      })),
+    );
+  }
+}
 
 const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 ---
 
-<!-- Padding-top para que el navbar fijo no tape el encabezado -->
 <section class="bg-cream pb-24 pt-32 sm:pt-36">
   <!-- Encabezado -->
-  <div class="mx-auto mb-12 w-full max-w-[1280px] px-6 text-center sm:px-8">
-    <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
+  <div class="mx-auto mb-10 w-full max-w-[1280px] px-6 text-center sm:px-8">
+    <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary" data-reveal>
       {t.pageEyebrow}
     </p>
-    <h1 class="mt-3 font-heading text-4xl font-bold uppercase leading-tight text-burgundy sm:text-5xl">
+    <h1
+      class="mt-3 font-heading text-4xl font-bold uppercase leading-tight text-burgundy sm:text-5xl"
+      data-reveal
+      style="--reveal-delay: 80ms"
+    >
       {t.pageTitle}
     </h1>
-    <p class="mt-4 font-body text-ink sm:text-lg">{t.pageSubtitle}</p>
-    <p class="mt-2 font-body text-sm text-ink/70">{t.lightboxHint}</p>
+    <p class="mt-4 font-body text-ink sm:text-lg" data-reveal style="--reveal-delay: 160ms">
+      {t.pageSubtitle}
+    </p>
+    <!-- Hilo andino: firma visual de la página -->
+    <div
+      class="mx-auto mt-6 h-1 w-24 rounded-full bg-gradient-to-r from-primary via-coral to-pink"
+      data-reveal
+      style="--reveal-delay: 240ms"
+    >
+    </div>
+    <p class="mt-4 font-body text-sm text-ink/70" data-reveal style="--reveal-delay: 300ms">
+      {statsLine} · {t.lightboxHint}
+    </p>
   </div>
 
-  <!-- Grid de fotos -->
+  <!-- Filtros -->
+  <div
+    class="mx-auto mb-8 flex max-w-[1280px] flex-wrap justify-center gap-2 px-4 sm:gap-3 sm:px-8"
+    data-gallery-filters
+    data-reveal
+    style="--reveal-delay: 360ms"
+  >
+    {
+      filters.map((f, i) => (
+        <button
+          type="button"
+          data-filter={f.id}
+          aria-pressed={i === 0 ? "true" : "false"}
+          class:list={[
+            "rounded-full border-[1.5px] px-5 py-2 font-heading text-sm font-bold uppercase tracking-wide transition-colors",
+            i === 0
+              ? "border-primary bg-primary text-white"
+              : "border-ink-200 bg-transparent text-ink-600 hover:border-primary hover:text-primary",
+          ]}
+        >
+          {f.label}
+          {f.id !== "all" && <span class="ml-1 opacity-60">{f.count}</span>}
+        </button>
+      ))
+    }
+  </div>
+
+  <!-- Mosaico -->
   <div class="mx-auto max-w-[1280px] px-4 sm:px-8">
     <ul
-      id="photo-grid"
-      class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+      id="gallery-grid"
+      class="grid auto-rows-[172px] grid-flow-dense grid-cols-2 gap-3 sm:auto-rows-[200px] sm:grid-cols-3 sm:gap-4 lg:auto-rows-[236px] lg:grid-cols-4"
     >
       {
-        images.map((src, i) => (
-          <li>
-            <button
-              type="button"
-              class="group block aspect-square w-full overflow-hidden rounded-2xl shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.25)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              data-lightbox
-              data-index={i}
-            >
-              <Image
-                src={src}
-                alt={t.imageAlt}
-                loading={i < 4 ? "eager" : "lazy"}
-                width={720}
-                height={720}
-                quality={72}
-                sizes="(min-width: 1024px) 300px, (min-width: 640px) 33vw, 50vw"
-                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-              />
-            </button>
-          </li>
-        ))
+        GALLERY_ITEMS.map((item, i) => {
+          const cat = CATEGORY[item.type];
+          const reveal = { "data-reveal": true, style: `--reveal-delay: ${(i % 4) * 80}ms` };
+          const cardBase =
+            "group relative block h-full w-full overflow-hidden rounded-2xl shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.25)]";
+
+          if (item.type === "photo" || item.type === "album") {
+            const meta = photoMeta(item.type === "photo" ? item.src : item.cover);
+            const span = item.type === "photo" ? (item.size ? PHOTO_SPAN[item.size] : "") : "";
+            const isBig = item.type === "photo" && (item.size === "wide" || item.size === "big");
+            const lb = lbIndexByItem.get(i)!;
+            return (
+              <li class:list={["gallery-item", span]} data-cat={cat} {...reveal}>
+                <button
+                  type="button"
+                  class:list={[
+                    cardBase,
+                    "text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                  ]}
+                  data-lightbox
+                  data-lb-group={lb.group}
+                  data-lb-index={lb.index}
+                  aria-label={item.caption ?? t.openPhoto}
+                >
+                  <Image
+                    src={meta}
+                    alt={item.caption ?? t.imageAlt}
+                    loading={i < 4 ? "eager" : "lazy"}
+                    width={isBig ? 1200 : 720}
+                    quality={72}
+                    sizes={
+                      isBig
+                        ? "(min-width: 1024px) 620px, 100vw"
+                        : "(min-width: 1024px) 300px, (min-width: 640px) 33vw, 50vw"
+                    }
+                    class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                  />
+                  {/* Velo burgundy con caption al hover */}
+                  <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-burgundy-900/80 via-burgundy-900/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  {(item.caption || item.location) && (
+                    <span class="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                      {item.caption && (
+                        <span class="block font-heading text-sm font-bold text-white">
+                          {item.caption}
+                        </span>
+                      )}
+                      {item.location && (
+                        <span class="block font-body text-xs text-white/80">{item.location}</span>
+                      )}
+                    </span>
+                  )}
+                  {item.type === "album" && (
+                    <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 font-heading text-xs font-bold uppercase tracking-wide text-burgundy backdrop-blur-sm">
+                      <Icon name="gallery" class="size-3.5" />
+                      {item.photos.length} {t.albumCount}
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          }
+
+          if (item.type === "reel" || item.type === "igpost") {
+            return (
+              <li
+                class:list={["gallery-item", item.type === "reel" && "row-span-2"]}
+                data-cat={cat}
+                {...reveal}
+              >
+                <div class="gallery-ig-card group relative h-full w-full overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+                  <blockquote
+                    class="instagram-media"
+                    data-instgrm-permalink={`https://www.instagram.com/p/${item.code}/`}
+                    data-instgrm-version="14"
+                    style="margin:0;width:100%;min-width:0;height:100%"
+                  />
+                </div>
+              </li>
+            );
+          }
+
+          // item.type === "video" (YouTube)
+          return (
+            <li class="gallery-item col-span-2" data-cat={cat} {...reveal}>
+              <div
+                class:list={[cardBase, "bg-ink-950"]}
+                data-facade
+                data-embed-url={`https://www.youtube-nocookie.com/embed/${item.youtubeId}?autoplay=1&rel=0`}
+              >
+                <img
+                  src={`https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`}
+                  alt={item.caption ?? t.imageAlt}
+                  loading="lazy"
+                  class="h-full w-full object-cover opacity-80 transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                />
+                <span class="absolute left-3 top-3 z-20 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 font-heading text-xs font-bold uppercase tracking-wide text-burgundy backdrop-blur-sm">
+                  <Icon name="play" class="size-3.5" />
+                  {t.badgeVideo}
+                </span>
+                <button
+                  type="button"
+                  data-facade-play
+                  aria-label={t.playVideo}
+                  class="absolute inset-0 z-10 flex w-full items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                >
+                  <span class="flex size-16 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:ring-primary">
+                    <Icon name="play" class="size-7 translate-x-0.5 text-white" />
+                  </span>
+                </button>
+                <span
+                  data-facade-spinner
+                  class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center"
+                >
+                  <span class="size-9 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                </span>
+              </div>
+            </li>
+          );
+        })
       }
     </ul>
   </div>
 
-  <!-- Sección Instagram -->
-  <div class="mx-auto mt-24 max-w-[1280px] px-6 sm:px-8">
-    <div class="mb-10 text-center">
-      <p class="font-heading text-sm font-bold uppercase tracking-[0.7px] text-primary">
-        {t.igEyebrow}
-      </p>
-      <h2 class="mt-3 font-heading text-3xl font-bold uppercase leading-tight text-burgundy sm:text-4xl">
-        {t.igTitle}
-      </h2>
-      <p class="mt-4 font-body text-ink sm:text-lg">{t.igSubtitle}</p>
-    </div>
-
-    <ul class="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        INSTAGRAM_POSTS.map((code) => (
-          <li class="w-full max-w-[400px]">
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
-              data-instgrm-version="14"
-              style="margin:0;width:100%;min-width:0;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px -12px rgb(0 0 0/0.3)"
-            />
-          </li>
-        ))
-      }
-    </ul>
-
-    <div class="mt-12 text-center">
-      <a
-        href={igHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="group inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-primary px-7 py-3.5 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-primary hover:text-white"
-      >
-        {t.igCta}
-        <Icon name="arrow" class="h-4 w-auto transition-transform group-hover:translate-x-1" />
-      </a>
-    </div>
+  <!-- CTA Instagram -->
+  <div class="mx-auto mt-16 max-w-[1280px] px-6 text-center sm:px-8">
+    <a
+      href={igHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-primary px-7 py-3.5 font-heading text-sm font-bold uppercase tracking-wide text-primary transition-colors hover:bg-primary hover:text-white"
+    >
+      <Icon name="logo-instagram" class="size-4" />
+      {t.igCta}
+      <Icon name="arrow" class="h-4 w-auto transition-transform group-hover:translate-x-1" />
+    </a>
   </div>
 </section>
 
 <!-- Lightbox -->
 <div
   id="lightbox"
-  class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 p-4"
+  class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-burgundy-950/95 p-4 opacity-0 transition-opacity duration-300 backdrop-blur-sm"
   role="dialog"
   aria-modal="true"
   aria-label={t.pageTitle}
 >
+  <p
+    id="lb-counter"
+    class="absolute left-1/2 top-5 -translate-x-1/2 font-heading text-sm font-bold tracking-wide text-white/70"
+  >
+  </p>
   <button
     type="button"
     id="lb-close"
     class="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
-    aria-label="Cerrar"
+    aria-label={t.lbClose}
   >
     <Icon name="close" class="size-6" />
   </button>
@@ -127,79 +327,222 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
     type="button"
     id="lb-prev"
     class="absolute left-2 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:left-6"
-    aria-label="Anterior"
+    aria-label={t.lbPrev}
   >
     <Icon name="chevron-left" class="size-6" />
   </button>
-  <img id="lb-img" src="" alt="" class="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" />
+  <img
+    id="lb-img"
+    src=""
+    alt=""
+    class="max-h-[80vh] max-w-[90vw] rounded-xl object-contain transition-opacity duration-200"
+  />
+  <p id="lb-caption" class="mt-4 max-w-[90vw] text-center font-body text-sm text-white/85"></p>
   <button
     type="button"
     id="lb-next"
     class="absolute right-2 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:right-6"
-    aria-label="Siguiente"
+    aria-label={t.lbNext}
   >
     <Icon name="chevron-right" class="size-6" />
   </button>
 </div>
 
-<script>
-  function initGallery() {
-    const grid = document.getElementById("photo-grid");
-    const lightbox = document.getElementById("lightbox");
-    const lbImg = document.getElementById("lb-img") as HTMLImageElement | null;
-    if (!grid || !lightbox || !lbImg) return;
+<script type="application/json" id="lb-data" set:html={JSON.stringify(lbGroups)} />
+<span id="lb-i18n" hidden data-of={t.lightboxOf}></span>
 
-    // Fuentes de las fotos, en orden, para navegar en el lightbox.
-    const sources = Array.from(
-      grid.querySelectorAll<HTMLImageElement>("img"),
-    ).map((img) => ({ src: img.currentSrc || img.src, alt: img.alt }));
-    let current = 0;
-
-    const show = (i: number) => {
-      current = (i + sources.length) % sources.length;
-      lbImg.src = sources[current].src;
-      lbImg.alt = sources[current].alt;
-    };
-    const open = (i: number) => {
-      show(i);
-      lightbox.classList.remove("hidden");
-      lightbox.classList.add("flex");
-      document.documentElement.classList.add("overflow-hidden");
-    };
-    const close = () => {
-      lightbox.classList.add("hidden");
-      lightbox.classList.remove("flex");
-      document.documentElement.classList.remove("overflow-hidden");
-    };
-
-    grid.querySelectorAll<HTMLButtonElement>("[data-lightbox]").forEach((btn) => {
-      btn.addEventListener("click", () =>
-        open(Number(btn.dataset.index ?? 0)),
-      );
-    });
-
-    document.getElementById("lb-close")?.addEventListener("click", close);
-    document
-      .getElementById("lb-prev")
-      ?.addEventListener("click", () => show(current - 1));
-    document
-      .getElementById("lb-next")
-      ?.addEventListener("click", () => show(current + 1));
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) close();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (lightbox.classList.contains("hidden")) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") show(current - 1);
-      if (e.key === "ArrowRight") show(current + 1);
-    });
-
+<style>
+  /* Re-entrada de los items al cambiar de filtro */
+  .gallery-item.filter-in {
+    animation: gallery-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes gallery-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-item.filter-in {
+      animation: none;
+    }
   }
 
-  // Instagram: carga el script oficial embed.js una vez y re-procesa los
-  // blockquotes en cada navegación (View Transitions no recarga la página).
-  function renderInstagram() {
+  /* Instagram embeds: contener dentro del card */
+  .gallery-ig-card {
+    container-type: inline-size;
+  }
+  .gallery-ig-card .instagram-media {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+</style>
+
+<script>
+  interface LightboxSlide {
+    src: string;
+    alt: string;
+    caption?: string;
+    location?: string;
+  }
+
+  // ---- Filtros ----
+  function initFilters() {
+    const bar = document.querySelector<HTMLElement>("[data-gallery-filters]");
+    const grid = document.getElementById("gallery-grid");
+    if (!bar || !grid || bar.dataset.ready) return;
+    bar.dataset.ready = "1";
+
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>("[data-filter]"));
+    const items = Array.from(grid.querySelectorAll<HTMLElement>(".gallery-item"));
+    const ACTIVE = ["border-primary", "bg-primary", "text-white"];
+    const INACTIVE = ["border-ink-200", "bg-transparent", "text-ink-600", "hover:border-primary", "hover:text-primary"];
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cat = btn.dataset.filter;
+        buttons.forEach((b) => {
+          const active = b === btn;
+          b.classList.remove(...(active ? INACTIVE : ACTIVE));
+          b.classList.add(...(active ? ACTIVE : INACTIVE));
+          b.setAttribute("aria-pressed", String(active));
+        });
+        items.forEach((el) => {
+          const show = cat === "all" || el.dataset.cat === cat;
+          el.classList.toggle("hidden", !show);
+          el.classList.remove("filter-in");
+          if (show) {
+            // reinicia la animación de entrada
+            void el.offsetWidth;
+            el.classList.add("filter-in");
+          }
+        });
+      });
+    });
+  }
+
+  // ---- Facades (IG + YouTube): iframe solo al hacer click ----
+  function initFacades() {
+    document.querySelectorAll<HTMLElement>("[data-facade]").forEach((card) => {
+      if (card.dataset.ready) return;
+      card.dataset.ready = "1";
+      const play = card.querySelector<HTMLButtonElement>("[data-facade-play]");
+      const spinner = card.querySelector<HTMLElement>("[data-facade-spinner]");
+      play?.addEventListener("click", () => {
+        if (card.dataset.loaded) return;
+        card.dataset.loaded = "1";
+        play.classList.add("hidden");
+        spinner?.classList.remove("hidden");
+        spinner?.classList.add("flex");
+
+        const iframe = document.createElement("iframe");
+        iframe.src = card.dataset.embedUrl ?? "";
+        iframe.className =
+          "absolute inset-0 z-30 h-full w-full border-0 opacity-0 transition-opacity duration-300";
+        iframe.allow =
+          "autoplay; encrypted-media; picture-in-picture; clipboard-write; web-share";
+        iframe.allowFullscreen = true;
+        iframe.addEventListener("load", () => {
+          iframe.classList.remove("opacity-0");
+          spinner?.classList.add("hidden");
+        });
+        card.appendChild(iframe);
+      });
+    });
+  }
+
+  // ---- Lightbox ----
+  let lbGroups: Record<string, LightboxSlide[]> = {};
+  let lbCurrent = { group: "main", index: 0 };
+
+  function lbEls() {
+    return {
+      lightbox: document.getElementById("lightbox"),
+      img: document.getElementById("lb-img") as HTMLImageElement | null,
+      caption: document.getElementById("lb-caption"),
+      counter: document.getElementById("lb-counter"),
+    };
+  }
+
+  function lbShow(group: string, index: number) {
+    const { img, caption, counter } = lbEls();
+    const slides = lbGroups[group];
+    if (!img || !slides?.length) return;
+    const i = ((index % slides.length) + slides.length) % slides.length;
+    lbCurrent = { group, index: i };
+    const slide = slides[i];
+    img.style.opacity = "0";
+    img.onload = () => {
+      img.style.opacity = "1";
+    };
+    img.src = slide.src;
+    img.alt = slide.alt;
+    if (caption) {
+      caption.textContent = [slide.caption, slide.location].filter(Boolean).join(" · ");
+    }
+    if (counter) {
+      const of = document.getElementById("lb-i18n")?.dataset.of ?? "/";
+      counter.textContent = `${i + 1} ${of} ${slides.length}`;
+    }
+  }
+
+  function lbOpen(group: string, index: number) {
+    const { lightbox } = lbEls();
+    if (!lightbox) return;
+    lbShow(group, index);
+    lightbox.classList.remove("hidden");
+    lightbox.classList.add("flex");
+    requestAnimationFrame(() => lightbox.classList.remove("opacity-0"));
+    document.documentElement.classList.add("overflow-hidden");
+  }
+
+  function lbClose() {
+    const { lightbox } = lbEls();
+    if (!lightbox) return;
+    lightbox.classList.add("opacity-0");
+    window.setTimeout(() => {
+      lightbox.classList.add("hidden");
+      lightbox.classList.remove("flex");
+    }, 300);
+    document.documentElement.classList.remove("overflow-hidden");
+  }
+
+  function initLightbox() {
+    const { lightbox } = lbEls();
+    if (!lightbox || lightbox.dataset.ready) return;
+    lightbox.dataset.ready = "1";
+
+    lbGroups = JSON.parse(document.getElementById("lb-data")?.textContent ?? "{}");
+
+    document.querySelectorAll<HTMLButtonElement>("[data-lightbox]").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        lbOpen(btn.dataset.lbGroup ?? "main", Number(btn.dataset.lbIndex ?? 0)),
+      );
+    });
+    document.getElementById("lb-close")?.addEventListener("click", lbClose);
+    document
+      .getElementById("lb-prev")
+      ?.addEventListener("click", () => lbShow(lbCurrent.group, lbCurrent.index - 1));
+    document
+      .getElementById("lb-next")
+      ?.addEventListener("click", () => lbShow(lbCurrent.group, lbCurrent.index + 1));
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) lbClose();
+    });
+  }
+
+  // Un solo listener global de teclado (sobrevive a View Transitions sin duplicarse).
+  document.addEventListener("keydown", (e) => {
+    const { lightbox } = lbEls();
+    if (!lightbox || lightbox.classList.contains("hidden")) return;
+    if (e.key === "Escape") lbClose();
+    if (e.key === "ArrowLeft") lbShow(lbCurrent.group, lbCurrent.index - 1);
+    if (e.key === "ArrowRight") lbShow(lbCurrent.group, lbCurrent.index + 1);
+  });
+
+  // ---- Instagram embeds ----
+  function loadInstagram() {
     const w = window as Window & { instgrm?: { Embeds: { process: () => void } } };
     if (w.instgrm) {
       w.instgrm.Embeds.process();
@@ -214,7 +557,9 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
   }
 
   document.addEventListener("astro:page-load", () => {
-    initGallery();
-    renderInstagram();
+    initFilters();
+    initFacades();
+    initLightbox();
+    loadInstagram();
   });
 </script>
