@@ -45,12 +45,12 @@ const PHOTO_SPAN = {
 const counts = { photos: 0, reels: 0, videos: 0 };
 for (const item of GALLERY_ITEMS) counts[CATEGORY[item.type]]++;
 
+// Sin "Todo": Fotos activo por defecto (desktop y mobile).
 const filters = [
-  { id: "all", label: t.filterAll },
   { id: "photos", label: t.filterPhotos, count: counts.photos },
   { id: "reels", label: t.filterReels, count: counts.reels },
   { id: "videos", label: t.filterVideos, count: counts.videos },
-].filter((f) => f.id === "all" || (f.count ?? 0) > 0);
+].filter((f) => f.count > 0);
 
 const statsLine = [
   counts.photos && `${counts.photos} ${t.statPhotos}`,
@@ -100,6 +100,11 @@ for (const [i, item] of GALLERY_ITEMS.entries()) {
 }
 
 const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
+
+// Reels para el carrusel mobile (1 card + flechas). En desktop viven en el mosaico.
+const reelCodes = GALLERY_ITEMS.flatMap((item) =>
+  item.type === "reel" || item.type === "igpost" ? [item.code] : [],
+);
 ---
 
 <section class="bg-cream pb-24 pt-32 sm:pt-36">
@@ -151,7 +156,7 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
           ]}
         >
           {f.label}
-          {f.id !== "all" && <span class="ml-1 opacity-60">{f.count}</span>}
+          <span class="ml-1 opacity-60">{f.count}</span>
         </button>
       ))
     }
@@ -229,7 +234,7 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
           if (item.type === "reel" || item.type === "igpost") {
             return (
               <li
-                class:list={["gallery-item", item.type === "reel" && "row-span-2"]}
+                class:list={["gallery-item hidden", item.type === "reel" && "row-span-2"]}
                 data-cat={cat}
                 {...reveal}
               >
@@ -247,7 +252,7 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 
           // item.type === "video" (YouTube)
           return (
-            <li class="gallery-item col-span-2" data-cat={cat} {...reveal}>
+            <li class="gallery-item col-span-2 hidden" data-cat={cat} {...reveal}>
               <div
                 class:list={[cardBase, "bg-ink-950"]}
                 data-facade
@@ -285,6 +290,55 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
         })
       }
     </ul>
+  </div>
+
+  <!-- Carrusel de reels (solo mobile): 1 card, flechas para navegar.
+       En desktop este bloque se elimina del DOM antes de cargar embed.js;
+       en mobile se eliminan los reels del mosaico (sin doble embed). -->
+  <div class="relative mx-auto hidden max-w-[1280px] px-4 sm:hidden" data-reels-carousel>
+    <ul
+      data-reels-track
+      class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {
+        reelCodes.map((code) => (
+          <li class="w-full shrink-0 snap-center px-1">
+            <div class="relative min-h-[580px] overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+              <span class="pointer-events-none absolute inset-0 flex animate-pulse items-center justify-center">
+                <Icon name="logo-instagram" class="size-9 text-ink-300" />
+              </span>
+              <blockquote
+                class="instagram-media relative"
+                data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
+                data-instgrm-version="14"
+                style="margin:0;width:100%;min-width:0"
+              />
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <button
+      type="button"
+      data-reels-prev
+      aria-label={t.lbPrev}
+      class="absolute -left-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
+    >
+      <Icon name="chevron-left" class="size-5" />
+    </button>
+    <button
+      type="button"
+      data-reels-next
+      aria-label={t.lbNext}
+      class="absolute -right-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
+    >
+      <Icon name="chevron-right" class="size-5" />
+    </button>
+    <p class="mt-4 text-center font-heading text-sm font-bold text-ink-600">
+      <span data-reels-counter>1</span>
+      <span class="text-ink-300">{t.lightboxOf}</span>
+      {reelCodes.length}
+    </p>
   </div>
 
   <!-- CTA Instagram -->
@@ -387,6 +441,22 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
     location?: string;
   }
 
+  const isMobile = () => matchMedia("(max-width: 639px)").matches;
+
+  // ---- Layout por dispositivo: sin embeds duplicados ----
+  // Mobile: los reels salen del mosaico (viven en el carrusel).
+  // Desktop: el carrusel se elimina del DOM. Corre ANTES de cargar embed.js.
+  function adaptLayout() {
+    const carousel = document.querySelector<HTMLElement>("[data-reels-carousel]");
+    if (isMobile()) {
+      document
+        .querySelectorAll('#gallery-grid .gallery-item[data-cat="reels"]')
+        .forEach((el) => el.remove());
+    } else {
+      carousel?.remove();
+    }
+  }
+
   // ---- Filtros ----
   function initFilters() {
     const bar = document.querySelector<HTMLElement>("[data-gallery-filters]");
@@ -409,7 +479,7 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
           b.setAttribute("aria-pressed", String(active));
         });
         items.forEach((el) => {
-          const show = cat === "all" || el.dataset.cat === cat;
+          const show = el.dataset.cat === cat;
           el.classList.toggle("hidden", !show);
           el.classList.remove("filter-in");
           if (show) {
@@ -418,8 +488,52 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
             el.classList.add("filter-in");
           }
         });
+        // Mobile: "Reels" muestra el carrusel y oculta el mosaico.
+        const carousel = document.querySelector<HTMLElement>("[data-reels-carousel]");
+        if (carousel) {
+          const showReels = isMobile() && cat === "reels";
+          carousel.classList.toggle("hidden", !showReels);
+          grid.classList.toggle("hidden", showReels);
+        }
+        // Los embeds procesados mientras estaban ocultos pueden quedar sin alto:
+        // re-procesar al mostrarlos.
+        if (cat === "reels") {
+          (window as Window & { instgrm?: { Embeds: { process: () => void } } }).instgrm?.Embeds.process();
+        }
       });
     });
+  }
+
+  // ---- Carrusel de reels (mobile): 1 card + flechas ----
+  function initReelsCarousel() {
+    const root = document.querySelector<HTMLElement>("[data-reels-carousel]");
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = "1";
+
+    const track = root.querySelector<HTMLElement>("[data-reels-track]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-reels-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-reels-next]");
+    const counter = root.querySelector<HTMLElement>("[data-reels-counter]");
+    if (!track || !prev || !next) return;
+
+    const count = track.children.length;
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    const goTo = (i: number) => {
+      const target = Math.max(0, Math.min(count - 1, i));
+      track.scrollTo({ left: target * track.clientWidth, behavior: "smooth" });
+    };
+
+    const sync = () => {
+      const i = current();
+      if (counter) counter.textContent = String(i + 1);
+      prev.disabled = i <= 0;
+      next.disabled = i >= count - 1;
+    };
+
+    prev.addEventListener("click", () => goTo(current() - 1));
+    next.addEventListener("click", () => goTo(current() + 1));
+    track.addEventListener("scroll", sync, { passive: true });
+    sync();
   }
 
   // ---- Facades (IG + YouTube): iframe solo al hacer click ----
@@ -557,9 +671,11 @@ const igHref = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
   }
 
   document.addEventListener("astro:page-load", () => {
+    adaptLayout();
     initFilters();
     initFacades();
     initLightbox();
+    initReelsCarousel();
     loadInstagram();
   });
 </script>

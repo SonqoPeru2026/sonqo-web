@@ -12,11 +12,15 @@ const { limit }: Props = Astro.props;
 const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
 ---
 
-<div class="mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
-  <ul class="flex flex-wrap justify-center gap-6">
+<div class="relative mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
+  <!-- Mobile: slider de 1 card con flechas (scroll-snap). Desktop: grid como siempre. -->
+  <ul
+    data-ig-track
+    class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-sm:gap-0 sm:snap-none sm:flex-wrap sm:justify-center sm:gap-6 sm:overflow-visible"
+  >
     {
       posts.map((code) => (
-        <li class="w-[320px] max-w-full shrink-0">
+        <li class="w-full shrink-0 snap-center max-sm:px-1 sm:w-[320px] sm:max-w-full">
           {/* min-height reserva el espacio del embed → sin salto (CLS) al cargar.
               El skeleton (logo IG + pulso) queda detrás; el iframe lo cubre al cargar. */}
           <div class="relative min-h-[580px] overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
@@ -34,6 +38,22 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
       ))
     }
   </ul>
+  <button
+    type="button"
+    data-ig-prev
+    aria-label="Anterior"
+    class="absolute left-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35 sm:hidden"
+  >
+    <Icon name="chevron-left" class="size-5" />
+  </button>
+  <button
+    type="button"
+    data-ig-next
+    aria-label="Siguiente"
+    class="absolute right-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35 sm:hidden"
+  >
+    <Icon name="chevron-right" class="size-5" />
+  </button>
 </div>
 
 <script>
@@ -56,10 +76,36 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
     document.body.appendChild(s);
   }
 
+  // Slider mobile: 1 card visible, flechas para avanzar (scroll-snap).
+  function initIgSlider(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>("[data-ig-track]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-ig-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-ig-next]");
+    if (!track || !prev || !next) return;
+
+    const count = track.children.length;
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    const goTo = (i: number) => {
+      const target = Math.max(0, Math.min(count - 1, i));
+      track.scrollTo({ left: target * track.clientWidth, behavior: "smooth" });
+    };
+    const sync = () => {
+      const i = current();
+      prev.disabled = i <= 0;
+      next.disabled = i >= count - 1;
+    };
+
+    prev.addEventListener("click", () => goTo(current() - 1));
+    next.addEventListener("click", () => goTo(current() + 1));
+    track.addEventListener("scroll", sync, { passive: true });
+    sync();
+  }
+
   function initIgEmbeds() {
     document.querySelectorAll<HTMLElement>("[data-ig-embeds]").forEach((root) => {
       if (root.dataset.igReady) return;
       root.dataset.igReady = "1";
+      initIgSlider(root);
       // Lazy: solo carga IG cuando la sección se acerca al viewport.
       const io = new IntersectionObserver(
         (entries, obs) => {
