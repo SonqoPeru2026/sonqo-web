@@ -36,13 +36,14 @@ export default {
   errName: "Ingresa tu nombre y apellido.",
   errEmail: "Ingresa un correo válido.",
   errPhone: "Ingresa un celular válido.",
-  errConsent: "Acepta para recibir la infografía.",
+  errConsent: "Debes aceptar para recibir la infografía.",
   errPrivacy: "Debes aceptar la política de privacidad.",
   badgePdf: "PDF",
   badgeInstant: "Descarga instantánea",
   badgeNoSpam: "Sin spam",
 
   // Tarjeta lateral
+  mockTitle: "31,877 niños abrigados desde 2016",
   cardTitle: "Infografía",
   cardIntro: "Esto encontrarás dentro:",
   cardItem1: "El origen del nombre Sonqo",

@@ -12,7 +12,7 @@ export default {
     "Cómo donar a Sonqo Perú, cómo confeccionamos y entregamos cada casaca, transparencia y contacto de nuestra ONG.",
   infographicTitle: "Infografía gratuita del friaje | Sonqo Perú",
   infographicDescription:
-    "Descarga gratis la infografía del friaje en los Andes del Perú y conoce cómo tu donación confecciona y entrega casacas térmicas a niños de todo el país.",
+    "Descarga gratis la infografía del friaje en los Andes del Perú y descubre cómo tu donación se convierte en casacas térmicas para niños de todo el país.",
   galleryTitle: "Galería | Sonqo Perú",
   galleryDescription:
     "Fotos y videos reales: cómo confeccionamos y entregamos casacas térmicas, niño por niño, en los Andes del Perú. Mira el impacto de tu donación.",

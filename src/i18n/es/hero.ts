@@ -7,6 +7,7 @@ export default {
   // Etiquetas de la tarjeta de impacto (los numeros viven en Hero.astro, migran a Sanity).
   statChildrenLabel: "Niños protegidos",
   statCommunitiesLabel: "Comunidades",
+  sliderLabel: "Diapositivas",
 
   slide1Title: 'Abriga con el <span class="text-primary">corazón</span>',
   slide1Text: "El friaje no da tregua en las alturas del Perú. Cada casaca que confeccionamos y entregamos con nuestras manos es un niño menos pasando frío.",

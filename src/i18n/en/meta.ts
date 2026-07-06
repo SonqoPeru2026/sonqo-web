@@ -1,7 +1,7 @@
 export default {
-  homeTitle: "Sonqo Perú | NGO warming children from the Andes cold",
+  homeTitle: "Sonqo Perú | NGO keeping Andean children warm in Peru",
   homeDescription:
-    "Peruvian non-profit NGO: your donation makes and hand-delivers thermal jackets to children facing the cold season in high-Andean communities across Peru. Warm with the heart.",
+    "Peruvian non-profit: with your donation we make and hand-deliver thermal jackets to children facing the cold season in high-Andean communities across Peru. Warmth from the heart.",
   donateTitle: "Donate jackets to children in the Andes | Sonqo Perú",
   donateDescription:
     "Donate from S/10: we make and hand-deliver a thermal jacket to a child facing the Andean cold. Choose a package or custom amount. Yape, transfer or card.",
@@ -11,7 +11,7 @@ export default {
     "How to donate to Sonqo Perú, how we make and deliver each jacket, transparency and how to contact our NGO.",
   infographicTitle: "Free cold-season infographic | Sonqo Perú",
   infographicDescription:
-    "Download our free infographic about the cold season in the Peruvian Andes and see how your donation makes and delivers thermal jackets to children across Peru.",
+    "Download our free infographic about the cold season in the Peruvian Andes and see how your donation becomes thermal jackets for children across Peru.",
   galleryTitle: "Gallery | Sonqo Perú",
   galleryDescription:
     "Real photos and videos: how we make and hand-deliver thermal jackets, child by child, across the Peruvian Andes. See your donation's impact.",

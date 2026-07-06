@@ -190,9 +190,40 @@ const fieldMessages = {
         class="pointer-events-none absolute -right-10 -top-8 h-44 w-auto text-white/10"
       />
 
-      <span class="relative flex size-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20">
-        <Icon name="purpose-heart" class="h-8 w-auto" />
-      </span>
+      <!-- Preview del PDF: hoja estilizada (decorativa) que muestra qué recibirás.
+           Reemplazar por una miniatura real cuando exista el PDF final. -->
+      <div
+        aria-hidden="true"
+        class="relative mx-auto w-52 -rotate-3 rounded-xl bg-white p-4 text-left shadow-[0px_28px_55px_-18px_rgb(0_0_0/0.5)] transition-transform duration-500 hover:rotate-0"
+      >
+        <span
+          class="absolute -right-2.5 -top-2.5 rounded-full bg-burgundy px-2.5 py-1 font-heading text-[10px] font-bold text-white shadow-md"
+        >
+          PDF
+        </span>
+        <div class="flex items-center gap-1.5">
+          <Icon name="hero-heart" class="h-3.5 w-auto text-primary" />
+          <span class="font-heading text-[10px] font-bold uppercase tracking-[0.12em] text-burgundy">
+            Sonqo Perú
+          </span>
+        </div>
+        <p class="mt-3 font-heading text-xs font-bold leading-snug text-burgundy">
+          {t.mockTitle}
+        </p>
+        <!-- Mini gráfico y líneas de texto simuladas -->
+        <div class="mt-3 flex items-end gap-1">
+          <span class="h-3 w-2.5 rounded-sm bg-primary-200"></span>
+          <span class="h-5 w-2.5 rounded-sm bg-primary-300"></span>
+          <span class="h-7 w-2.5 rounded-sm bg-primary"></span>
+          <span class="h-4 w-2.5 rounded-sm bg-primary-300"></span>
+          <span class="h-6 w-2.5 rounded-sm bg-primary-400"></span>
+        </div>
+        <div class="mt-3 space-y-1.5">
+          <span class="block h-1.5 w-full rounded-full bg-ink-100"></span>
+          <span class="block h-1.5 w-4/5 rounded-full bg-ink-100"></span>
+          <span class="block h-1.5 w-3/5 rounded-full bg-ink-100"></span>
+        </div>
+      </div>
 
       <h3 class="relative mt-6 font-heading text-3xl font-bold">{t.cardTitle}</h3>
       <p class="relative mt-2 font-body text-sm text-white/80">{t.cardIntro}</p>

@@ -1,6 +1,8 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import aboutImg from "@/assets/images/about-sonqo.webp";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "aboutus");
@@ -33,11 +35,13 @@ const highlights = [t.highlight1, t.highlight2, t.highlight3];
           class="absolute -inset-3 -rotate-2 rounded-[44px] bg-gradient-to-br from-burgundy/15 to-primary/15 sm:-inset-4"
         >
         </div>
-        <img
-          src="/images/about-sonqo.webp"
+        <Image
+          src={aboutImg}
           alt={t.imageAlt}
-          width="446"
-          height="540"
+          widths={[446, 700, 892]}
+          sizes="(min-width: 1024px) 560px, 100vw"
+          quality={75}
+          loading="lazy"
           class="relative aspect-[446/540] w-full rounded-[40px] object-cover shadow-[0px_24px_48px_-12px_rgb(84_5_69/0.25)]"
         />
         <!-- badge flotante -->

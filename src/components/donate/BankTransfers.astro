@@ -1,8 +1,10 @@
 ---
 
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
 import CopyRow from "@/components/donate/CopyRow.astro";
+import venmoQr from "@/assets/images/donate-venmo-qr.webp";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "bankTransfers");
@@ -78,13 +80,14 @@ const cardClass =
               <span class="inline-block rounded bg-primary/10 px-2 py-0.5 font-heading text-xs font-bold text-primary">
                 {t.name}
               </span>
-              <p class="mt-1 font-body text-[#1b1c1c]">{venmoName}</p>
+              <p class="mt-1 font-body text-ink-900">{venmoName}</p>
             </div>
-            <img
-              src="/images/donate-venmo-qr.webp"
-              alt="Venmo QR"
-              width="128"
-              height="128"
+            <Image
+              src={venmoQr}
+              alt={t.venmoQrAlt}
+              width={256}
+              quality={90}
+              loading="lazy"
               class="size-24 shrink-0 rounded-xl border border-ink-100 bg-white p-1.5 sm:size-32"
             />
           </div>
@@ -101,14 +104,15 @@ const cardClass =
                   <span class="inline-block rounded bg-primary/10 px-2 py-0.5 font-heading text-xs font-bold text-primary">
                     {t.name}
                   </span>
-                  <p class="mt-1 font-body text-[#1b1c1c]">{yapeName}</p>
+                  <p class="mt-1 font-body text-ink-900">{yapeName}</p>
                 </div>
               </div>
-              <img
-                src="/images/donate-venmo-qr.webp"
-                alt="Yape QR"
-                width="128"
-                height="128"
+              <Image
+                src={venmoQr}
+                alt={t.yapeQrAlt}
+                width={256}
+                quality={90}
+                loading="lazy"
                 class="size-24 shrink-0 rounded-xl border border-ink-100 bg-white p-1.5 sm:size-32"
               />
             </div>

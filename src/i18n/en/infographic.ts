@@ -10,7 +10,7 @@ export default {
   formTitleLine1: "Fill in your details and get the",
   formTitleLine2: "infographic instantly.",
   nameLabel: "Full name",
-  namePlaceholder: "E.g. María Quispe",
+  namePlaceholder: "e.g., María Quispe",
   emailLabel: "Email address",
   emailPlaceholder: "example@email.com",
   phoneLabel: "Phone",
@@ -43,11 +43,12 @@ export default {
   badgeNoSpam: "No spam",
 
   // Side card
+  mockTitle: "31,877 children kept warm since 2016",
   cardTitle: "Infographic",
   cardIntro: "Here's what's inside:",
   cardItem1: "The origin of the name Sonqo",
   cardItem2: "Our mission and values",
   cardItem3: "How your support warms a child",
   cardItem4: "Our impact in numbers",
-  cardTagline: "Warm with the heart",
+  cardTagline: "Warmth from the heart",
 } as const;

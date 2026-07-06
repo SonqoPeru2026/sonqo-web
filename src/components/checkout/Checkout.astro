@@ -1,6 +1,8 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
+import checkoutPhoto from "@/assets/images/checkout-photo.webp";
 import { PACKAGES } from "@/lib/donation";
 import { PUBLIC_MP_PUBLIC_KEY } from "astro:env/client";
 import PaymentBrick from "@/components/checkout/PaymentBrick";
@@ -219,8 +221,14 @@ const steps: Step[] = [
           <p class="mt-2 text-center font-body text-sm text-ink">{summary.impact}</p>
 
           <div class="mt-6 overflow-hidden rounded-2xl bg-mist">
-            <img src="/images/checkout-photo.webp" alt={summary.name}
-              width="440" height="440" class="h-auto w-full" />
+            <Image
+              src={checkoutPhoto}
+              alt={summary.name}
+              width={880}
+              quality={75}
+              loading="lazy"
+              class="h-auto w-full"
+            />
           </div>
 
           <dl class="mt-8 space-y-4">

@@ -9,7 +9,7 @@ export default {
   q2: "Can I donate from outside Peru?",
   a2: "Yes. We accept international card donations. The charge is processed in soles and you can contribute from any country.",
   q3: "Is Sonqo Perú a formal organization?",
-  a3: "Yes. We are a formal non-profit organization. The whole team works ad honorem and we account for every campaign.",
+  a3: "Yes. We are a formally registered non-profit organization. The whole team works ad honorem and we account for every campaign.",
   q4: "How does card payment work?",
   a4: "Card payments are processed securely through MercadoPago. Your data is encrypted and we never store it.",
   q5: "Can I make a recurring donation?",

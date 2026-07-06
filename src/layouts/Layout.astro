@@ -7,6 +7,8 @@ import Footer from "@/components/common/Footer.astro";
 import WelcomeModal from "@/components/common/WelcomeModal.astro";
 import Animations from "@/components/common/Animations.astro";
 import Seo from "@/components/common/Seo.astro";
+import { useTranslations } from "@/i18n/utils";
+import type { Language } from "@/i18n/dictionaries";
 
 interface Props {
   title: string;
@@ -15,13 +17,11 @@ interface Props {
   noindex?: boolean;
 }
 
-const {
-  title,
-  description = "Sonqo Perú — ONG que confecciona y entrega casacas térmicas a niños del friaje en las comunidades altoandinas de todo el Perú. Desde el corazón del Perú.",
-  image,
-  noindex,
-} = Astro.props;
+const { title, description: rawDescription, image, noindex } = Astro.props;
 const lang = Astro.currentLocale ?? "es";
+// Fallback localizado: si la page no pasa description, usa la del home en su idioma.
+const description =
+  rawDescription ?? useTranslations(lang as Language, "meta").homeDescription;
 const gtmId = PUBLIC_GTM_ID;
 ---
 

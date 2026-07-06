@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { INSTAGRAM_POSTS } from "@/data/instagram";
+import { getLang, useTranslations } from "@/i18n/utils";
 
 // Carrusel manual (scroll-snap + flechas, sin autoplay) de publicaciones de
 // Instagram. embed.js se carga en lazy (al entrar en viewport) para no penalizar
@@ -10,13 +11,15 @@ interface Props {
 }
 const { limit }: Props = Astro.props;
 const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "gallery");
 ---
 
 <div class="relative mx-auto max-w-[1400px] px-4 sm:px-12" data-ig-carousel>
   <button
     type="button"
     data-ig-prev
-    aria-label="Anterior"
+    aria-label={t.lbPrev}
     class="absolute left-1 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0px_10px_30px_-8px_rgb(0_0_0/0.3)] transition hover:bg-primary hover:text-white sm:flex"
   >
     <Icon name="chevron-left" class="size-6" />
@@ -43,7 +46,7 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
   <button
     type="button"
     data-ig-next
-    aria-label="Siguiente"
+    aria-label={t.lbNext}
     class="absolute right-1 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-[0px_10px_30px_-8px_rgb(0_0_0/0.3)] transition hover:bg-primary hover:text-white sm:flex"
   >
     <Icon name="chevron-right" class="size-6" />

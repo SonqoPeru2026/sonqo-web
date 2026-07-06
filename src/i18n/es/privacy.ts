@@ -7,7 +7,6 @@ export default {
   updatedLabel: "Última actualización",
   lastUpdated: "2 de julio de 2026",
   tocLabel: "Contenido",
-  backLabel: "Volver al inicio",
   sections: [
     {
       id: "responsable",

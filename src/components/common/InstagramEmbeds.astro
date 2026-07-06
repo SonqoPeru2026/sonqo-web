@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { INSTAGRAM_POSTS } from "@/data/instagram";
+import { getLang, useTranslations } from "@/i18n/utils";
 
 // Grid de publicaciones de Instagram (sin carrusel). embed.js se carga en lazy
 // (al entrar en viewport) para no penalizar el load inicial del home. Comparte el
@@ -10,16 +11,22 @@ interface Props {
 }
 const { limit }: Props = Astro.props;
 const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "gallery");
 ---
 
-<div class="mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
-  <ul class="flex flex-wrap justify-center gap-6">
+<div class="relative mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
+  <!-- Mobile: slider de 1 card con flechas (scroll-snap). Desktop: grid como siempre. -->
+  <ul
+    data-ig-track
+    class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-sm:gap-0 sm:snap-none sm:flex-wrap sm:justify-center sm:gap-6 sm:overflow-visible"
+  >
     {
       posts.map((code) => (
-        <li class="w-[320px] max-w-full shrink-0">
+        <li class="w-full shrink-0 snap-center max-sm:px-1 sm:w-[320px] sm:max-w-full">
           {/* min-height reserva el espacio del embed → sin salto (CLS) al cargar.
               El skeleton (logo IG + pulso) queda detrás; el iframe lo cubre al cargar. */}
-          <div class="relative min-h-[580px] overflow-hidden rounded-2xl bg-ink-100/50 shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
+          <div class="relative min-h-[460px] overflow-hidden rounded-2xl bg-white shadow-[0px_10px_30px_-12px_rgb(0_0_0/0.3)]">
             <span class="pointer-events-none absolute inset-0 flex animate-pulse items-center justify-center">
               <Icon name="logo-instagram" class="size-9 text-ink-300" />
             </span>
@@ -27,44 +34,53 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
               class="instagram-media relative"
               data-instgrm-permalink={`https://www.instagram.com/p/${code}/`}
               data-instgrm-version="14"
-              style="margin:0;width:100%;min-width:0"
+              style="margin:0;width:100%;min-width:0;height:100%;min-height:540px;"
             />
           </div>
         </li>
       ))
     }
   </ul>
+  <!-- Controles del slider (solo mobile), debajo del carrusel -->
+  <div class="mt-5 flex items-center justify-center gap-5 sm:hidden">
+    <button
+      type="button"
+      data-ig-prev
+      aria-label={t.lbPrev}
+      class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
+    >
+      <Icon name="chevron-left" class="size-5" />
+    </button>
+    <button
+      type="button"
+      data-ig-next
+      aria-label={t.lbNext}
+      class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
+    >
+      <Icon name="chevron-right" class="size-5" />
+    </button>
+  </div>
 </div>
 
 <script>
-  interface InstagramGlobal {
-    instgrm?: { Embeds: { process: () => void } };
-  }
-
-  // Carga embed.js una vez y procesa los blockquotes (comparte guard con /gallery).
-  function loadInstagram() {
-    const w = window as Window & InstagramGlobal;
-    if (w.instgrm) {
-      w.instgrm.Embeds.process();
-      return;
-    }
-    if (document.getElementById("ig-embed-js")) return;
-    const s = document.createElement("script");
-    s.id = "ig-embed-js";
-    s.async = true;
-    s.src = "https://www.instagram.com/embed.js";
-    document.body.appendChild(s);
-  }
+  import { loadInstagramEmbeds } from "@/scripts/instagram-embed";
+  import { initSnapSlider } from "@/scripts/snap-slider";
 
   function initIgEmbeds() {
     document.querySelectorAll<HTMLElement>("[data-ig-embeds]").forEach((root) => {
       if (root.dataset.igReady) return;
       root.dataset.igReady = "1";
+      // Slider mobile: 1 card visible, flechas para avanzar (scroll-snap).
+      initSnapSlider(root, {
+        track: "[data-ig-track]",
+        prev: "[data-ig-prev]",
+        next: "[data-ig-next]",
+      });
       // Lazy: solo carga IG cuando la sección se acerca al viewport.
       const io = new IntersectionObserver(
         (entries, obs) => {
           if (entries.some((e) => e.isIntersecting)) {
-            loadInstagram();
+            loadInstagramEmbeds();
             obs.disconnect();
           }
         },

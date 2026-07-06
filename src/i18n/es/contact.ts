@@ -3,7 +3,7 @@ export default {
   title: "Sumemos corazones",
   description:
     "¿Quieres donar, ser voluntario o sumar tu empresa a la causa? Escríbenos: cada mensaje puede abrigar a un niño más.",
-  note: "También nos interesan proyectos colaborativos y de turismo sostenible y solidario en las comunidades altoandinas.",
+  note: "También nos interesan los proyectos colaborativos y el turismo sostenible y solidario en las comunidades altoandinas.",
   labelName: "Nombre",
   placeholderName: "Tu nombre",
   labelEmail: "Email",

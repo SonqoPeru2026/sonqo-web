@@ -1,7 +1,22 @@
 # Sonqo — Studio (Sanity CMS)
 
-Panel para que el equipo edite números e imágenes del sitio **sin tocar código**.
+Panel para que el equipo edite contenido del sitio **sin tocar código**.
 Sanity lo hostea gratis en `*.sanity.studio`. No pesa en el build de Astro.
+
+## Qué se edita aquí
+
+| Sección del Studio | Alimenta a | Fallback si está vacío |
+|---|---|---|
+| Configuración del sitio | Números de impacto, metas de campaña, imagen de /donate | Valores actuales en código |
+| Slides del inicio | Carrusel del Hero (foto + título + texto, ES/EN) | Slides actuales en código |
+| Galería | Mosaico de fotos de /gallery (reels y videos siguen en código) | Fotos actuales en código |
+| Paquetes de donación | Nombre y frase de impacto de las 4 cards | Textos del i18n |
+
+**Los precios NO se editan aquí**: viven en `src/lib/donation.ts` porque
+alimentan el flujo de pago seguro. Cambio de precio = tarea de developer.
+
+Los textos bilingües muestran ES y EN lado a lado; no se puede publicar si
+falta un idioma (misma garantía de paridad que el i18n del sitio).
 
 ## Setup (una vez)
 
@@ -40,7 +55,7 @@ el sitio solo:
 2. **Sanity** → manage → API → **Webhooks** → New webhook:
    - URL = el Deploy Hook de Vercel.
    - Dataset = `production`. Trigger = on **create/update/delete**.
-   - Filter (opcional): `_type == "siteSettings"`.
+   - Filter (opcional): `_type in ["siteSettings", "heroSlide", "galleryPhoto", "donationPackage"]`.
 
 Resultado: el equipo publica → Sanity llama al hook → Vercel rebuildea → el dato
 nuevo sale en vivo (~1–2 min). Cambios raros → pocos builds/mes, dentro del free tier.

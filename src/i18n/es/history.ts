@@ -7,4 +7,7 @@ export default {
   peakLabel: "Pico histórico",
   goalLabel: "Meta",
   unit: "niños abrigados",
+  totalLabel: "niños abrigados desde 2016",
+  goalChip: "Meta 2026",
+  goalUnit: "niños abrigados este año",
 } as const;

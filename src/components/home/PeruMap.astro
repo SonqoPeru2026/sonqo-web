@@ -1,0 +1,109 @@
+---
+import peruRaw from "@/assets/svg/peru.svg?raw";
+
+interface Props {
+  label: string;
+}
+const { label }: Props = Astro.props;
+
+const svgInner = peruRaw.slice(
+  peruRaw.indexOf(">", peruRaw.indexOf("<svg")) + 1,
+  peruRaw.lastIndexOf("</svg>"),
+);
+
+interface City {
+  name: string;
+  x: number;
+  y: number;
+  labelX: number;
+  labelY: number;
+  anchor: "start" | "middle" | "end";
+}
+
+const CITIES: City[] = [
+  { name: "Huancavelica", x: 274, y: 550, labelX: 262, labelY: 542, anchor: "end" },
+  { name: "Ayacucho", x: 306, y: 566, labelX: 294, labelY: 590, anchor: "end" },
+  { name: "Apurímac", x: 363, y: 587, labelX: 363, labelY: 616, anchor: "middle" },
+  { name: "Cusco", x: 402, y: 582, labelX: 416, labelY: 576, anchor: "start" },
+  { name: "Puno", x: 485, y: 682, labelX: 473, labelY: 706, anchor: "end" },
+];
+---
+
+<svg
+  viewBox="0 0 542.767 792"
+  role="img"
+  aria-label={label}
+  class="peru-map mx-auto h-auto w-full max-w-[220px] sm:max-w-[280px]"
+>
+  <g class="peru-departments" set:html={svgInner} />
+
+  {
+    CITIES.map((city, i) => (
+      <g>
+        {/* Anillo que pulsa (escalonado por ciudad) */}
+        <circle
+          cx={city.x}
+          cy={city.y}
+          r="11"
+          class="map-ping fill-primary/40"
+          style={`animation-delay:${i * 350}ms`}
+        />
+        <circle cx={city.x} cy={city.y} r="8" class="fill-primary stroke-white" stroke-width="3" />
+        <text
+          x={city.labelX}
+          y={city.labelY}
+          text-anchor={city.anchor}
+          class="fill-burgundy font-heading text-[24px] font-bold"
+        >
+          {city.name}
+        </text>
+      </g>
+    ))
+  }
+</svg>
+
+<style is:global>
+  .peru-map .peru-departments path {
+    fill: var(--color-burgundy-50, #f7eef5);
+    stroke: #ffffff;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+  .peru-map #PE-HUV,
+  .peru-map #PE-AYA,
+  .peru-map #PE-APU,
+  .peru-map #PE-CUS,
+  .peru-map #PE-PUN {
+    fill: var(--color-primary-100, #ffdbe3);
+  }
+  /* Lago Titicaca */
+  .peru-map #PE-LKT {
+    fill: #ffffff;
+    stroke: var(--color-burgundy-200, #d9aecf);
+  }
+</style>
+
+<style>
+  .map-ping {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: map-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes map-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    70%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-ping {
+      animation: none;
+      opacity: 0;
+    }
+  }
+</style>
