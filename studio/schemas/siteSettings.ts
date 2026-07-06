@@ -1,8 +1,5 @@
 import { defineType, defineField } from "sanity";
 
-// Singleton: un único documento que el equipo edita. Números que el sitio Astro
-// lee en build (ver ../src/lib/sanity.ts). Agrupados por sección para que se
-// entienda qué número alimenta a qué parte del sitio.
 export default defineType({
   name: "siteSettings",
   title: "Configuración del sitio",
@@ -10,6 +7,7 @@ export default defineType({
   groups: [
     { name: "cifras", title: "Cifras de impacto (Inicio)", default: true },
     { name: "campana", title: "Campaña (barra de recaudación)" },
+    { name: "imagenes", title: "Imágenes" },
   ],
   fields: [
     defineField({
@@ -51,6 +49,14 @@ export default defineType({
       type: "number",
       group: "campana",
       validation: (rule) => rule.required().min(0),
+    }),
+    defineField({
+      name: "imagenDonateHero",
+      title: "Imagen de portada de /donate",
+      description:
+        "Foto de fondo de la página Donar. Ideal: 1920px de ancho o más. Si se deja vacía, se usa la foto actual del sitio.",
+      type: "image",
+      group: "imagenes",
     }),
   ],
   preview: { prepare: () => ({ title: "Configuración del sitio" }) },

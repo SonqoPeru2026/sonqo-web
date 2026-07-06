@@ -22,6 +22,10 @@ export default defineConfig({
 
   adapter: vercel({
     imageService: true,
+    imagesConfig: {
+      sizes: [300, 480, 620, 640, 720, 960, 1080, 1200, 1280, 1600, 1920, 2560, 3840],
+      formats: ['image/avif', 'image/webp'],
+    },
     maxDuration: 30,
   }),
   server: { port: 8090 },

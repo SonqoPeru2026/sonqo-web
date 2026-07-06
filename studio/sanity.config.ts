@@ -26,7 +26,6 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-      // Estructura a medida: una sola entrada que abre el documento único.
       structure: (S) =>
         S.list()
           .title("Contenido")
@@ -36,6 +35,26 @@ export default defineConfig({
               .id(SITE_SETTINGS_ID)
               .child(
                 S.document().schemaType("siteSettings").documentId(SITE_SETTINGS_ID),
+              ),
+            S.divider(),
+            S.listItem()
+              .title("Slides del inicio")
+              .child(
+                S.documentTypeList("heroSlide")
+                  .title("Slides del inicio")
+                  .defaultOrdering([{ field: "orden", direction: "asc" }]),
+              ),
+            S.listItem()
+              .title("Galería")
+              .child(
+                S.documentTypeList("galleryPhoto")
+                  .title("Fotos de galería")
+                  .defaultOrdering([{ field: "orden", direction: "asc" }]),
+              ),
+            S.listItem()
+              .title("Paquetes de donación")
+              .child(
+                S.documentTypeList("donationPackage").title("Paquetes de donación"),
               ),
           ]),
     }),

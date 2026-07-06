@@ -1,32 +1,16 @@
 ---
-import { Image, getImage } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
-import slide1 from "@/assets/images/hero-slide-1.webp";
-import slide2 from "@/assets/images/hero-slide-2.webp";
-import slide2Mobile from "@/assets/images/hero-slide-2-mobile.webp";
-import slide3 from "@/assets/images/hero-slide-3.webp";
-import slide3Mobile from "@/assets/images/hero-slide-3-mobile.webp";
+import { getHeroSlides, getSiteSettings } from "@/lib/sanity";
 
 const lang = getLang(Astro.url);
 const hero = useTranslations(lang, "hero");
 
-const rawSlides = [
-  { img: slide1, imgMobile: slide1, alt: hero.slide1Alt, title: hero.slide1Title, text: hero.slide1Text },
-  { img: slide2, imgMobile: slide2Mobile, alt: hero.slide2Alt, title: hero.slide2Title, text: hero.slide2Text },
-  { img: slide3, imgMobile: slide3Mobile, alt: hero.slide3Alt, title: hero.slide3Title, text: hero.slide3Text },
-];
+// Contenido editable por el equipo en Sanity (leído en build; fallback = código).
+const slides = await getHeroSlides(lang);
+const { ninosAtendidos } = await getSiteSettings();
 
-const slides = await Promise.all(
-  rawSlides.map(async (s) => ({
-    ...s,
-    mobileSrcset: (
-      await getImage({ src: s.imgMobile, widths: [s.imgMobile.width], quality: 85 })
-    ).srcSet.attribute,
-  })),
-);
-
-const STAT_CHILDREN = "31,877+";
+const STAT_CHILDREN = `${ninosAtendidos.toLocaleString("en-US")}+`;
 
 const SLIDE_MS = 6500;
 ---
@@ -40,7 +24,7 @@ const SLIDE_MS = 6500;
   <!-- Datos de slides para el carousel (data attributes, sin JSON) -->
   <div class="hidden" aria-hidden="true">
     {slides.map((s, i) => (
-      <span data-slide={i} data-title={s.title} data-text={s.text}></span>
+      <span data-slide={i} data-title={s.titulo} data-text={s.texto}></span>
     ))}
   </div>
 
@@ -53,17 +37,21 @@ const SLIDE_MS = 6500;
           aria-hidden={i !== 0 ? "true" : undefined}
           class={`hero-bg absolute inset-0 h-full w-full transition-opacity duration-[1200ms] ease-out ${i === 0 ? "is-active opacity-100" : "opacity-0"}`}
         >
-          <source media="(max-width: 639px)" srcset={s.mobileSrcset} sizes="100vw" />
-          <Image
-            src={s.img}
-            alt={i === 0 ? s.alt : ""}
-            widths={[640, 960, 1280, 1920, 2560, s.img.width]}
+          {s.imgMobile && (
+            <source media="(max-width: 639px)" srcset={s.imgMobile.srcset} sizes="100vw" />
+          )}
+          <img
+            src={s.img.src}
+            srcset={s.img.srcset}
             sizes="100vw"
-            quality={85}
+            width={s.img.width}
+            height={s.img.height}
+            alt={i === 0 ? s.alt : ""}
             loading={i === 0 ? "eager" : "lazy"}
             fetchpriority={i === 0 ? "high" : undefined}
             class="h-full w-full object-cover object-center"
           />
+
         </picture>
       ))
     }
@@ -104,13 +92,13 @@ const SLIDE_MS = 6500;
         data-hero-title
         class="hero-title hero-fade-up mt-7 font-heading text-[2.7rem] font-bold leading-[1.06] text-white sm:text-6xl lg:text-[4.6rem] lg:leading-[1.03]"
         style="animation-delay: 100ms"
-        set:html={slides[0].title}
+        set:html={slides[0].titulo}
       />
       <p
         data-hero-text
         class="hero-fade-up mt-6 max-w-xl font-body text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl"
         style="animation-delay: 200ms"
-        set:html={slides[0].text}
+        set:html={slides[0].texto}
       />
     </div>
 

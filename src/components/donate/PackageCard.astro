@@ -3,21 +3,20 @@ import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import CustomAmount from "@/components/donate/CustomAmount.astro";
 import { PACKAGES } from "@/lib/donation";
+import { getPackagesContent } from "@/lib/sanity";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "packageCard");
 
-// Paquete destacado visualmente (decisión de marketing, no de datos):
-// guía al usuario indeciso hacia la opción intermedia.
 const FEATURED_ID = "ninos";
 
-// Nombres/impacto vienen del i18n; el precio, de la fuente de verdad (lib/donation).
-const packages = [
-  { id: "aliado", name: t.aliadoName, price: PACKAGES.aliado.price, impact: t.impact1 },
-  { id: "ninos", name: t.ninosName, price: PACKAGES.ninos.price, impact: t.impact5 },
-  { id: "corazon", name: t.corazonName, price: PACKAGES.corazon.price, impact: t.impact10 },
-  { id: "comunidad", name: t.comunidadName, price: PACKAGES.comunidad.price, impact: t.impact20 },
-];
+const content = await getPackagesContent(lang);
+const packages = (["aliado", "ninos", "corazon", "comunidad"] as const).map((id) => ({
+  id,
+  name: content[id].name,
+  impact: content[id].impact,
+  price: PACKAGES[id].price,
+}));
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 const checkoutHref = localizePath("/checkout", lang);
