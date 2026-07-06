@@ -24,7 +24,7 @@ export default {
   firstNameError: "Enter your first name",
   lastNameError: "Enter your last name",
   emailError: "Invalid email",
-  contactIncompleteError: "Complete your first name, last name and email before paying.",
+  contactIncompleteError: "Please complete your first name, last name, and email before paying.",
 
   cardNumberLabel: "Card number",
   cardNumberPlaceholder: "0000 0000 0000 0000",
@@ -49,7 +49,7 @@ export default {
   customImpact: "Every sol brings a thermal jacket closer to a child who needs it.",
   summaryKicker: "Your donation",
   subtotalLabel: "Subtotal",
-  totalLabel: "Total to pay",
+  totalLabel: "Total",
   guarantee: "100% goes to thermal jackets",
   changeAmount: "Want to donate a different amount?",
   currency: "S/",

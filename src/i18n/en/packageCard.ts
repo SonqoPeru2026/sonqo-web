@@ -1,5 +1,5 @@
 export default {
-  heading: "Every sol counts, thank you for your support!",
+  heading: "Every sol counts — thank you for your support!",
   tabSuggested: "Suggested",
   tabCustom: "Other amount",
   packageLabel: "Package",
@@ -7,7 +7,7 @@ export default {
   featuredBadge: "Most chosen",
   aliadoName: "Sonqo Ally",
   ninosName: "Happy Children",
-  corazonName: "Solidary Heart",
+  corazonName: "Caring Heart",
   comunidadName: "Sonqo Community",
   impact1: "You keep 1 child warm all winter.",
   impact5: "You keep 5 children warm all winter.",

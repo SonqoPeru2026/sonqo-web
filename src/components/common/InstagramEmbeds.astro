@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { INSTAGRAM_POSTS } from "@/data/instagram";
+import { getLang, useTranslations } from "@/i18n/utils";
 
 // Grid de publicaciones de Instagram (sin carrusel). embed.js se carga en lazy
 // (al entrar en viewport) para no penalizar el load inicial del home. Comparte el
@@ -10,6 +11,8 @@ interface Props {
 }
 const { limit }: Props = Astro.props;
 const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
+const lang = getLang(Astro.url);
+const t = useTranslations(lang, "gallery");
 ---
 
 <div class="relative mx-auto max-w-[1280px] px-4 sm:px-8" data-ig-embeds>
@@ -43,7 +46,7 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
     <button
       type="button"
       data-ig-prev
-      aria-label="Anterior"
+      aria-label={t.lbPrev}
       class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
     >
       <Icon name="chevron-left" class="size-5" />
@@ -51,7 +54,7 @@ const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS;
     <button
       type="button"
       data-ig-next
-      aria-label="Siguiente"
+      aria-label={t.lbNext}
       class="flex size-11 items-center justify-center rounded-full bg-white text-burgundy shadow-[0px_10px_24px_-8px_rgb(84_5_69/0.4)] transition disabled:opacity-35"
     >
       <Icon name="chevron-right" class="size-5" />

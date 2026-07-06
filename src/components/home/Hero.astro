@@ -57,7 +57,7 @@ const SLIDE_MS = 6500;
           <Image
             src={s.img}
             alt={i === 0 ? s.alt : ""}
-            widths={[1280, s.img.width]}
+            widths={[640, 960, 1280, 1920, 2560, s.img.width]}
             sizes="100vw"
             quality={85}
             loading={i === 0 ? "eager" : "lazy"}
@@ -157,7 +157,7 @@ const SLIDE_MS = 6500;
       style="animation-delay: 500ms"
       data-hero-nav
       role="tablist"
-      aria-label="Slides"
+      aria-label={hero.sliderLabel}
     >
       {
         slides.map((_, i) => (

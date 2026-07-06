@@ -1,5 +1,5 @@
 export default {
-  tagline: "Warmth from the heart. Together, for a winter without cold for the children of Peru.",
+  tagline: "Warmth from the heart. Together, so no child in Peru spends winter in the cold.",
   exploreHeading: "Explore",
   infoHeading: "Information",
   terms: "Terms",

@@ -1,6 +1,6 @@
 export default {
   eyebrow: "Visual testimonials",
-  title: "What we achieved together",
+  title: "What we've achieved together",
   subtitle: "Every video, a life kept warm in the Andes",
   imageAlt: "Children kept warm with Sonqo jackets in the Andes",
   viewAll: "See full gallery",
@@ -11,7 +11,7 @@ export default {
   igEyebrow: "Follow us on Instagram",
   igTitle: "In motion",
   igSubtitle: "Videos and posts from our deliveries",
-  igCta: "See more at @sonqoperusolidario",
+  igCta: "See more on @sonqoperusolidario",
   igOpen: "Open post on Instagram",
   igLoad: "Play",
   filterAll: "All",

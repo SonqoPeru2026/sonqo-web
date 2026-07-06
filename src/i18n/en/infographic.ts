@@ -10,7 +10,7 @@ export default {
   formTitleLine1: "Fill in your details and get the",
   formTitleLine2: "infographic instantly.",
   nameLabel: "Full name",
-  namePlaceholder: "E.g. María Quispe",
+  namePlaceholder: "e.g., María Quispe",
   emailLabel: "Email address",
   emailPlaceholder: "example@email.com",
   phoneLabel: "Phone",
@@ -50,5 +50,5 @@ export default {
   cardItem2: "Our mission and values",
   cardItem3: "How your support warms a child",
   cardItem4: "Our impact in numbers",
-  cardTagline: "Warm with the heart",
+  cardTagline: "Warmth from the heart",
 } as const;
