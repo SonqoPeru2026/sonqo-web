@@ -5,6 +5,7 @@ export default {
   bar1Label: "Recaudación",
   bar2Label: "Niños abrigados",
   of: "de",
+  inProgress: "Campaña en curso",
   cta: "Dona aquí",
   footnote: "Juntos podemos. Cada sol se vuelve abrigo, y cada abrigo, una sonrisa.",
   welcomeEyebrow: "Campaña invierno 2026",

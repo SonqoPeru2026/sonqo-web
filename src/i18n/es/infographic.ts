@@ -43,6 +43,7 @@ export default {
   badgeNoSpam: "Sin spam",
 
   // Tarjeta lateral
+  mockTitle: "31,877 niños abrigados desde 2016",
   cardTitle: "Infografía",
   cardIntro: "Esto encontrarás dentro:",
   cardItem1: "El origen del nombre Sonqo",

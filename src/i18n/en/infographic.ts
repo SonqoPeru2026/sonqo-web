@@ -43,6 +43,7 @@ export default {
   badgeNoSpam: "No spam",
 
   // Side card
+  mockTitle: "31,877 children kept warm since 2016",
   cardTitle: "Infographic",
   cardIntro: "Here's what's inside:",
   cardItem1: "The origin of the name Sonqo",

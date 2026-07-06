@@ -6,7 +6,6 @@ export default {
   updatedLabel: "Last updated",
   lastUpdated: "July 2, 2026",
   tocLabel: "Contents",
-  backLabel: "Back to home",
   sections: [
     {
       id: "aceptacion",

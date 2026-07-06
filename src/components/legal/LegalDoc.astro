@@ -20,7 +20,6 @@ interface LegalDocData {
   updatedLabel: string;
   lastUpdated: string;
   tocLabel: string;
-  backLabel: string;
   sections: readonly Section[];
   help: { title: string; text: string; cta: string; email: string };
 }
@@ -37,12 +36,6 @@ const num = (i: number) => String(i + 1).padStart(2, "0");
 <div class="bg-mist">
   <!-- Encabezado -->
   <header class="mx-auto max-w-[1280px] px-6 pt-32 pb-10 sm:px-8 lg:pt-40">
-    <a
-      href={backHref}
-      class="inline-flex items-center gap-1.5 font-body text-sm font-medium text-ink transition-colors hover:text-primary"
-    >
-      <span aria-hidden="true">←</span>{doc.backLabel}
-    </a>
 
     <div class="mt-8 flex items-center gap-4">
       <span class="h-0.5 w-8 bg-primary"></span>
@@ -139,7 +132,7 @@ const num = (i: number) => String(i + 1).padStart(2, "0");
 
       <!-- Ayuda -->
       <div
-        class="mt-8 flex flex-col items-start gap-5 rounded-3xl bg-[linear-gradient(145deg,var(--color-primary)_0%,#e11d48_100%)] px-8 py-9 text-white shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1)] sm:flex-row sm:items-center sm:justify-between sm:px-10"
+        class="mt-8 flex flex-col items-start gap-5 rounded-3xl bg-[linear-gradient(145deg,var(--color-primary)_0%,var(--color-primary-600)_100%)] px-8 py-9 text-white shadow-[0_20px_25px_-5px_rgb(0_0_0/0.1)] sm:flex-row sm:items-center sm:justify-between sm:px-10"
       >
         <div>
           <h2 class="font-heading text-xl font-bold sm:text-2xl">{doc.help.title}</h2>

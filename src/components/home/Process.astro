@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations } from "@/i18n/utils";
+import PeruMap from "@/components/home/PeruMap.astro";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "process");
@@ -25,7 +26,8 @@ const steps = [
     </div>
 
     <!-- Pasos -->
-    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="relative mt-12">
+      <ul class="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
         steps.map((step, i) => (
           <li
@@ -44,7 +46,8 @@ const steps = [
           </li>
         ))
       }
-    </ul>
+      </ul>
+    </div>
 
     <!-- Bloque mapa / dónde llegamos -->
     <div
@@ -61,13 +64,7 @@ const steps = [
         <p class="mt-4 font-body leading-relaxed text-ink sm:text-lg">{t.mapText}</p>
       </div>
       <div class="flex-1">
-        <img
-          src="/images/how-children.webp"
-          alt={t.mapImageAlt}
-          width="558"
-          height="314"
-          class="aspect-[558/314] w-full rounded-2xl object-cover"
-        />
+        <PeruMap label={t.mapImageAlt} />
       </div>
     </div>
   </div>

@@ -4,6 +4,7 @@ export default {
   tabCustom: "Other amount",
   packageLabel: "Package",
   donate: "Donate",
+  featuredBadge: "Most chosen",
   aliadoName: "Sonqo Ally",
   ninosName: "Happy Children",
   corazonName: "Solidary Heart",

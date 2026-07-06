@@ -18,8 +18,13 @@ const t = useTranslations(lang, "donateHero");
     quality={72}
     class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_45%]"
   />
-  <!-- Velo para legibilidad (negro 69%, como en el diseño) -->
-  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-black/[0.48]"></div>
+
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background: linear-gradient(to top, rgb(15 15 18 / 0.75) 0%, rgb(15 15 18 / 0.5) 50%, rgb(15 15 18 / 0.3) 100%);"
+  >
+  </div>
 
   <div class="mx-auto w-full max-w-[1280px] px-6 text-center sm:px-8">
     <span

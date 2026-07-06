@@ -5,6 +5,7 @@ export default {
   bar1Label: "Funds raised",
   bar2Label: "Children kept warm",
   of: "of",
+  inProgress: "Campaign in progress",
   cta: "Donate now",
   footnote: "Together we can. Every sol becomes a coat, and every coat, a smile.",
   welcomeEyebrow: "Winter campaign 2026",

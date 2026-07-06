@@ -1,19 +1,30 @@
 ---
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
-import slide1 from "@/assets/images/hero-slide-1.jpg";
-import slide2 from "@/assets/images/hero-slide-2.jpg";
-import slide3 from "@/assets/images/hero-slide-3.jpg";
+import slide1 from "@/assets/images/hero-slide-1.webp";
+import slide2 from "@/assets/images/hero-slide-2.webp";
+import slide2Mobile from "@/assets/images/hero-slide-2-mobile.webp";
+import slide3 from "@/assets/images/hero-slide-3.webp";
+import slide3Mobile from "@/assets/images/hero-slide-3-mobile.webp";
 
 const lang = getLang(Astro.url);
 const hero = useTranslations(lang, "hero");
 
-const slides = [
-  { img: slide1, alt: hero.slide1Alt, title: hero.slide1Title, text: hero.slide1Text },
-  { img: slide2, alt: hero.slide2Alt, title: hero.slide2Title, text: hero.slide2Text },
-  { img: slide3, alt: hero.slide3Alt, title: hero.slide3Title, text: hero.slide3Text },
+const rawSlides = [
+  { img: slide1, imgMobile: slide1, alt: hero.slide1Alt, title: hero.slide1Title, text: hero.slide1Text },
+  { img: slide2, imgMobile: slide2Mobile, alt: hero.slide2Alt, title: hero.slide2Title, text: hero.slide2Text },
+  { img: slide3, imgMobile: slide3Mobile, alt: hero.slide3Alt, title: hero.slide3Title, text: hero.slide3Text },
 ];
+
+const slides = await Promise.all(
+  rawSlides.map(async (s) => ({
+    ...s,
+    mobileSrcset: (
+      await getImage({ src: s.imgMobile, widths: [s.imgMobile.width], quality: 85 })
+    ).srcSet.attribute,
+  })),
+);
 
 const STAT_CHILDREN = "31,877+";
 
@@ -37,18 +48,23 @@ const SLIDE_MS = 6500;
   <div class="absolute inset-0 -z-20">
     {
       slides.map((s, i) => (
-        <Image
-          src={s.img}
-          alt={i === 0 ? s.alt : ""}
-          aria-hidden={i !== 0 ? "true" : undefined}
+        <picture
           data-bg={i}
-          widths={[768, 1280, 1920]}
-          sizes="100vw"
-          quality={72}
-          loading={i === 0 ? "eager" : "lazy"}
-          fetchpriority={i === 0 ? "high" : undefined}
-          class={`hero-bg absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-out ${i === 0 ? "is-active opacity-100" : "opacity-0"}`}
-        />
+          aria-hidden={i !== 0 ? "true" : undefined}
+          class={`hero-bg absolute inset-0 h-full w-full transition-opacity duration-[1200ms] ease-out ${i === 0 ? "is-active opacity-100" : "opacity-0"}`}
+        >
+          <source media="(max-width: 639px)" srcset={s.mobileSrcset} sizes="100vw" />
+          <Image
+            src={s.img}
+            alt={i === 0 ? s.alt : ""}
+            widths={[1280, s.img.width]}
+            sizes="100vw"
+            quality={85}
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchpriority={i === 0 ? "high" : undefined}
+            class="h-full w-full object-cover object-center"
+          />
+        </picture>
       ))
     }
   </div>
