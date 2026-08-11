@@ -1,408 +1,188 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import { getHeroSlides, getSiteSettings } from "@/lib/sanity";
+import secondaryPhoto from "@/assets/images/gallery/8.webp";
 
 const lang = getLang(Astro.url);
 const hero = useTranslations(lang, "hero");
 
 // Contenido editable por el equipo en Sanity (leído en build; fallback = código).
+// El schema de Sanity soporta varios slides; el hero editorial usa solo el primero
+// como foto + copy principal (los demás quedan disponibles para uso futuro).
 const slides = await getHeroSlides(lang);
+const slide = slides[0];
 const { ninosAtendidos } = await getSiteSettings();
 
 const STAT_CHILDREN = `${ninosAtendidos.toLocaleString("en-US")}+`;
-
-const SLIDE_MS = 6500;
 ---
 
-<section
-  id="inicio"
-  data-hero
-  style={`--slide-ms:${SLIDE_MS}ms`}
-  class="hero relative isolate min-h-[100dvh] overflow-hidden bg-ink-900"
->
-  <!-- Datos de slides para el carousel (data attributes, sin JSON) -->
-  <div class="hidden" aria-hidden="true">
-    {slides.map((s, i) => (
-      <span data-slide={i} data-title={s.titulo} data-text={s.texto}></span>
-    ))}
-  </div>
+<section id="inicio" data-hero class="hero-editorial relative bg-white pt-24 sm:pt-28">
+  <div class="mx-auto grid w-full max-w-[1400px] lg:grid-cols-2 lg:items-stretch">
+    <!-- Fotografía documental (izquierda), real, blanco y negro editorial -->
+    <div class="relative order-1 h-[58vh] min-h-[380px] sm:h-[68vh] lg:h-auto lg:min-h-[85vh]">
+      <div class="hero-photo-frame absolute inset-0 overflow-hidden bg-ink-900">
+        <!-- `slide.img` ya viene con URL resuelta (Sanity o local): <img> plano, sin astro:assets -->
+        <img
+          src={slide.img.src}
+          srcset={slide.img.srcset}
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          width={slide.img.width}
+          height={slide.img.height}
+          alt={slide.alt}
+          loading="eager"
+          fetchpriority="high"
+          class="hero-photo h-full w-full object-cover"
+        />
+      </div>
 
-  <!-- Fondos full-bleed (cross-fade + Ken Burns sutil) -->
-  <div class="absolute inset-0 -z-20">
-    {
-      slides.map((s, i) => (
-        <picture
-          data-bg={i}
-          aria-hidden={i !== 0 ? "true" : undefined}
-          class={`hero-bg absolute inset-0 h-full w-full transition-opacity duration-[1200ms] ease-out ${i === 0 ? "is-active opacity-100" : "opacity-0"}`}
-        >
-          {s.imgMobile && (
-            <source media="(max-width: 639px)" srcset={s.imgMobile.srcset} sizes="100vw" />
-          )}
-          <img
-            src={s.img.src}
-            srcset={s.img.srcset}
-            sizes="100vw"
-            width={s.img.width}
-            height={s.img.height}
-            alt={i === 0 ? s.alt : ""}
-            loading={i === 0 ? "eager" : "lazy"}
-            fetchpriority={i === 0 ? "high" : undefined}
-            class="h-full w-full object-cover object-center"
-          />
+      <!-- Ficha documental -->
+      <span
+        data-reveal
+        class="absolute left-5 top-5 inline-flex items-center gap-2 bg-white/90 px-3 py-1.5 font-heading text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-900 sm:left-8 sm:top-8"
+      >
+        {hero.photoCaption}
+      </span>
 
-        </picture>
-      ))
-    }
-  </div>
+      <!-- Foto secundaria superpuesta (archivo fotográfico, tambien real) -->
+      <div
+        data-reveal
+        style="--reveal-delay: 200ms"
+        class="hero-secondary-photo absolute bottom-4 right-5 w-[46%] max-w-[260px] border-[6px] border-white bg-white shadow-[0_18px_36px_-16px_rgb(0_0_0/0.45)] sm:right-8 lg:-bottom-10 lg:right-10"
+      >
+        <Image
+          src={secondaryPhoto}
+          alt={hero.secondaryImageAlt}
+          widths={[260, 400, 520]}
+          sizes="260px"
+          quality={80}
+          loading="eager"
+          class="hero-photo aspect-[4/5] w-full object-cover"
+        />
+      </div>
+    </div>
 
-  <!-- Overlay direccional (desktop): oscuro a la izquierda, la foto respira a la derecha -->
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 -z-10 hidden sm:block"
-    style="background: linear-gradient(100deg, rgb(15 15 18 / 0.88) 0%, rgb(15 15 18 / 0.62) 38%, rgb(15 15 18 / 0.22) 68%, rgb(15 15 18 / 0.05) 100%);"
-  >
-  </div>
-  <!-- Overlay vertical (mobile): legibilidad del texto -->
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 -z-10 sm:hidden"
-    style="background: linear-gradient(to top, rgb(15 15 18 / 0.92) 0%, rgb(15 15 18 / 0.62) 45%, rgb(15 15 18 / 0.28) 75%, rgb(15 15 18 / 0.12) 100%);"
-  >
-  </div>
-  <!-- Calidez sutil de marca -->
-  <div aria-hidden="true" class="absolute inset-0 -z-[9] bg-primary/5 mix-blend-multiply"></div>
-
-  <!-- Contenido: columna editorial a la izquierda -->
-  <div
-    class="mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col items-center justify-center px-6 pb-20 pt-40 text-center sm:items-start sm:px-8 sm:text-left"
-  >
-    <!-- Badge / hashtag -->
-    <span
-      class="hero-fade-up inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 font-heading text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white/90 ring-1 ring-inset ring-white/15 backdrop-blur-md"
+    <!-- Contenido editorial (derecha) -->
+    <div
+      class="relative order-2 flex flex-col justify-center px-6 pb-20 pt-16 sm:px-10 sm:pt-20 lg:px-16 lg:pb-16 lg:pt-16 xl:px-20"
     >
-      <Icon name="hero-heart" class="h-3.5 w-auto text-primary" />
-      {hero.hashtag}
-    </span>
+      <!-- Linea que se dibuja de fondo: hilo andino, no una foto ni un icono generico -->
+      <svg
+        class="hero-line pointer-events-none absolute inset-0 h-full w-full"
+        preserveAspectRatio="none"
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+      >
+        <path
+          d="M 80 2 C 55 18, 98 40, 66 58 S 58 92, 22 98"
+          fill="none"
+          stroke="var(--color-primary)"
+          stroke-width="1.4"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
 
-    <!-- Copy del slide (titulo + texto salen/entran juntos) -->
-    <div data-hero-copy class="hero-copy max-w-2xl">
+      <span
+        data-reveal
+        class="inline-flex w-fit items-center gap-2.5 font-heading text-xs font-bold uppercase tracking-[0.16em] text-primary"
+      >
+        <span class="size-2 shrink-0 bg-primary" aria-hidden="true"></span>
+        {hero.eyebrow}
+      </span>
+
       <h1
-        data-hero-title
-        class="hero-title hero-fade-up mt-7 font-heading text-[2.7rem] font-bold leading-[1.06] text-white sm:text-6xl lg:text-[4.6rem] lg:leading-[1.03]"
-        style="animation-delay: 100ms"
-        set:html={slides[0].titulo}
+        data-reveal
+        style="--reveal-delay: 80ms"
+        class="mt-6 font-heading text-[2.6rem] font-bold leading-[1.08] text-ink-950 sm:text-6xl lg:text-[3.6rem] xl:text-[4rem]"
+        set:html={slide.titulo}
       />
+
       <p
-        data-hero-text
-        class="hero-fade-up mt-6 max-w-xl font-body text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl"
-        style="animation-delay: 200ms"
-        set:html={slides[0].texto}
+        data-reveal
+        style="--reveal-delay: 160ms"
+        class="mt-6 max-w-lg font-body text-base leading-relaxed text-ink-600 sm:text-lg"
+        set:html={slide.texto}
       />
-    </div>
 
-    <!-- CTAs -->
-    <div
-      class="hero-fade-up mt-10 flex w-full max-w-sm flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:gap-4"
-      style="animation-delay: 300ms"
-    >
-      <a
-        href={localizePath("/donate", lang)}
-        class="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-primary px-10 py-4 font-heading text-sm font-bold text-white shadow-[0_20px_50px_-12px_rgb(228_0_63/0.6)] transition-[background-color,transform,box-shadow] duration-300 hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgb(228_0_63/0.75)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
+      <p
+        data-reveal
+        style="--reveal-delay: 220ms"
+        class="mt-5 max-w-lg border-l-2 border-ink-200 pl-4 font-body text-sm italic leading-relaxed text-ink-500"
       >
-        <Icon name="hero-donate" class="h-5 w-auto text-white transition-transform duration-300 group-hover:scale-110" />
-        {hero.ctaPrimary}
-      </a>
-      <a
-        href="#proposito"
-        class="inline-flex w-full items-center justify-center rounded-full border border-white/30 px-9 py-4 font-heading text-sm font-bold text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
-      >
-        {hero.ctaSecondary}
-      </a>
-    </div>
+        {hero.missionNote}
+      </p>
 
-    <!-- Linea de confianza compacta (sin card: los numeros grandes viven en Historia) -->
-    <p
-      class="hero-fade-up mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 font-heading text-xs font-semibold text-white/60 sm:justify-start"
-      style="animation-delay: 400ms"
-    >
-      <span class="inline-flex items-center gap-1.5">
-        <Icon name="hero-lock" class="h-3.5 w-auto" />
-        {hero.secure}
-      </span>
-      <span class="hidden h-3 w-px bg-white/25 sm:block" aria-hidden="true"></span>
-      <span class="inline-flex items-center gap-1.5">
-        <Icon name="campaign-heart" class="h-3.5 w-auto text-primary" />
-        <span class="tabular-nums text-white/80">{STAT_CHILDREN}</span>
+      <div data-reveal style="--reveal-delay: 280ms" class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a
+          href={localizePath("/donate", lang)}
+          class="hero-cta inline-flex items-center justify-center bg-primary px-9 py-4 font-heading text-sm font-bold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          {hero.ctaPrimary}
+        </a>
+        <a
+          href="#proposito"
+          class="group inline-flex items-center gap-2 font-heading text-sm font-bold text-primary transition-colors duration-200 hover:text-primary-600"
+        >
+          {hero.ctaSecondary}
+          <Icon name="arrow" class="h-3.5 w-auto transition-transform duration-200 ease-out group-hover:translate-x-1" />
+        </a>
+      </div>
+
+      <p
+        data-reveal
+        style="--reveal-delay: 340ms"
+        class="mt-10 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-heading text-xs font-semibold uppercase tracking-[0.06em] text-ink-400"
+      >
+        <span class="inline-flex items-center gap-1.5">
+          <span class="size-1.5 bg-primary" aria-hidden="true"></span>
+          {hero.locationLine}
+        </span>
+        <span class="h-3 w-px bg-ink-200" aria-hidden="true"></span>
+        <span class="tabular-nums text-ink-600">{STAT_CHILDREN}</span>
         {hero.statChildrenLabel}
-      </span>
-    </p>
-
-    <!-- Navegacion del carrusel: segmentos clicables (indicador + control en uno) -->
-    <div
-      class="hero-fade-up mt-12 flex w-full items-center justify-center gap-3 sm:justify-start"
-      style="animation-delay: 500ms"
-      data-hero-nav
-      role="tablist"
-      aria-label={hero.sliderLabel}
-    >
-      {
-        slides.map((_, i) => (
-          <button
-            type="button"
-            data-hero-goto={i}
-            role="tab"
-            aria-selected={i === 0 ? "true" : "false"}
-            aria-label={`${i + 1} / ${slides.length}`}
-            class="group flex h-8 w-12 items-center sm:w-16"
-          >
-            <span class="relative h-[3px] w-full overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
-              <span
-                data-hero-seg
-                class="hero-seg absolute inset-0 origin-left scale-x-0 rounded-full bg-primary"
-              />
-            </span>
-          </button>
-        ))
-      }
-      <p class="ml-1 font-heading text-xs text-white/50" aria-live="polite">
-        <span data-hero-current class="font-bold text-white/90">01</span>
-        <span class="mx-0.5 text-white/30">/</span>
-        <span class="text-white/30">{String(slides.length).padStart(2, "0")}</span>
       </p>
     </div>
   </div>
 </section>
 
-<script>
-  function initHero() {
-    const root = document.querySelector<HTMLElement>("[data-hero]");
-    if (!root) return;
-
-    // Limpiar interval global anterior (View Transitions no recarga la pagina)
-    if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-
-    const bgs = [...root.querySelectorAll<HTMLElement>("[data-bg]")];
-    const copyEl = root.querySelector<HTMLElement>("[data-hero-copy]");
-    const titleEl = root.querySelector<HTMLElement>("[data-hero-title]");
-    const textEl = root.querySelector<HTMLElement>("[data-hero-text]");
-    const counter = root.querySelector<HTMLElement>("[data-hero-current]");
-    const gotoBtns = [...root.querySelectorAll<HTMLButtonElement>("[data-hero-goto]")];
-    const segs = [...root.querySelectorAll<HTMLElement>("[data-hero-seg]")];
-
-    const slideEls = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
-    const slides = slideEls.map((el) => ({
-      title: el.dataset.title ?? "",
-      text: el.dataset.text ?? "",
-    }));
-
-    const count = slides.length;
-    if (count <= 1 || !titleEl || !textEl || !copyEl) return;
-
-    const MS = parseInt(getComputedStyle(root).getPropertyValue("--slide-ms")) || 6500;
-    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let index = 0;
-    let swapping = false;
-
-    // Evita salto de layout cuando el titulo del slide ocupa menos lineas.
-    copyEl.style.minHeight = copyEl.getBoundingClientRect().height + "px";
-
-    function paintNav() {
-      segs.forEach((seg, j) => {
-        seg.classList.remove("run");
-        if (j === index && !reducedMotion) {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => seg.classList.add("run"));
-          });
-        }
-        seg.classList.toggle("scale-x-100", j === index && reducedMotion);
-      });
-      gotoBtns.forEach((b, j) => b.setAttribute("aria-selected", String(j === index)));
-      if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-    }
-
-    function swapCopy(i: number) {
-      const apply = () => {
-        titleEl!.innerHTML = slides[i].title;
-        textEl!.innerHTML = slides[i].text;
-        // Reinicia el subrayado del acento (hilo andino)
-        titleEl!.querySelectorAll<HTMLElement>(".text-primary").forEach((el) => {
-          el.classList.remove("accent-draw");
-          void el.offsetWidth;
-          el.classList.add("accent-draw");
-        });
-      };
-      if (reducedMotion) {
-        apply();
-        return;
-      }
-      swapping = true;
-      copyEl!.classList.add("is-leaving");
-      window.setTimeout(() => {
-        apply();
-        copyEl!.classList.remove("is-leaving");
-        copyEl!.classList.add("is-entering");
-        window.setTimeout(() => {
-          copyEl!.classList.remove("is-entering");
-          swapping = false;
-        }, 500);
-      }, 320);
-    }
-
-    function show(i: number) {
-      const next = ((i % count) + count) % count;
-      if (next === index && bgs[next]?.classList.contains("opacity-100")) return;
-      if (swapping) return;
-      index = next;
-      bgs.forEach((bg, j) => {
-        bg.classList.toggle("opacity-100", j === index);
-        bg.classList.toggle("opacity-0", j !== index);
-        bg.classList.toggle("is-active", j === index);
-      });
-      swapCopy(index);
-      paintNav();
-    }
-
-    function start() {
-      if (reducedMotion) return;
-      if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-      (window as any).__heroTimer = setInterval(() => show(index + 1), MS);
-    }
-
-    function stop() {
-      if ((window as any).__heroTimer) clearInterval((window as any).__heroTimer);
-      (window as any).__heroTimer = null;
-    }
-
-    gotoBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        show(Number(btn.dataset.heroGoto ?? 0));
-        start();
-      });
-    });
-
-    root.addEventListener("mouseenter", stop);
-    root.addEventListener("mouseleave", start);
-    root.addEventListener("focusin", stop);
-    root.addEventListener("focusout", start);
-
-    // Dibuja el subrayado del acento en la primera carga
-    titleEl.querySelectorAll<HTMLElement>(".text-primary").forEach((el) => {
-      el.classList.add("accent-draw");
-    });
-
-    paintNav();
-    start();
-  }
-
-  document.addEventListener("astro:page-load", initHero);
-</script>
-
 <style>
-  /* Ken Burns: la foto activa respira (zoom sutil durante el slide) */
-  .hero-bg.is-active {
-    animation: hero-zoom calc(var(--slide-ms) + 1500ms) ease-out forwards;
+  .hero-photo {
+    filter: grayscale(1) contrast(1.08);
   }
-  @keyframes hero-zoom {
-    from {
-      transform: scale(1);
-    }
+
+  /* Foto secundaria: pequeña rotación al entrar, foto colocada "a mano" */
+  .hero-secondary-photo {
+    transform: rotate(-2deg);
+  }
+
+  /* Linea de fondo: se dibuja una vez al cargar (hilo andino), no un icono generico */
+  .hero-line path {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    opacity: 0.3;
+    animation: hero-line-draw 1800ms cubic-bezier(0.23, 1, 0.32, 1) 200ms forwards;
+  }
+  @keyframes hero-line-draw {
     to {
-      transform: scale(1.06);
+      stroke-dashoffset: 0;
     }
   }
 
-  /* Acento del titulo: crimson italico + hilo andino que se dibuja debajo */
-  .hero-title :global(.text-primary) {
-    font-style: italic;
+  /* Feedback de presión en el CTA principal */
+  .hero-cta:active {
+    transform: scale(0.97);
+  }
+
+  /* Acento del titulo: solo color, sin glow/gradiente (direccion editorial) */
+  h1 :global(.text-primary) {
     color: var(--color-primary);
-    text-shadow: 0 0 40px rgb(228 0 63 / 0.35);
-    background-image: linear-gradient(
-      90deg,
-      var(--color-primary),
-      var(--color-coral),
-      var(--color-pink)
-    );
-    background-repeat: no-repeat;
-    background-position: 0 96%;
-    background-size: 100% 0.08em;
-  }
-  .hero-title :global(.text-primary.accent-draw) {
-    animation: accent-draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s backwards;
-  }
-  @keyframes accent-draw {
-    from {
-      background-size: 0% 0.08em;
-    }
-    to {
-      background-size: 100% 0.08em;
-    }
   }
 
-  /* Salida/entrada del copy sincronizada con el cross-fade del fondo */
-  .hero-copy {
-    transition:
-      opacity 0.32s ease,
-      transform 0.32s ease;
-  }
-  .hero-copy.is-leaving {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-  .hero-copy.is-entering {
-    animation: copy-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  @keyframes copy-enter {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-  }
-
-  /* Entrada escalonada inicial */
-  .hero-fade-up {
-    opacity: 0;
-    transform: translateY(24px);
-    animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes hero-fade-up {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Segmentos del carrusel: el activo se llena durante el slide */
-  .hero-seg.run {
-    animation: hero-fill var(--slide-ms) linear forwards;
-  }
-  @keyframes hero-fill {
-    from {
-      transform: scaleX(0);
-    }
-    to {
-      transform: scaleX(1);
-    }
-  }
-
-  /* Respetar reduced-motion */
   @media (prefers-reduced-motion: reduce) {
-    .hero-bg.is-active {
+    .hero-line path {
       animation: none;
-    }
-    .hero-fade-up,
-    .hero-copy.is-entering {
-      opacity: 1;
-      transform: none;
-      animation: none;
-    }
-    .hero-title :global(.text-primary.accent-draw) {
-      animation: none;
-    }
-    .hero-seg.run {
-      animation: none;
-      transform: scaleX(1);
+      stroke-dashoffset: 0;
     }
   }
 </style>

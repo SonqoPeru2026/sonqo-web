@@ -1,17 +1,19 @@
 export default {
-  // Hero: carrusel full-bleed. Solo foto + titulo + texto rotan; el resto es fijo.
-  hashtag: "#AbrigaConElCorazón",
+  // Hero editorial: foto documental + copy fijo (contenido del slide 1 de Sanity).
+  eyebrow: "Sonqo · del quechua: corazón",
   ctaPrimary: "Dona ahora",
-  ctaSecondary: "Conoce más",
-  secure: "Pago 100% seguro",
+  ctaSecondary: "Conoce la causa",
+  missionNote: "Sonqo significa corazón en quechua. Así trabajamos: desde el corazón, junto a cada familia.",
+  photoCaption: "Perú",
+  locationLine: "Comunidades andinas del Perú",
+  secondaryImageAlt: "El equipo de Sonqo junto a niños de la comunidad, entregando casacas en persona",
   // Etiquetas de la tarjeta de impacto (los numeros viven en Hero.astro, migran a Sanity).
-  statChildrenLabel: "Niños protegidos",
+  statChildrenLabel: "niños abrigados",
   statCommunitiesLabel: "Comunidades",
-  sliderLabel: "Diapositivas",
 
-  slide1Title: 'Abriga con el <span class="text-primary">corazón</span>',
-  slide1Text: "El friaje no da tregua en las alturas del Perú. Cada casaca que confeccionamos y entregamos con nuestras manos es un niño menos pasando frío.",
-  slide1Alt: "Niños de una comunidad andina saludando con sus casacas térmicas Sonqo",
+  slide1Title: 'Abriga con<br />el <span class="text-primary">corazón.</span>',
+  slide1Text: "El friaje no da tregua en las alturas del Perú. Cada casaca que confeccionamos y entregamos con nuestras manos, en persona, es un niño o una niña menos pasando frío en las comunidades que más lo necesitan.",
+  slide1Alt: "Niños de una comunidad andina con sus casacas térmicas Sonqo",
 
   slide2Title: 'Sumemos <span class="text-primary">corazones</span>',
   slide2Text: "Desde 2016 subimos donde casi nadie llega, en todo el país, para que ningún niño andino pase el invierno sin abrigo.",
