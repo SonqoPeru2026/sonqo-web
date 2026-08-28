@@ -4,7 +4,7 @@ import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import checkoutPhoto from "@/assets/images/checkout-photo.webp";
 import { PACKAGES } from "@/lib/donation";
-import { PUBLIC_MP_PUBLIC_KEY } from "astro:env/client";
+import { PUBLIC_MP_PUBLIC_KEY, TURNSTILE_SITE_KEY } from "astro:env/client";
 import PaymentBrick from "@/components/checkout/PaymentBrick";
 
 const lang = getLang(Astro.url);
@@ -170,6 +170,24 @@ const steps: Step[] = [
         </label>
         <p data-consent-error class:list={[errorClass, "mt-2"]}>{t.consentError}</p>
 
+        {
+          TURNSTILE_SITE_KEY && (
+            <div class="mt-6">
+              <div
+                class="cf-turnstile"
+                data-sitekey={TURNSTILE_SITE_KEY}
+                data-action="checkout"
+                data-callback="__onTurnstileSuccess"
+                data-expired-callback="__onTurnstileExpired"
+                data-error-callback="__onTurnstileExpired"
+              />
+              <p data-turnstile-error role="alert" class:list={[errorClass, "mt-2"]}>
+                Verificación anti-bot pendiente. Completa el desafío antes de pagar.
+              </p>
+            </div>
+          )
+        }
+
         <hr class="my-10 border-ink-200" />
 
         {
@@ -180,6 +198,7 @@ const steps: Step[] = [
               amount={summary.price}
               packageId={brickPackageId}
               thanksHref={thanksHref}
+              turnstileEnabled={Boolean(TURNSTILE_SITE_KEY)}
             />
           ) : (
             <p class="rounded-xl bg-white p-5 text-center font-body text-sm text-ink-500 ring-1 ring-ink-200">
@@ -202,6 +221,8 @@ const steps: Step[] = [
         </div>
 
       </form>
+
+      {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
 
       <!-- ============ Columna derecha: resumen ============ -->
       <aside>
@@ -261,6 +282,16 @@ const steps: Step[] = [
   import { makeCheckoutContactSchema, type CheckoutContactMessages } from "@/lib/validation/checkout-contact";
   import { CONTACT_CHANGE_EVENT, CONTACT_INVALID_EVENT } from "@/components/checkout/checkout-contact";
   import type { CheckoutContact } from "@/components/checkout/checkout-contact";
+  import { TURNSTILE_INVALID_EVENT } from "@/components/checkout/checkout-turnstile";
+
+  // Callbacks globales que el widget de Turnstile invoca por nombre (data-callback).
+  window.__onTurnstileSuccess = (token: string) => {
+    window.__checkoutTurnstileToken = token;
+    document.querySelector("[data-turnstile-error]")?.classList.add("hidden");
+  };
+  window.__onTurnstileExpired = () => {
+    window.__checkoutTurnstileToken = undefined;
+  };
 
   function initCheckoutContact() {
     const form = document.querySelector<HTMLFormElement>("[data-checkout-form]");
@@ -348,6 +379,13 @@ const steps: Step[] = [
       validate(true);
       formErrorEl?.classList.remove("hidden");
       form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    // Turnstile pendiente: el Brick generó el token de tarjeta pero no cobra (ver
+    // PaymentBrick.tsx). Pintamos el error y bajamos la vista al widget.
+    document.addEventListener(TURNSTILE_INVALID_EVENT, () => {
+      form?.querySelector("[data-turnstile-error]")?.classList.remove("hidden");
+      form?.querySelector(".cf-turnstile")?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
     form.addEventListener("input", () => formErrorEl?.classList.add("hidden"));

@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import SuccessModal from "@/components/common/SuccessModal.astro";
+import { TURNSTILE_SITE_KEY } from "astro:env/client";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "contact");
@@ -181,6 +182,8 @@ const fieldMessages = {
       </label>
       <p data-error="terms" class={errorClass}></p>
 
+      {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="contact" />}
+
       <button
         type="submit"
         data-submit
@@ -202,6 +205,8 @@ const fieldMessages = {
     <SuccessModal title={t.successTitle} message={t.success} closeLabel={t.modalClose} />
   </div>
 </section>
+
+{TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
 
 <script>
   import { makeContactSchema, type ContactMessages } from "@/lib/validation/contact";

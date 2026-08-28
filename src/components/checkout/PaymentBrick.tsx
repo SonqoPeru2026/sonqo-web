@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { initMercadoPago, CardPayment } from "@mercadopago/sdk-react";
 import type { CheckoutContact } from "./checkout-contact";
 import { CONTACT_CHANGE_EVENT, CONTACT_INVALID_EVENT, readContact, isContactValid } from "./checkout-contact";
+import { TURNSTILE_INVALID_EVENT, readTurnstileToken, resetTurnstile } from "./checkout-turnstile";
 
 interface Props {
   publicKey: string;
   amount: number;
   packageId?: string;
   thanksHref: string;
+  turnstileEnabled: boolean;
 }
 
 let mpInitialized = false;
@@ -17,7 +19,7 @@ let mpInitialized = false;
 // El nombre/email/teléfono viven en el <form> de Astro (fuera de esta isla React), así que
 // se leen del DOM vía checkout-contact.ts en vez de pasarse como props (que serían estáticas
 // del render del servidor).
-export default function PaymentBrick({ publicKey, amount, packageId, thanksHref }: Props) {
+export default function PaymentBrick({ publicKey, amount, packageId, thanksHref, turnstileEnabled }: Props) {
   const submitting = useRef(false);
   const [emailAtMount, setEmailAtMount] = useState<string>(() => readContact().email);
 
@@ -60,6 +62,12 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
           document.dispatchEvent(new CustomEvent(CONTACT_INVALID_EVENT));
           return;
         }
+        const turnstileToken = turnstileEnabled ? readTurnstileToken() : undefined;
+        if (turnstileEnabled && !turnstileToken) {
+          // Igual que el contacto: no se cobra nada, se pide completar el desafío.
+          document.dispatchEvent(new CustomEvent(TURNSTILE_INVALID_EVENT));
+          return;
+        }
         submitting.current = true;
         try {
           const res = await fetch("/api/create-payment", {
@@ -77,6 +85,7 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
               lastName: contact.lastName,
               phone: contact.phone || undefined,
               consent: contact.consent,
+              turnstileToken,
             }),
           });
           const data = (await res.json()) as { status?: string; statusDetail?: string };
@@ -87,6 +96,7 @@ export default function PaymentBrick({ publicKey, amount, packageId, thanksHref 
           window.location.href = `${thanksHref}?${params.toString()}`;
         } catch {
           submitting.current = false; // falló la red: permitir reintento
+          if (turnstileEnabled) resetTurnstile(); // token de un solo uso: renovar para el reintento
           window.location.href = `${thanksHref}?status=error`;
         }
       }}

@@ -25,6 +25,8 @@ export const paymentSchema = z
     amount: z.number().optional(),
     // Consentimiento obligatorio: debe llegar en true o el pago se rechaza.
     consent: z.literal(true),
+    // Token de Cloudflare Turnstile (anti-bot). Verificado server-side en create-payment.
+    turnstileToken: z.string().max(2048).optional(),
   })
   .extend(makeCheckoutContactSchema().omit({ email: true }).shape);
 

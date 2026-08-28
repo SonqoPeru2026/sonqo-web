@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { withinRateLimit } from "@/lib/rate-limit";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import { paymentSchema } from "@/lib/validation/payment";
 import { resolveAmount, DEFAULT_CURRENCY } from "@/lib/donation";
 import { PAYMENT_STATUS } from "@/lib/payment";
@@ -40,6 +41,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return fail(400, "Datos de pago inválidos");
   }
   const data = parsed.data;
+
+  // 3.5. Anti-bot/anti-fraude: Turnstile. Falla cerrado (ver lib/turnstile).
+  const turnstileOk = await verifyTurnstileToken(data.turnstileToken, "checkout", consentIp);
+  if (!turnstileOk) {
+    return fail(403, "Verificación de seguridad fallida. Recarga la página e intenta de nuevo.");
+  }
 
   // 4. Monto AUTORITATIVO: recalculado en server, nunca el del cliente.
   const amount = resolveAmount({ packageId: data.packageId, amount: data.amount });

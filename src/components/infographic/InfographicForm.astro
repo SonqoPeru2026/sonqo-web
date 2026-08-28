@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import SuccessModal from "@/components/common/SuccessModal.astro";
+import { TURNSTILE_SITE_KEY } from "astro:env/client";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "infographic");
@@ -155,6 +156,8 @@ const fieldMessages = {
           <p data-error="privacy" class:list={[errorClass, "mt-2"]}></p>
         </div>
 
+        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="infographic" />}
+
         <button
           type="submit"
           data-submit
@@ -258,6 +261,8 @@ const fieldMessages = {
     </div>
   </div>
 </section>
+
+{TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
 
 <script>
   import { makeLeadSchema, type LeadMessages } from "@/lib/validation/lead";
