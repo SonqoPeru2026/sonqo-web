@@ -210,6 +210,7 @@ const fieldMessages = {
 
 <script>
   import { makeContactSchema, type ContactMessages } from "@/lib/validation/contact";
+  import { renderPendingTurnstileWidgets } from "@/lib/turnstile-client";
 
   function initContactForm() {
     const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
@@ -318,4 +319,5 @@ const fieldMessages = {
   }
 
   document.addEventListener("astro:page-load", initContactForm);
+  document.addEventListener("astro:page-load", renderPendingTurnstileWidgets);
 </script>

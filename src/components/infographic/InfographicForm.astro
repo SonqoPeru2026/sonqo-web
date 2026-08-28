@@ -266,6 +266,7 @@ const fieldMessages = {
 
 <script>
   import { makeLeadSchema, type LeadMessages } from "@/lib/validation/lead";
+  import { renderPendingTurnstileWidgets } from "@/lib/turnstile-client";
 
   function initInfographicForm() {
     const form = document.querySelector<HTMLFormElement>("[data-ig-form]");
@@ -371,4 +372,5 @@ const fieldMessages = {
   }
 
   document.addEventListener("astro:page-load", initInfographicForm);
+  document.addEventListener("astro:page-load", renderPendingTurnstileWidgets);
 </script>

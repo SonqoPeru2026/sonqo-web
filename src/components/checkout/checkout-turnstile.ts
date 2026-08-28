@@ -1,14 +1,11 @@
 // Puente entre el widget de Turnstile (fuera de la isla React) y PaymentBrick.tsx.
 // Mismo patrón que checkout-contact.ts: window global + eventos custom.
+// El tipo completo de window.turnstile vive en lib/turnstile-client.ts (única fuente).
 declare global {
   interface Window {
     __checkoutTurnstileToken?: string;
     __onTurnstileSuccess?: (token: string) => void;
     __onTurnstileExpired?: () => void;
-    turnstile?: {
-      reset: (widgetId?: string) => void;
-      getResponse: (widgetId?: string) => string | undefined;
-    };
   }
 }
 

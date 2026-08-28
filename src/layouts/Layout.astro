@@ -1,6 +1,6 @@
 ---
 import { ClientRouter, fade } from "astro:transitions";
-import { PUBLIC_GTM_ID } from "astro:env/client";
+import { PUBLIC_GTM_ID, TURNSTILE_SITE_KEY } from "astro:env/client";
 import "@/styles/global.css";
 import Navbar from "@/components/common/Navbar.astro";
 import Footer from "@/components/common/Footer.astro";
@@ -57,6 +57,22 @@ const gtmId = PUBLIC_GTM_ID;
       image={image}
       noindex={noindex}
     />
+
+    {
+      // Turnstile: UN SOLO <script>, cargado una vez en <head> (el ClientRouter
+      // de Astro no recarga <head> en cada navegación SPA, a diferencia del body).
+      // render=explicit: el auto-render de Turnstile solo escanea el DOM al cargar
+      // el script, así que en checkout/contacto/infografía renderizamos a mano en
+      // cada astro:page-load (ver lib/turnstile-client.ts) — si no, el widget solo
+      // aparece en la primera page que visitas y hace falta F5 para las demás.
+      TURNSTILE_SITE_KEY && (
+        <script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__onTurnstileLoad"
+          async
+          defer
+        />
+      )
+    }
 
     <!-- Navegación suave entre páginas/idiomas, sin recarga completa -->
     <ClientRouter />
