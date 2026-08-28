@@ -4,7 +4,7 @@ import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import checkoutPhoto from "@/assets/images/checkout-photo.webp";
 import { PACKAGES } from "@/lib/donation";
-import { PUBLIC_MP_PUBLIC_KEY, PUBLIC_TURNSTILE_SITE_KEY } from "astro:env/client";
+import { PUBLIC_MP_PUBLIC_KEY, TURNSTILE_SITE_KEY } from "astro:env/client";
 import PaymentBrick from "@/components/checkout/PaymentBrick";
 
 const lang = getLang(Astro.url);
@@ -171,11 +171,11 @@ const steps: Step[] = [
         <p data-consent-error class:list={[errorClass, "mt-2"]}>{t.consentError}</p>
 
         {
-          PUBLIC_TURNSTILE_SITE_KEY && (
+          TURNSTILE_SITE_KEY && (
             <div class="mt-6">
               <div
                 class="cf-turnstile"
-                data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}
+                data-sitekey={TURNSTILE_SITE_KEY}
                 data-action="checkout"
                 data-callback="__onTurnstileSuccess"
                 data-expired-callback="__onTurnstileExpired"
@@ -198,7 +198,7 @@ const steps: Step[] = [
               amount={summary.price}
               packageId={brickPackageId}
               thanksHref={thanksHref}
-              turnstileEnabled={Boolean(PUBLIC_TURNSTILE_SITE_KEY)}
+              turnstileEnabled={Boolean(TURNSTILE_SITE_KEY)}
             />
           ) : (
             <p class="rounded-xl bg-white p-5 text-center font-body text-sm text-ink-500 ring-1 ring-ink-200">
@@ -222,7 +222,7 @@ const steps: Step[] = [
 
       </form>
 
-      {PUBLIC_TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+      {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
 
       <!-- ============ Columna derecha: resumen ============ -->
       <aside>

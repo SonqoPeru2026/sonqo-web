@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
 import SuccessModal from "@/components/common/SuccessModal.astro";
-import { PUBLIC_TURNSTILE_SITE_KEY } from "astro:env/client";
+import { TURNSTILE_SITE_KEY } from "astro:env/client";
 
 const lang = getLang(Astro.url);
 const t = useTranslations(lang, "infographic");
@@ -156,7 +156,7 @@ const fieldMessages = {
           <p data-error="privacy" class:list={[errorClass, "mt-2"]}></p>
         </div>
 
-        {PUBLIC_TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} data-action="infographic" />}
+        {TURNSTILE_SITE_KEY && <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="infographic" />}
 
         <button
           type="submit"
@@ -262,7 +262,7 @@ const fieldMessages = {
   </div>
 </section>
 
-{PUBLIC_TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+{TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
 
 <script>
   import { makeLeadSchema, type LeadMessages } from "@/lib/validation/lead";

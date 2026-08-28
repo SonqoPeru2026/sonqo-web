@@ -70,7 +70,7 @@ export default defineConfig({
 
       // Cloudflare Turnstile — anti-bot/anti-fraude en checkout. Sitekey pública,
       // secreta solo server (siteverify). Sin keys, el checkout degrada sin captcha.
-      PUBLIC_TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
       TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
 
       // Sanity — PROJECT_ID y dataset públicos. Lectura en build con dataset
