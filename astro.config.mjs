@@ -68,6 +68,11 @@ export default defineConfig({
       PUBLIC_MP_PUBLIC_KEY: envField.string({ context: 'client', access: 'public' }),
       MP_WEBHOOK_SECRET: envField.string({ context: 'server', access: 'secret' }),
 
+      // Cloudflare Turnstile — anti-bot/anti-fraude en checkout. Sitekey pública,
+      // secreta solo server (siteverify). Sin keys, el checkout degrada sin captcha.
+      PUBLIC_TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+      TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+
       // Sanity — PROJECT_ID y dataset públicos. Lectura en build con dataset
       PUBLIC_SANITY_PROJECT_ID: envField.string({ context: 'client', access: 'public' }),
       SANITY_DATASET: envField.string({ context: 'client', access: 'public' }),

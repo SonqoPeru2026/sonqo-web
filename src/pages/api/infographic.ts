@@ -5,6 +5,7 @@ import { resend } from "@/lib/resend";
 import { supabase } from "@/lib/supabase";
 import { withinRateLimit } from "@/lib/rate-limit";
 import { isHoneypotTriggered } from "@/lib/honeypot";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import { makeLeadSchema } from "@/lib/validation/lead";
 import { LeadInternal } from "@/components/emails/LeadInternal";
 import { LeadUser } from "@/components/emails/LeadUser";
@@ -39,6 +40,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   // 3. Rate limit por IP.
   if (!(await withinRateLimit(request, "infographic"))) {
     return fail(429, "Demasiados intentos. Espera unos minutos.");
+  }
+
+  // 3.5. Anti-bot: Turnstile. Falla cerrado (ver lib/turnstile).
+  const turnstileToken = (body as { "cf-turnstile-response"?: unknown })["cf-turnstile-response"];
+  if (!(await verifyTurnstileToken(turnstileToken, "infographic", consentIp))) {
+    return fail(403, "Verificación de seguridad fallida. Recarga la página e intenta de nuevo.");
   }
 
   // 4. Validación estricta.
