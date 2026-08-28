@@ -222,8 +222,6 @@ const steps: Step[] = [
 
       </form>
 
-      {TURNSTILE_SITE_KEY && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
-
       <!-- ============ Columna derecha: resumen ============ -->
       <aside>
         <div class="rounded-3xl bg-white p-8 shadow-[0px_24px_60px_-30px_rgb(84_5_69/0.25)]">
@@ -283,6 +281,7 @@ const steps: Step[] = [
   import { CONTACT_CHANGE_EVENT, CONTACT_INVALID_EVENT } from "@/components/checkout/checkout-contact";
   import type { CheckoutContact } from "@/components/checkout/checkout-contact";
   import { TURNSTILE_INVALID_EVENT } from "@/components/checkout/checkout-turnstile";
+  import { renderPendingTurnstileWidgets } from "@/lib/turnstile-client";
 
   // Callbacks globales que el widget de Turnstile invoca por nombre (data-callback).
   window.__onTurnstileSuccess = (token: string) => {
@@ -393,4 +392,5 @@ const steps: Step[] = [
   }
 
   document.addEventListener("astro:page-load", initCheckoutContact);
+  document.addEventListener("astro:page-load", renderPendingTurnstileWidgets);
 </script>
