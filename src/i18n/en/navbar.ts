@@ -1,6 +1,6 @@
 export default {
   purpose: "Purpose",
-  achievements: "Achievements",
+  achievements: "Impact",
   about: "About us",
   gallery: "Gallery",
   contact: "Contact us",

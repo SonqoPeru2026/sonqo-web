@@ -78,6 +78,10 @@ const gtmId = PUBLIC_GTM_ID;
     <ClientRouter />
   </head>
   <body class="font-body text-burgundy-900 antialiased overflow-x-hidden">
+
+    <a href="#main-content" class="fixed left-4 top-3 z-[100] -translate-y-20 rounded-full bg-ink-950 px-5 py-3 font-heading text-sm font-bold text-white transition-transform focus:translate-y-0">
+      {lang === "es" ? "Saltar al contenido" : "Skip to content"}
+    </a>
     {
       gtmId && (
         <noscript>
@@ -91,7 +95,7 @@ const gtmId = PUBLIC_GTM_ID;
       )
     }
     <Navbar />
-    <main transition:animate={fade({ duration: "0.4s" })}>
+    <main id="main-content" tabindex="-1" transition:animate={fade({ duration: "0.4s" })}>
       <slot />
     </main>
     <Footer />

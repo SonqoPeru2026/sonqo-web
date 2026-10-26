@@ -6,6 +6,7 @@ export default {
   startLabel: "Comienzo",
   peakLabel: "Pico histórico",
   goalLabel: "Meta",
+  cumulativeLabel: "Acumulado",
   unit: "niños abrigados",
   totalLabel: "niños abrigados desde 2016",
   goalChip: "Meta 2026",

@@ -1,0 +1,93 @@
+---
+import { useTranslations } from "@/i18n/utils";
+interface Props { lang: "es" | "en"; children: number; communities: number; }
+const { lang, children, communities } = Astro.props;
+const t = useTranslations(lang, "hero");
+const locale = lang === "es" ? "es-PE" : "en-US";
+const items = [
+  { icon: "heart", value: t.sinceLabel, label: t.impactSinceLabel, story: t.impactSinceStory },
+  { icon: "jacket", value: `${children.toLocaleString(locale)}+`, label: t.statChildrenLabel, story: t.impactChildrenStory },
+  { icon: "mountains", value: `${communities.toLocaleString(locale)}+`, label: t.statCommunitiesLabel, story: t.impactCommunitiesStory },
+];
+---
+<section class="impact" aria-labelledby="hero-impact-title">
+  <h2 id="hero-impact-title" class="sr-only">{t.impactTitle}</h2>
+  <ul class="impact-grid">
+    {items.map((item, index) => (
+      <li class="impact-item">
+        <article class="impact-block" tabindex="0" aria-labelledby={`impact-value-${index} impact-label-${index}`} aria-describedby={`impact-story-${index}`}>
+          <svg class="impact-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            {item.icon === "heart" && <>
+              <path class="icon-accent" d="M32 29s-12-7.7-12-15a7 7 0 0 1 12-4.8A7 7 0 0 1 44 14c0 7.3-12 15-12 15Z" />
+              <path d="m8 39 8-9a4 4 0 0 1 6 5l-5 7m39-3-8-9a4 4 0 0 0-6 5l5 7M6 43l13 13 9-9a7 7 0 0 0 2-5v-8a4 4 0 0 0-8 0v3m36 6L45 56l-9-9a7 7 0 0 1-2-5v-8a4 4 0 0 1 8 0v3M4 47l11 11m45-11L49 58" />
+            </>}
+            {item.icon === "jacket" && <>
+              <path d="m23 12-9 6L5 38l9 5 7-13v24h22V30l7 13 9-5-9-20-9-6" />
+              <path class="icon-accent" d="m23 12 3-5h12l3 5-9 9-9-9Z" />
+              <path d="M32 21v33m-11-7h22m-19-9 4 3m12-3-4 3M8 33l8 4m32 0 8-4" />
+            </>}
+            {item.icon === "mountains" && <>
+              <path d="M5 44 24 12l19 32M35 31l8-13 16 26M17 24l7 4 7-4" />
+              <path class="icon-accent" d="M39 24h8M32 57c-17-8 18-8 6-14" />
+              <path d="M5 57h15m24 0h15" /><circle class="icon-accent" cx="47" cy="9" r="4" />
+            </>}
+          </svg>
+          <h3 id={`impact-value-${index}`} class="impact-value">{item.value}</h3>
+          <p id={`impact-label-${index}`} class="impact-label">{item.label}</p>
+          <p id={`impact-story-${index}`} class="impact-story">{item.story}</p>
+        </article>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .impact { background: var(--color-cream); color: var(--color-burgundy); padding: 22px 24px 20px; }
+  .impact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1384px; margin: 0 auto; padding: 0; list-style: none; }
+  .impact-item { position: relative; min-width: 0; }
+  .impact-item + .impact-item::before { content: ""; position: absolute; top: 30px; bottom: 30px; left: 0; width: 1px; background: rgb(84 5 69 / .12); }
+  .impact-block { height: 100%; padding: 28px 32px 24px; text-align: center; border-radius: 16px; scroll-margin-top: 110px; }
+  .impact-block:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+  .impact-icon { display: block; width: 64px; height: 64px; margin: 0 auto 20px; }
+  .icon-accent { fill: rgb(228 0 63 / .035); }
+  .impact-value { font-size: clamp(1.8rem, 3vw, 2.75rem); font-weight: 700; letter-spacing: -.045em; line-height: 1.15; }
+  .impact-label { margin-top: 9px; font-size: 14px; font-weight: 500; }
+  .impact-story { max-width: 30ch; margin: 17px auto 0; color: var(--color-ink-600); font-size: 14px; line-height: 1.65; }
+  /* Content is available by default, including touch devices and screen readers.
+     Only fine-pointer desktops receive the visual reveal; its space stays reserved. */
+  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    .impact-story { opacity: 0; transform: translateY(7px); }
+    .impact-block:is(:hover, :focus) { background: #fff1f4; }
+    .impact-block:is(:hover, :focus) .impact-story { opacity: 1; transform: none; }
+    .impact-block:is(:hover, :focus) .icon-accent { stroke: var(--color-primary); fill: rgb(228 0 63 / .08); }
+    .impact-block:is(:hover, :focus) .impact-icon { transform: translateY(-3px); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .impact-block { transition: background-color 220ms ease-out; }
+    .impact-story { transition: opacity 220ms ease-out, transform 220ms ease-out; }
+    .impact-icon { transition: transform 220ms ease-out; }
+    .icon-accent { transition: stroke 220ms ease-out, fill 220ms ease-out; }
+  }
+  @media (min-width: 1024px) {
+    .impact { min-height: 224px; padding: 8px 32px 12px; }
+    .impact-grid { min-height: 204px; }
+    .impact-block { padding: 12px 24px; }
+    .impact-icon { width: 48px; height: 48px; margin-bottom: 10px; }
+    .impact-value { font-size: clamp(1.75rem, 2.5vw, 2rem); }
+    .impact-label { margin-top: 6px; }
+    .impact-story { min-height: 42px; margin-top: 10px; font-size: 13px; line-height: 1.6; }
+    .impact-item + .impact-item::before { top: 20px; bottom: 20px; }
+  }
+  @media (max-width: 767px) {
+    .impact { padding: 12px 24px 16px; }
+    .impact-grid { grid-template-columns: 1fr; max-width: 480px; }
+    .impact-block { padding: 26px 12px; }
+    .impact-icon { width: 56px; height: 56px; margin-bottom: 14px; }
+    .impact-value { font-size: 2rem; }
+    .impact-story { margin-top: 12px; }
+    .impact-item + .impact-item::before { top: 0; bottom: auto; left: 20%; width: 60%; height: 1px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .impact-story, .impact-block:is(:hover, :focus) .impact-icon { transform: none; }
+  }
+</style>
