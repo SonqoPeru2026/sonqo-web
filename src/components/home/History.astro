@@ -25,8 +25,15 @@ const TOTAL = YEARS.filter((y) => !("goal" in y && y.goal)).reduce(
   0,
 );
 const MAX = Math.max(...YEARS.map((y) => y.value));
-const pct = (v: number) => Math.round((v / MAX) * 100);
+const ratio = (v: number) => (v / MAX).toFixed(4);
 const fmt = (n: number) => n.toLocaleString("en-US");
+
+// Acumulado hasta cada año (la meta no suma). Sincroniza el contador con las barras.
+const CUMULATIVE = YEARS.reduce<number[]>((acc, y) => {
+  const prev = acc[acc.length - 1] ?? 0;
+  acc.push("goal" in y && y.goal ? prev : prev + y.value);
+  return acc;
+}, []);
 ---
 
 <section id="history" class="overflow-hidden bg-mist py-24">
@@ -45,95 +52,113 @@ const fmt = (n: number) => n.toLocaleString("en-US");
       </h2>
     </div>
 
-    <!-- Total acumulado: el número protagonista -->
-    <div class="mt-12 text-center" data-reveal style="--reveal-delay: 160ms">
-      <div class="inline-flex flex-col items-center">
-        <span class="flex items-center gap-3">
-          <Icon name="campaign-heart" class="size-8 text-primary sm:size-10" />
-          <span
-            class="font-heading text-6xl font-bold leading-none tabular-nums text-primary sm:text-7xl"
-            data-count={TOTAL}
-            data-count-dur="2200"
-          >
-            {fmt(TOTAL)}
+    <div data-history-chart>
+      <!-- Total acumulado: sube sincronizado con las barras -->
+      <div class="mt-12 text-center" data-reveal style="--reveal-delay: 160ms">
+        <div class="inline-flex flex-col items-center">
+          <span class="flex items-center gap-3">
+            <Icon name="campaign-heart" class="size-8 text-primary sm:size-10" />
+            <span
+              class="font-heading text-6xl font-bold leading-none tabular-nums text-primary sm:text-7xl"
+              data-cum
+              data-total={TOTAL}
+              aria-label={`${fmt(TOTAL)} ${t.totalLabel}`}
+            >
+              {fmt(TOTAL)}
+            </span>
           </span>
-        </span>
-        <span class="mt-3 font-body text-base text-ink sm:text-lg">{t.totalLabel}</span>
+          <span class="mt-3 font-body text-base text-ink sm:text-lg">{t.totalLabel}</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Timeline / gráfico: barras verticales en sm+, horizontales en mobile -->
-    <div class="mt-14" data-reveal style="--reveal-delay: 240ms">
-      <!-- Desktop / tablet: barras verticales -->
-      <ol class="hidden items-end gap-2 sm:flex lg:gap-3" role="list">
-        {
-          YEARS.map((y, i) => (
-            <li class="group flex flex-1 flex-col items-center">
-              <span
-                class:list={[
-                  "mb-2 font-heading text-xs font-bold tabular-nums transition-transform duration-300 group-hover:-translate-y-0.5 lg:text-sm",
-                  "peak" in y && y.peak ? "text-primary" : "text-burgundy/70",
-                ]}
-              >
-                {fmt(y.value)}
-              </span>
-              <div class="flex h-52 w-full items-end lg:h-64">
-                <div
-                  class:list={[
-                    "bar-v w-full rounded-t-lg",
-                    "goal" in y && y.goal
-                      ? "border-2 border-dashed border-primary bg-primary-50"
-                      : "peak" in y && y.peak
-                        ? "bg-gradient-to-t from-primary-700 to-primary shadow-[0px_12px_30px_-8px_rgb(228_0_63/0.5)]"
-                        : "bg-primary-200 transition-colors duration-300 group-hover:bg-primary-300",
-                  ]}
-                  style={`height:${pct(y.value)}%; --bar-delay:${i * 70}ms`}
-                />
-              </div>
-              <span class="mt-2.5 font-heading text-xs font-bold tabular-nums text-burgundy lg:text-sm">
-                {y.year}
-              </span>
-              <span class="mt-1 h-4 font-heading text-[10px] font-bold uppercase tracking-[0.5px] text-primary lg:text-[11px]">
-                {"label" in y ? y.label : ""}
-              </span>
-            </li>
-          ))
-        }
-      </ol>
+      <!-- Timeline / gráfico: barras verticales en sm+, horizontales en mobile -->
+      <div class="mt-14" data-reveal style="--reveal-delay: 240ms">
+        <!-- Desktop / tablet: barras verticales -->
+        <ol class="chart hidden items-end gap-2 sm:flex lg:gap-3" role="list">
+          {
+            YEARS.map((y, i) => {
+              const isGoal = "goal" in y && y.goal;
+              const isPeak = "peak" in y && y.peak;
+              return (
+                <li
+                  class="col group relative flex flex-1 flex-col items-center outline-none"
+                  tabindex="0"
+                  data-cum-value={CUMULATIVE[i]}
+                  style={`--i:${i}`}
+                >
+                  {!isGoal && (
+                    <span role="tooltip" class="tip">
+                      {t.cumulativeLabel}: <b>{fmt(CUMULATIVE[i])}</b>
+                    </span>
+                  )}
+                  <div class="track flex h-52 w-full items-end lg:h-64">
+                    <div class="rise flex w-full flex-col justify-end" style={`--p:${ratio(y.value)}`}>
+                      <span
+                        class:list={[
+                          "val pb-2 text-center font-heading text-xs font-bold tabular-nums lg:text-sm",
+                          isPeak || isGoal ? "text-primary" : "text-burgundy",
+                        ]}
+                      >
+                        {fmt(y.value)}
+                      </span>
+                      <div
+                        class:list={[
+                          "bar relative min-h-0 flex-1 rounded-t-lg",
+                          isGoal && "bar-goal",
+                          isPeak && "bar-peak",
+                          !isGoal && !isPeak && "bar-base",
+                        ]}
+                      />
+                    </div>
+                  </div>
+                  <span class="mt-2.5 font-heading text-xs font-bold tabular-nums text-burgundy lg:text-sm">
+                    {y.year}
+                  </span>
+                  <span class="mt-1 h-4 font-heading text-[10px] font-bold uppercase tracking-[0.5px] text-primary lg:text-[11px]">
+                    {"label" in y ? y.label : ""}
+                  </span>
+                </li>
+              );
+            })
+          }
+        </ol>
 
-      <!-- Mobile: barras horizontales -->
-      <ol class="space-y-3 sm:hidden" role="list">
-        {
-          YEARS.map((y, i) => (
-            <li class="flex items-center gap-3">
-              <span class="w-11 shrink-0 font-heading text-sm font-bold tabular-nums text-burgundy">
-                {y.year}
-              </span>
-              <div class="h-7 flex-1 overflow-hidden rounded-full bg-white/70">
-                <div
-                  class:list={[
-                    "bar-h h-full rounded-full",
-                    "goal" in y && y.goal
-                      ? "border-2 border-dashed border-primary bg-primary-50"
-                      : "peak" in y && y.peak
-                        ? "bg-gradient-to-r from-primary to-primary-700"
-                        : "bg-primary-200",
-                  ]}
-                  style={`width:${pct(y.value)}%; --bar-delay:${i * 60}ms`}
-                />
-              </div>
-              <span
-                class:list={[
-                  "w-14 shrink-0 text-right font-heading text-xs font-bold tabular-nums",
-                  "peak" in y && y.peak ? "text-primary" : "text-burgundy/70",
-                ]}
-              >
-                {fmt(y.value)}
-              </span>
-            </li>
-          ))
-        }
-      </ol>
+        <!-- Mobile: barras horizontales -->
+        <ol class="space-y-3 sm:hidden" role="list">
+          {
+            YEARS.map((y, i) => {
+              const isGoal = "goal" in y && y.goal;
+              const isPeak = "peak" in y && y.peak;
+              return (
+                <li class="col-h flex items-center gap-3" data-cum-value={CUMULATIVE[i]} style={`--i:${i}`}>
+                  <span class="w-11 shrink-0 font-heading text-sm font-bold tabular-nums text-burgundy">
+                    {y.year}
+                  </span>
+                  <div class="h-7 flex-1 overflow-hidden rounded-full bg-white/70">
+                    <div
+                      class:list={[
+                        "bar-h h-full rounded-full",
+                        isGoal && "bar-goal",
+                        isPeak && "bar-peak-h",
+                        !isGoal && !isPeak && "bar-base",
+                      ]}
+                      style={`width:${Math.round((y.value / MAX) * 100)}%`}
+                    />
+                  </div>
+                  <span
+                    class:list={[
+                      "val-h w-14 shrink-0 text-right font-heading text-xs font-bold tabular-nums",
+                      isPeak || isGoal ? "text-primary" : "text-burgundy",
+                    ]}
+                  >
+                    {fmt(y.value)}
+                  </span>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
     </div>
 
     <!-- Crecimiento + meta -->
@@ -161,33 +186,213 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 </section>
 
 <style>
-  /* Las barras crecen cuando el wrapper [data-reveal] recibe .is-visible
-     (motor global en Animations.astro). Escalonado con --bar-delay. */
-  .bar-v {
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--bar-delay, 0ms);
+  /* Barra + valor suben juntos desde el eje. Altura = 2rem (valor) + (resto * ratio). */
+  .track {
+    clip-path: inset(-3rem -1rem 0 -1rem); /* recorta solo por abajo; deja respirar glow y valor */
+  }
+  .rise {
+    height: calc(2rem + (100% - 2rem) * var(--p));
+  }
+  .bar-base {
+    background: var(--color-burgundy-300);
+    transition: background-color 0.3s;
+  }
+  .bar-peak {
+    background: linear-gradient(to top, var(--color-primary-700), var(--color-primary));
+  }
+  .bar-peak::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 36px 4px rgb(228 0 63 / 0.55);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .bar-peak-h {
+    background: linear-gradient(to right, var(--color-primary), var(--color-primary-700));
+  }
+  .bar-goal {
+    border: 2px dashed var(--color-primary);
+    background: repeating-linear-gradient(
+      135deg,
+      var(--color-primary-100) 0 6px,
+      var(--color-primary-50) 6px 12px
+    );
+  }
+
+  /* Hover / foco: se atenúan las demás, la activa toma el rojo de marca */
+  .chart:has(.col:hover) .col:not(:hover),
+  .chart:has(.col:focus-visible) .col:not(:focus-visible) {
+    opacity: 0.5;
+  }
+  .col {
+    transition: opacity 0.25s;
+  }
+  .col:hover .bar-base,
+  .col:focus-visible .bar-base {
+    background: var(--color-primary);
+  }
+  .col:focus-visible .bar {
+    outline: 2px solid var(--color-burgundy);
+    outline-offset: 2px;
+  }
+  .tip {
+    position: absolute;
+    left: 50%;
+    top: -2.25rem;
+    z-index: 10;
+    transform: translate(-50%, 4px);
+    white-space: nowrap;
+    border-radius: 9999px;
+    background: var(--color-burgundy);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    color: white;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.18s,
+      transform 0.18s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .col:hover .tip,
+  .col:focus-visible .tip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  /* Estado armado (JS activo, sin reduced-motion): todo oculto hasta que entra su turno. */
+  [data-armed] .rise {
+    transform: translateY(100%);
+    transition: transform 0.65s cubic-bezier(0.2, 0, 0, 1);
     will-change: transform;
   }
-  .bar-h {
+  [data-armed] .val {
+    opacity: 0;
+    transition: opacity 0.3s ease-out 0.35s;
+  }
+  [data-armed] .bar-h {
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--bar-delay, 0ms);
-    will-change: transform;
+    transition: transform 0.65s cubic-bezier(0.2, 0, 0, 1);
   }
-  :global([data-reveal].is-visible) .bar-v {
-    transform: scaleY(1);
+  [data-armed] .val-h {
+    opacity: 0;
+    transition: opacity 0.3s ease-out 0.35s;
   }
-  :global([data-reveal].is-visible) .bar-h {
-    transform: scaleX(1);
+  [data-armed] .is-in .rise {
+    transform: none;
+  }
+  [data-armed] .is-in .val,
+  [data-armed] .is-in .val-h {
+    opacity: 1;
+  }
+  [data-armed] .is-in .bar-h {
+    transform: none;
+  }
+  /* Pico: destello al aterrizar (capa secundaria) */
+  [data-armed] .is-in .bar-peak::after {
+    animation: peak-glow 1.4s ease-out 0.55s 1 both;
+  }
+  /* Meta: respira suave (capa ambiental), solo tras aterrizar */
+  [data-armed] .is-in .bar-goal {
+    animation: goal-breathe 4s ease-in-out 1.2s infinite;
+  }
+  @keyframes peak-glow {
+    0% {
+      opacity: 0;
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.35;
+    }
+  }
+  @keyframes goal-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .bar-v,
-    .bar-h {
-      transform: none;
-      transition: none;
+    .rise,
+    .bar-h,
+    .val,
+    .val-h,
+    .col,
+    .tip {
+      transition: none !important;
+      animation: none !important;
+    }
+    .bar-peak::after {
+      opacity: 0.35;
     }
   }
 </style>
+
+<script>
+  function initHistoryChart() {
+    const root = document.querySelector<HTMLElement>("[data-history-chart]:not([data-bound])");
+    if (!root) return;
+    root.setAttribute("data-bound", "");
+
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || !("IntersectionObserver" in window)) return; // estado final directo
+
+    const counter = root.querySelector<HTMLElement>("[data-cum]");
+    const total = Number(counter?.getAttribute("data-total")) || 0;
+    const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+    const STEP = 45; // ola izquierda -> derecha (11 barras = 450ms)
+    const LAND = 300; // la barra "aterriza" a ~45% de su recorrido
+
+    root.setAttribute("data-armed", "");
+    if (counter) counter.textContent = "0";
+
+    let shown = 0;
+    let raf = 0;
+    const tweenTo = (target: number, dur: number) => {
+      cancelAnimationFrame(raf);
+      const from = shown;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - t0) / dur);
+        shown = from + (target - from) * (1 - Math.pow(1 - p, 3));
+        if (counter) counter.textContent = fmt(shown);
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
+    const run = () => {
+      // Solo la lista visible (la otra es display:none) define el ritmo del contador.
+      const cols = Array.from(root.querySelectorAll<HTMLElement>(".col, .col-h"));
+      cols.forEach((el) => {
+        const i = Number(el.style.getPropertyValue("--i")) || 0;
+        setTimeout(() => el.classList.add("is-in"), i * STEP);
+      });
+      const visible = cols.filter((el) => el.offsetParent !== null);
+      visible.forEach((el, i) => {
+        const cum = Number(el.getAttribute("data-cum-value")) || 0;
+        setTimeout(() => tweenTo(cum, 260), i * STEP + LAND);
+      });
+      setTimeout(() => tweenTo(total, 260), visible.length * STEP + LAND + 300);
+    };
+
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          obs.disconnect();
+          run();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(root);
+  }
+
+  document.addEventListener("astro:page-load", initHistoryChart);
+</script>

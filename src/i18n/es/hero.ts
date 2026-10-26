@@ -16,10 +16,11 @@ export default {
   // Etiquetas de la tarjeta de impacto (los numeros viven en Hero.astro, migran a Sanity).
   statChildrenLabel: "niños abrigados",
   statCommunitiesLabel: "Comunidades",
+  heroEyebrow: "Desde el corazón del Perú",
   newTitleBefore: "Que ningún niño ",
   newTitleAccent: "pase frío.",
   newTitleAfter: "",
-  newDescription: "Confeccionamos casacas térmicas y las entregamos personalmente en las comunidades altoandinas.",
+  newDescription: "Somos una ONG peruana que hace casacas térmicas y las entrega en mano a niños de los Andes, donde el frío no da tregua.",
   ctaPrimaryNew: "Quiero ayudar",
   ctaSecondaryNew: "Mira cómo lo hacemos",
   secureNote: "Donación segura · Elige el monto · Recibe confirmación",
