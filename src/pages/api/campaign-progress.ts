@@ -10,7 +10,11 @@ export const prerender = false;
 // Redis cachea la suma con TTL corto, así Supabase se consulta rara vez.
 export const GET: APIRoute = async () => {
   // 1. Valor caliente desde Redis (1 comando, milisegundos, sin tocar la BD).
-  const cached = await redis.get<number>(CAMPAIGN_RAISED_KEY);
+  // Redis es solo cache: si esta caido se salta y se consulta Supabase directo.
+  const cached = await redis.get<number>(CAMPAIGN_RAISED_KEY).catch((err) => {
+    console.warn("[campaign-progress] Redis get failed", err);
+    return null;
+  });
   if (cached != null) {
     return json({ raised: Number(cached) });
   }
@@ -23,7 +27,9 @@ export const GET: APIRoute = async () => {
   }
 
   // 3. Re-siembra el cache con TTL corto.
-  await redis.set(CAMPAIGN_RAISED_KEY, raised, { ex: CAMPAIGN_CACHE_TTL });
+  await redis.set(CAMPAIGN_RAISED_KEY, raised, { ex: CAMPAIGN_CACHE_TTL }).catch((err) => {
+    console.warn("[campaign-progress] Redis set failed", err);
+  });
   return json({ raised });
 };
 

@@ -1,0 +1,88 @@
+---
+// Eyebrow + titulo del hero. Se renderiza dos veces (capa trasera y delantera del
+// efecto de profundidad), por eso vive aparte: ambas copias deben ser identicas.
+interface Props {
+  tag: "h1" | "div";
+  eyebrow: string;
+  words: { text: string; accent: boolean }[];
+}
+
+const { tag: Tag, eyebrow, words } = Astro.props;
+---
+
+<div class="px-5 pt-[8.5rem] sm:px-8 sm:pt-[8.5rem] lg:px-12 lg:pt-[9rem]">
+  <div class="mx-auto max-w-[1480px]">
+    <p class="hidden items-center gap-3 font-heading text-xs font-bold uppercase tracking-[0.16em] text-white/90 sm:inline-flex">
+      <span class="eyebrow-line h-0.5 w-8 bg-primary" aria-hidden="true"></span>
+      <span class="eyebrow-text">{eyebrow}</span>
+    </p>
+    <Tag class="title mt-0 font-heading font-bold leading-[1.02] tracking-[-0.045em] sm:mt-5">
+      {
+        words.map((word, i) => (
+          <>
+            {word.accent && !words[i - 1]?.accent && <br />}
+            <span class:list={["word"]}>
+              <span class:list={["word-inner", word.accent && "title-accent"]} style={`--i:${i}`}>{word.text}</span>
+            </span>{" "}
+          </>
+        ))
+      }
+    </Tag>
+  </div>
+</div>
+
+<style>
+  /* Titulo de portada: escala con el ancho y con la altura (no invade en pantallas bajas). */
+  .title {
+    font-size: clamp(2.75rem, min(6.4vw, 10svh), 6.5rem);
+    max-width: 19ch;
+    color: #fff;
+    /* Sombra corta: una larga se recortaria en la mascara (overflow) de cada palabra.
+       El contraste fuerte lo da .hero-title-scrim en Hero.astro. */
+    text-shadow: 0 1px 3px rgb(14 0 11 / 0.4);
+  }
+
+  .word {
+    display: inline-block;
+    overflow: hidden;
+    /* Aire para descendentes y la tilde: la mascara no corta la "g" ni la "ú". */
+    padding: 0.08em 0.02em 0.12em;
+    margin: -0.08em -0.02em -0.12em;
+    vertical-align: top;
+  }
+  @media (max-width: 639px) {
+    .title { max-width: 12ch; font-size: clamp(2.5rem, 10.5vw, 4rem); }
+  }
+
+  .word-inner {
+    display: inline-block;
+  }
+
+  /* --ease-out lo define .hero (Hero.astro) y se hereda. */
+  @media (prefers-reduced-motion: no-preference) {
+    .eyebrow-line {
+      transform-origin: left;
+      animation: title-line 700ms var(--ease-out) 200ms both;
+    }
+    .eyebrow-text {
+      animation: title-rise 700ms var(--ease-out) 300ms both;
+    }
+      .word-inner {
+      animation: title-word 1100ms var(--ease-out) calc(380ms + var(--i) * 70ms) both;
+    }
+  }
+
+  @keyframes title-line {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes title-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes title-word {
+    /* 130%: con 105% asomaban tildes y puntos por el borde inferior de la mascara. */
+    from { transform: translateY(130%); }
+    to { transform: translateY(0); }
+  }
+</style>

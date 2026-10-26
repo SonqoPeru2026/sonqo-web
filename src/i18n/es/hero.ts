@@ -1,6 +1,12 @@
 export default {
+  impactTitle: "Nuestro impacto",
+  impactSinceLabel: "Abrigando con el corazón",
+  impactSinceStory: "Abrigamos con el corazón, junto a cada familia.",
+  impactChildrenStory: "Cada casaca se entrega personalmente, niño por niño.",
+  impactCommunitiesStory: "Viajamos hasta las comunidades altoandinas para llevar abrigo.",
+
   // Hero editorial: foto documental + copy fijo (contenido del slide 1 de Sanity).
-  eyebrow: "Sonqo · del quechua: corazón",
+  eyebrow: "Desde 2016, llegamos donde más nos necesitan",
   ctaPrimary: "Dona ahora",
   ctaSecondary: "Conoce la causa",
   missionNote: "Sonqo significa corazón en quechua. Así trabajamos: desde el corazón, junto a cada familia.",
@@ -10,6 +16,22 @@ export default {
   // Etiquetas de la tarjeta de impacto (los numeros viven en Hero.astro, migran a Sanity).
   statChildrenLabel: "niños abrigados",
   statCommunitiesLabel: "Comunidades",
+  newTitleBefore: "Que ningún niño ",
+  newTitleAccent: "pase frío.",
+  newTitleAfter: "",
+  newDescription: "Confeccionamos casacas térmicas y las entregamos personalmente en las comunidades altoandinas.",
+  ctaPrimaryNew: "Quiero ayudar",
+  ctaSecondaryNew: "Mira cómo lo hacemos",
+  secureNote: "Donación segura · Elige el monto · Recibe confirmación",
+  statTeamLabel: "Equipo ad honorem",
+  mainImageAlt: "Cuatro niños con casacas térmicas Sonqo en una comunidad rodeada por montañas de los Andes",
+  photoStory: "No enviamos cajas: viajamos hasta cada comunidad y entregamos cada casaca en persona.",
+  journeyImageAlt: "Niños con casacas Sonqo reunidos en la puna andina durante una jornada de entrega",
+  journeyCaption: "Llegamos donde el invierno golpea más fuerte.",
+  continueLabel: "Conoce nuestra misión",
+  teamProof: "Equipo 100% ad honorem",
+  tempLabel: "Friaje en la puna",
+  sinceLabel: "Desde 2016",
 
   slide1Title: 'Abriga con<br />el <span class="text-primary">corazón.</span>',
   slide1Text: "El friaje no da tregua en las alturas del Perú. Cada casaca que confeccionamos y entregamos con nuestras manos, en persona, es un niño o una niña menos pasando frío en las comunidades que más lo necesitan.",

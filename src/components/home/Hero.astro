@@ -2,187 +2,69 @@
 import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import { getLang, useTranslations, localizePath } from "@/i18n/utils";
-import { getHeroSlides, getSiteSettings } from "@/lib/sanity";
-import secondaryPhoto from "@/assets/images/gallery/8.webp";
+import { getSiteSettings } from "@/lib/sanity";
+import HeroImpact from "./HeroImpact.astro";
+import heroPhoto from "@/assets/images/hero-campaign-v2.webp";
 
 const lang = getLang(Astro.url);
 const hero = useTranslations(lang, "hero");
+const { ninosAtendidos, comunidades } = await getSiteSettings();
 
-// Contenido editable por el equipo en Sanity (leído en build; fallback = código).
-// El schema de Sanity soporta varios slides; el hero editorial usa solo el primero
-// como foto + copy principal (los demás quedan disponibles para uso futuro).
-const slides = await getHeroSlides(lang);
-const slide = slides[0];
-const { ninosAtendidos } = await getSiteSettings();
-
-const STAT_CHILDREN = `${ninosAtendidos.toLocaleString("en-US")}+`;
 ---
 
-<section id="inicio" data-hero class="hero-editorial relative bg-white pt-24 sm:pt-28">
-  <div class="mx-auto grid w-full max-w-[1400px] lg:grid-cols-2 lg:items-stretch">
-    <!-- Fotografía documental (izquierda), real, blanco y negro editorial -->
-    <div class="relative order-1 h-[58vh] min-h-[380px] sm:h-[68vh] lg:h-auto lg:min-h-[85vh]">
-      <div class="hero-photo-frame absolute inset-0 overflow-hidden bg-ink-900">
-        <!-- `slide.img` ya viene con URL resuelta (Sanity o local): <img> plano, sin astro:assets -->
-        <img
-          src={slide.img.src}
-          srcset={slide.img.srcset}
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          width={slide.img.width}
-          height={slide.img.height}
-          alt={slide.alt}
-          loading="eager"
-          fetchpriority="high"
-          class="hero-photo h-full w-full object-cover"
-        />
-      </div>
-
-      <!-- Ficha documental -->
-      <span
-        data-reveal
-        class="absolute left-5 top-5 inline-flex items-center gap-2 bg-white/90 px-3 py-1.5 font-heading text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-900 sm:left-8 sm:top-8"
-      >
-        {hero.photoCaption}
-      </span>
-
-      <!-- Foto secundaria superpuesta (archivo fotográfico, tambien real) -->
-      <div
-        data-reveal
-        style="--reveal-delay: 200ms"
-        class="hero-secondary-photo absolute bottom-4 right-5 w-[46%] max-w-[260px] border-[6px] border-white bg-white shadow-[0_18px_36px_-16px_rgb(0_0_0/0.45)] sm:right-8 lg:-bottom-10 lg:right-10"
-      >
-        <Image
-          src={secondaryPhoto}
-          alt={hero.secondaryImageAlt}
-          widths={[260, 400, 520]}
-          sizes="260px"
-          quality={80}
-          loading="eager"
-          class="hero-photo aspect-[4/5] w-full object-cover"
-        />
-      </div>
-    </div>
-
-    <!-- Contenido editorial (derecha) -->
-    <div
-      class="relative order-2 flex flex-col justify-center px-6 pb-20 pt-16 sm:px-10 sm:pt-20 lg:px-16 lg:pb-16 lg:pt-16 xl:px-20"
-    >
-      <!-- Linea que se dibuja de fondo: hilo andino, no una foto ni un icono generico -->
-      <svg
-        class="hero-line pointer-events-none absolute inset-0 h-full w-full"
-        preserveAspectRatio="none"
-        viewBox="0 0 100 100"
-        aria-hidden="true"
-      >
-        <path
-          d="M 80 2 C 55 18, 98 40, 66 58 S 58 92, 22 98"
-          fill="none"
-          stroke="var(--color-primary)"
-          stroke-width="1.4"
-          vector-effect="non-scaling-stroke"
-        />
-      </svg>
-
-      <span
-        data-reveal
-        class="inline-flex w-fit items-center gap-2.5 font-heading text-xs font-bold uppercase tracking-[0.16em] text-primary"
-      >
-        <span class="size-2 shrink-0 bg-primary" aria-hidden="true"></span>
-        {hero.eyebrow}
-      </span>
-
-      <h1
-        data-reveal
-        style="--reveal-delay: 80ms"
-        class="mt-6 font-heading text-[2.6rem] font-bold leading-[1.08] text-ink-950 sm:text-6xl lg:text-[3.6rem] xl:text-[4rem]"
-        set:html={slide.titulo}
-      />
-
-      <p
-        data-reveal
-        style="--reveal-delay: 160ms"
-        class="mt-6 max-w-lg font-body text-base leading-relaxed text-ink-600 sm:text-lg"
-        set:html={slide.texto}
-      />
-
-      <p
-        data-reveal
-        style="--reveal-delay: 220ms"
-        class="mt-5 max-w-lg border-l-2 border-ink-200 pl-4 font-body text-sm italic leading-relaxed text-ink-500"
-      >
-        {hero.missionNote}
-      </p>
-
-      <div data-reveal style="--reveal-delay: 280ms" class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <a
-          href={localizePath("/donate", lang)}
-          class="hero-cta inline-flex items-center justify-center bg-primary px-9 py-4 font-heading text-sm font-bold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        >
-          {hero.ctaPrimary}
+<section id="inicio" data-hero class="hero relative isolate overflow-hidden bg-burgundy-950 text-white" aria-labelledby="hero-title">
+  <div class="hero-visual absolute inset-0" aria-hidden="true">
+    <Image src={heroPhoto} widths={[640, 960, 1440, 1920, 2560]} sizes="100vw" quality={85} alt="" loading="eager" fetchpriority="high" class="hero-photo h-full w-full object-cover" />
+    <div class="hero-shade absolute inset-0"></div>
+  </div>
+  <div class="hero-layout relative mx-auto flex w-full max-w-[1480px] items-center px-6 sm:px-10 lg:px-12">
+    <div class="hero-copy">
+      <p class="hero-eyebrow mb-6 font-heading text-[0.65rem] font-bold uppercase tracking-[0.16em] text-white/80 sm:text-xs">Sonqo Perú · {hero.locationLine}</p>
+      <h1 id="hero-title" class="hero-title font-heading font-bold">{hero.newTitleBefore}<br /><span>{hero.newTitleAccent}</span></h1>
+      <p id="hero-description" class="hero-description mt-6 max-w-[29rem] text-base leading-relaxed text-white/85 sm:mt-7 sm:text-lg">{hero.newDescription}</p>
+      <div class="hero-actions mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 sm:mt-9">
+        <a href={localizePath("/donate", lang)} aria-describedby="hero-description" class="hero-cta inline-flex min-h-[52px] items-center justify-center gap-4 rounded-full bg-primary px-7 py-3.5 font-heading text-base font-bold text-white transition-colors hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {hero.ctaPrimaryNew}<Icon name="arrow" class="h-3.5 w-auto" aria-hidden="true" />
         </a>
-        <a
-          href="#proposito"
-          class="group inline-flex items-center gap-2 font-heading text-sm font-bold text-primary transition-colors duration-200 hover:text-primary-600"
-        >
-          {hero.ctaSecondary}
-          <Icon name="arrow" class="h-3.5 w-auto transition-transform duration-200 ease-out group-hover:translate-x-1" />
-        </a>
+        <a href="#process" class="inline-flex min-h-12 items-center gap-2 font-heading text-sm font-medium text-white/90 underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">{hero.ctaSecondaryNew}<Icon name="chevron-right" class="size-4" aria-hidden="true" /></a>
       </div>
-
-      <p
-        data-reveal
-        style="--reveal-delay: 340ms"
-        class="mt-10 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-heading text-xs font-semibold uppercase tracking-[0.06em] text-ink-400"
-      >
-        <span class="inline-flex items-center gap-1.5">
-          <span class="size-1.5 bg-primary" aria-hidden="true"></span>
-          {hero.locationLine}
-        </span>
-        <span class="h-3 w-px bg-ink-200" aria-hidden="true"></span>
-        <span class="tabular-nums text-ink-600">{STAT_CHILDREN}</span>
-        {hero.statChildrenLabel}
-      </p>
     </div>
   </div>
+  <svg class="hero-divider" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 0C240 72 1200 72 1440 0V60H0Z" fill="var(--color-cream)" /></svg>
 </section>
+<HeroImpact lang={lang} children={ninosAtendidos} communities={comunidades} />
 
 <style>
-  .hero-photo {
-    filter: grayscale(1) contrast(1.08);
+  .hero-layout { min-height: clamp(660px, 88svh, 960px); padding-top: 112px; padding-bottom: 108px; }
+  .hero-copy { width: min(48%, 620px); }
+  .hero-title { font-size: clamp(3.5rem, 5.35vw, 5.75rem); line-height: 1.04; letter-spacing: -0.045em; }
+  .hero-photo { object-position: 60% center; }
+  .hero-shade { background: linear-gradient(90deg, rgb(14 0 11 / .62) 0%, rgb(14 0 11 / .38) 35%, rgb(14 0 11 / .06) 64%, transparent 100%); }
+  .hero-divider { position: absolute; bottom: -1px; left: 0; width: 100%; height: 54px; pointer-events: none; }
+  /* Reserve the remaining first-screen space for the impact strip.
+     A content-driven minimum allows short viewports and text zoom to scroll. */
+  @media (min-width: 1024px) {
+    .hero-layout { min-height: clamp(480px, calc(100svh - 224px), 800px); padding-top: 104px; padding-bottom: 52px; }
+    .hero-title { font-size: clamp(3rem, min(5.1vw, 8.5svh), 5.25rem); }
+    .hero-eyebrow { margin-bottom: 18px; }
+    .hero-description { margin-top: 20px; font-size: 1rem; }
+    .hero-actions { margin-top: 24px; }
+    .hero-photo { object-position: 60% 85%; }
+    .hero-divider { height: 34px; }
   }
-
-  /* Foto secundaria: pequeña rotación al entrar, foto colocada "a mano" */
-  .hero-secondary-photo {
-    transform: rotate(-2deg);
+  @media (max-width: 767px) {
+    .hero-layout { min-height: max(760px, 94svh); align-items: flex-end; padding-top: 360px; padding-bottom: 66px; }
+    .hero-copy { width: 100%; max-width: 36rem; }
+    .hero-photo { object-position: 80% top; }
+    .hero-shade { background: linear-gradient(0deg, rgb(14 0 11 / .97) 0%, rgb(14 0 11 / .85) 25%, rgb(14 0 11 / .25) 60%, rgb(14 0 11 / .08) 100%); }
+    .hero-eyebrow { max-width: 30ch; line-height: 1.7; margin-bottom: 16px; }
+    .hero-title { font-size: clamp(2.75rem, 9.8vw, 4.5rem); }
+    .hero-divider { height: 26px; }
   }
-
-  /* Linea de fondo: se dibuja una vez al cargar (hilo andino), no un icono generico */
-  .hero-line path {
-    stroke-dasharray: 300;
-    stroke-dashoffset: 300;
-    opacity: 0.3;
-    animation: hero-line-draw 1800ms cubic-bezier(0.23, 1, 0.32, 1) 200ms forwards;
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy { animation: hero-enter 850ms cubic-bezier(.16, 1, .3, 1) both; }
+    .hero-photo { animation: hero-settle 1500ms cubic-bezier(.16, 1, .3, 1) both; }
   }
-  @keyframes hero-line-draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  /* Feedback de presión en el CTA principal */
-  .hero-cta:active {
-    transform: scale(0.97);
-  }
-
-  /* Acento del titulo: solo color, sin glow/gradiente (direccion editorial) */
-  h1 :global(.text-primary) {
-    color: var(--color-primary);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-line path {
-      animation: none;
-      stroke-dashoffset: 0;
-    }
-  }
+  @keyframes hero-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes hero-settle { from { transform: scale(1.025); } to { transform: scale(1); } }
 </style>

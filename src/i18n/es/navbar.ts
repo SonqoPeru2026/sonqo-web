@@ -1,6 +1,6 @@
 export default {
   purpose: "Propósito",
-  achievements: "Logros",
+  achievements: "Impacto",
   about: "Nosotros",
   gallery: "Galería",
   contact: "Contáctanos",

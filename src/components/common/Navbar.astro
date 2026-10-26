@@ -27,12 +27,12 @@ const langOption = (code: "es" | "en", label: string) => ({
 const langs = [langOption("es", "ES"), langOption("en", "EN")];
 ---
 
-<header transition:animate="none" class="fixed inset-x-0 top-0 z-50 px-4 py-4">
+<header transition:animate="none" class="fixed inset-x-0 top-0 z-50 px-3 py-3 sm:px-4">
   <nav
-    class="mx-auto flex max-w-full items-center justify-between gap-3 rounded-[20px] bg-white px-4 py-4 shadow-[0_8px_24px_-4px_rgb(0_0_0/0.2)] sm:gap-6 sm:px-6 sm:py-5 lg:px-8"
+    class="mx-auto flex max-w-[1480px] items-center justify-between gap-3 rounded-2xl border border-white/70 bg-white/95 px-4 py-2 shadow-[0_4px_20px_-12px_rgb(42_10_31/0.25)] backdrop-blur-xl sm:gap-6 sm:px-6 lg:px-7"
   >
     <a href={home} aria-label="Sonqo Perú" class="text-primary">
-      <Icon name="logo-sonqo" class="h-8 w-auto" />
+      <Icon name="logo-sonqo" class="h-8 w-auto sm:h-8" />
     </a>
 
     <ul class="hidden items-center gap-4 lg:flex lg:gap-8">
@@ -72,7 +72,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
 
       <a
         href={localizePath("/donate", lang)}
-        class="rounded-full bg-primary px-4 py-2 font-heading text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-primary-600 lg:px-6 lg:py-2.5 lg:text-sm"
+      class="inline-flex min-h-11 items-center rounded-full bg-primary px-5 py-2 font-heading text-xs font-bold uppercase tracking-wide text-white shadow-[0_8px_20px_-10px_rgb(228_0_63/0.8)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:px-6 lg:text-sm"
       >
         {t.cta}
       </a>
@@ -84,7 +84,7 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
       type="button"
       aria-label={t.menuOpen}
       aria-controls="mobile-menu"
-      class="text-primary transition-transform hover:scale-110 active:scale-95 lg:hidden"
+      class="flex size-11 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:bg-primary-100 lg:hidden"
     >
       <Icon name="menu" class="h-6 w-auto" />
     </button>
@@ -92,13 +92,13 @@ const langs = [langOption("es", "ES"), langOption("en", "EN")];
 </header>
 
 <!-- Backdrop -->
-<div id="menu-backdrop" transition:animate="none" class="fixed inset-0 z-[55] bg-black/50 md:hidden"></div>
+<div id="menu-backdrop" transition:animate="none" class="fixed inset-0 z-[55] bg-black/50 lg:hidden"></div>
 
 <!-- Drawer móvil (entra desde la izquierda) -->
 <aside
   id="mobile-menu"
   transition:animate="none"
-  class="fixed inset-y-0 right-0 z-[60] flex h-full w-[86%] max-w-sm flex-col bg-primary text-white shadow-2xl md:hidden"
+  class="fixed inset-y-0 right-0 z-[60] flex h-full w-[86%] max-w-sm flex-col bg-primary text-white shadow-2xl lg:hidden"
 >
   <!-- Header -->
   <div class="flex items-center justify-between px-5 py-5">

@@ -54,8 +54,8 @@ const items = [...images, ...images];
   .marquee__track {
     display: flex;
     width: max-content;
-    gap: 1.5rem;
-    padding-inline: 0.75rem;
+    /* Sin gap: el espacio va en cada item, asi -50% cae justo al inicio de la copia
+       (bucle sin salto). */
     animation: marquee-scroll 45s linear infinite;
   }
   .marquee__track--reverse {
@@ -66,6 +66,7 @@ const items = [...images, ...images];
   }
   .marquee__item {
     flex: none;
+    margin-inline: 0.75rem;
     width: 200px;
     height: 150px;
   }
