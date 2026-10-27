@@ -63,12 +63,24 @@ const COLD = 20;
     .hero-divider { height: 34px; }
   }
   @media (max-width: 767px) {
-    .hero-layout { min-height: max(760px, 94svh); align-items: flex-end; padding-top: 360px; padding-bottom: 66px; }
+    /* Todo el copy + CTA entra en el primer viewport (svh = con las barras de Safari visibles).
+       El contenido manda la altura minima; la foto ocupa el aire de arriba. */
+    /* Altura dictada por el contenido: sin cielo vacio arriba. Asi la seccion de impacto
+       asoma en el primer viewport y se entiende que hay mas abajo. */
+    .hero-layout { min-height: 0; align-items: flex-end; padding-top: 6.25rem; padding-bottom: 3rem; }
     .hero-copy { width: 100%; max-width: 36rem; }
-    .hero-photo { object-position: 80% top; }
-    .hero-shade { background: linear-gradient(0deg, rgb(14 0 11 / .97) 0%, rgb(14 0 11 / .85) 25%, rgb(14 0 11 / .25) 60%, rgb(14 0 11 / .08) 100%); }
-    .hero-eyebrow { max-width: 30ch; line-height: 1.7; margin-bottom: 16px; }
-    .hero-title { font-size: clamp(2.75rem, 9.8vw, 4.5rem); }
+    /* Anclada abajo + zoom: los ninos (parte baja de la foto) quedan detras del copy. */
+    .hero-photo { object-position: 72% 100%; scale: 1.3; transform-origin: 72% 100%; }
+    /* Scrim superior: da contraste al termometro y al navbar sobre las nubes claras. */
+    .hero-shade { background:
+      linear-gradient(180deg, rgb(14 0 11 / .45) 0%, transparent 24%),
+      linear-gradient(0deg, rgb(14 0 11 / .96) 0%, rgb(14 0 11 / .82) 34%, rgb(14 0 11 / .25) 64%, rgb(14 0 11 / .05) 100%); }
+    .hero-eyebrow { max-width: none; margin-bottom: 14px; font-size: .625rem; letter-spacing: .14em; }
+    .hero-title { font-size: clamp(2.6rem, 11.5vw, 4.5rem); }
+    .hero-description { margin-top: 16px; font-size: 1rem; line-height: 1.55; }
+    .hero-actions { margin-top: 24px; flex-direction: column; align-items: stretch; gap: 4px; }
+    .hero-cta { width: 100%; min-height: 56px; box-shadow: 0 10px 28px -10px rgb(228 0 63 / .7); }
+    .hero-actions a:not(.hero-cta) { justify-content: center; }
     .hero-divider { height: 26px; }
   }
   .hero-line { display: block; overflow: hidden; padding: 0.06em 0.02em 0.14em; margin: -0.06em -0.02em -0.14em; }
@@ -85,7 +97,8 @@ const COLD = 20;
   .hero-temp-text { display: flex; flex-direction: column; justify-content: center; gap: .15rem; }
   .hero-temp-value { font-size: clamp(2rem, 2.6vw, 2.5rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.045em; color: color-mix(in oklab, #fff calc((1 - var(--cold)) * 100%), #a9d6f5); }
   .hero-temp-label { font-size: .6875rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgb(255 255 255 / .85); }
-  @media (max-width: 767px) { .hero-temp { top: 5.75rem; right: 1.25rem; bottom: auto; gap: .7rem; } .hero-therm { height: 3.5rem; } .hero-temp-value { font-size: 1.75rem; } .hero-temp-label { font-size: .625rem; } }
+  /* En mobile el termometro compite con la foto y el navbar: se oculta (el dato sigue en Purpose). */
+  @media (max-width: 767px) { .hero-temp { display: none; } }
   @media (prefers-reduced-motion: no-preference) {
     /* Coreografia: eyebrow -> titulo (linea a linea) -> descripcion -> CTAs -> chip. Ola corta (~1.3s). */
     .hero-eyebrow-line { transform-origin: left; animation: hero-line-grow 700ms cubic-bezier(.16, 1, .3, 1) 150ms both; }
