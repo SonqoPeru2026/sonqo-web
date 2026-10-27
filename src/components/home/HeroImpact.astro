@@ -10,11 +10,11 @@ const items = [
   { icon: "mountains", value: `${communities.toLocaleString(locale)}+`, label: t.statCommunitiesLabel, story: t.impactCommunitiesStory },
 ];
 ---
-<section class="impact" aria-labelledby="hero-impact-title">
+<section class="impact" data-impact data-carousel aria-labelledby="hero-impact-title">
   <h2 id="hero-impact-title" class="sr-only">{t.impactTitle}</h2>
   <ul class="impact-grid">
     {items.map((item, index) => (
-      <li class="impact-item">
+      <li class="impact-item" data-s={index === 0 ? "active" : "after"}>
         <article class="impact-block" tabindex="0" aria-labelledby={`impact-value-${index} impact-label-${index}`} aria-describedby={`impact-story-${index}`}>
           <svg class="impact-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             {item.icon === "heart" && <>
@@ -39,7 +39,13 @@ const items = [
       </li>
     ))}
   </ul>
+  <div class="impact-dots" role="group" aria-label={t.impactTitle}>
+    {items.map((item, index) => (
+      <button type="button" class="impact-dot" data-dot={index} aria-label={`${item.value} ${item.label}`} aria-current={index === 0 ? "true" : undefined}><span class="impact-dot-fill"></span></button>
+    ))}
+  </div>
 </section>
+<noscript><style>.impact-dots{display:none!important}.impact[data-carousel] .impact-grid{display:block!important}.impact[data-carousel] .impact-item{opacity:1!important;visibility:visible!important;transform:none!important}</style></noscript>
 
 <style>
   .impact { background: var(--color-cream); color: var(--color-burgundy); padding: 22px 24px 20px; }
@@ -81,7 +87,7 @@ const items = [
   @media (max-width: 767px) {
     .impact { padding: 12px 24px 16px; }
     .impact-grid { grid-template-columns: 1fr; max-width: 480px; }
-    .impact-block { padding: 26px 12px; }
+    .impact-block { padding: 20px 12px 8px; }
     .impact-icon { width: 56px; height: 56px; margin-bottom: 14px; }
     .impact-value { font-size: 2rem; }
     .impact-story { margin-top: 12px; }
@@ -90,4 +96,85 @@ const items = [
   @media (prefers-reduced-motion: reduce) {
     .impact-story, .impact-block:is(:hover, :focus) .impact-icon { transform: none; }
   }
+
+  /* Mobile: los 3 datos rotan solos como un carrusel (uno a la vez, ~5.5 s).
+     Todos comparten la misma celda de la grilla -> la altura es la del mas alto, sin saltos de layout. */
+  .impact-dots { display: none; }
+  @media (max-width: 767px) {
+    .impact[data-carousel] .impact-grid { touch-action: pan-y; }
+    .impact[data-carousel] .impact-item { grid-area: 1 / 1; }
+    .impact[data-carousel] .impact-item::before { display: none; }
+    .impact[data-carousel] .impact-item:not([data-s="active"]) { opacity: 0; visibility: hidden; pointer-events: none; }
+    .impact[data-carousel] .impact-item[data-s="before"] { transform: translateX(-28px); }
+    .impact[data-carousel] .impact-item[data-s="after"] { transform: translateX(28px); }
+    .impact[data-carousel] .impact-dots { display: flex; justify-content: center; gap: 2px; }
+    .impact-dot { position: relative; width: 40px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
+    .impact-dot::before, .impact-dot-fill { content: ""; position: absolute; left: 8px; right: 8px; top: 50%; height: 4px; margin-top: -2px; border-radius: 4px; }
+    .impact-dot::before { background: rgb(84 5 69 / .16); }
+    .impact-dot-fill { background: var(--color-primary); transform: scaleX(0); transform-origin: left; }
+    .impact-dot:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -4px; border-radius: 8px; }
+    .impact-dot[aria-current="true"] .impact-dot-fill { transform: none; }
+  }
+  @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+    /* Entra desacelerando (450 ms), sale mas rapido (250 ms): lo nuevo manda. */
+    .impact[data-carousel] .impact-item { transition: opacity 250ms cubic-bezier(.4, 0, 1, 1), transform 250ms cubic-bezier(.4, 0, 1, 1), visibility 0s linear 250ms; }
+    .impact[data-carousel] .impact-item[data-s="active"] { transition: opacity 450ms cubic-bezier(.16, 1, .3, 1) 120ms, transform 450ms cubic-bezier(.16, 1, .3, 1) 120ms, visibility 0s; }
+    /* El relleno del indicador marca el tiempo restante; su animationend avanza el slide. */
+    .impact-dot[aria-current="true"] .impact-dot-fill { transform: scaleX(0); animation: impact-fill var(--impact-interval, 5500ms) linear forwards; }
+    .impact[data-paused] .impact-dot-fill { animation-play-state: paused; }
+  }
+  @keyframes impact-fill { to { transform: scaleX(1); } }
 </style>
+
+<script>
+  // Carrusel mobile de la franja de impacto. Sin timers: avanza cuando termina el relleno del
+  // indicador (CSS), asi pausar = pausar la animacion. Con prefers-reduced-motion no hay autoplay.
+  function initImpact() {
+    const root = document.querySelector<HTMLElement>("[data-impact]:not([data-bound])");
+    if (!root) return;
+    root.setAttribute("data-bound", "");
+    const items = [...root.querySelectorAll<HTMLElement>(".impact-item")];
+    const dots = [...root.querySelectorAll<HTMLElement>(".impact-dot")];
+    const grid = root.querySelector<HTMLElement>(".impact-grid")!;
+    let index = 0;
+    root.dataset.paused = "";
+
+    const go = (next: number, dir: 1 | -1) => {
+      if (next === index) return;
+      const [enter, leave] = dir === 1 ? ["after", "before"] : ["before", "after"];
+      const incoming = items[next];
+      incoming.style.transition = "none"; // coloca el entrante en su lado sin animar
+      incoming.dataset.s = enter;
+      void incoming.offsetWidth;
+      incoming.style.transition = "";
+      items.forEach((el, i) => { el.dataset.s = i === next ? "active" : i === index ? leave : enter; });
+      dots.forEach((d, i) => (i === next ? d.setAttribute("aria-current", "true") : d.removeAttribute("aria-current")));
+      index = next;
+    };
+    const step = (dir: 1 | -1) => go((index + dir + items.length) % items.length, dir);
+
+    root.addEventListener("animationend", (e) => { if ((e as AnimationEvent).animationName === "impact-fill") step(1); });
+    dots.forEach((d, i) => d.addEventListener("click", () => go(i, i > index ? 1 : -1)));
+
+    // Pausa: fuera de pantalla, pestana oculta, dedo apoyado, foco en un indicador.
+    const holds = new Set<string>(["offscreen"]);
+    const sync = () => (holds.size ? root.setAttribute("data-paused", "") : root.removeAttribute("data-paused"));
+    const hold = (k: string, on: boolean) => { on ? holds.add(k) : holds.delete(k); sync(); };
+    new IntersectionObserver(([en]) => hold("offscreen", !en.isIntersecting), { threshold: 0.4 }).observe(root);
+    document.addEventListener("visibilitychange", () => hold("hidden", document.hidden));
+    root.addEventListener("focusin", () => hold("focus", true));
+    root.addEventListener("focusout", () => hold("focus", false));
+
+    // Swipe horizontal.
+    let x0 = 0;
+    grid.addEventListener("pointerdown", (e) => { x0 = e.clientX; hold("touch", true); });
+    const end = (e: PointerEvent) => {
+      hold("touch", false);
+      const dx = e.clientX - x0;
+      if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+    };
+    grid.addEventListener("pointerup", end);
+    grid.addEventListener("pointercancel", () => hold("touch", false));
+  }
+  document.addEventListener("astro:page-load", initImpact);
+</script>
