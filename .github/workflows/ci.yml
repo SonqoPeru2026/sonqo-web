@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+# Un run por rama/PR: si llega un push nuevo, cancela el anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Valores dummy: el build solo valida que el schema de env exista y compile.
+    # Los secretos reales viven en Vercel, nunca aqui. Sanity caido/vacio usa los fallbacks del codigo.
+    env:
+      PUBLIC_SANITY_PROJECT_ID: ci-placeholder
+      SANITY_DATASET: production
+      RESEND_API_KEY: ci-placeholder
+      RESEND_FROM: onboarding@resend.dev
+      RESEND_TO: ci@example.com
+      PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+      SUPABASE_SERVICE_KEY: ci-placeholder
+      UPSTASH_REDIS_REST_URL: https://ci-placeholder.upstash.io
+      UPSTASH_REDIS_REST_TOKEN: ci-placeholder
+      MP_ACCESS_TOKEN: ci-placeholder
+      PUBLIC_MP_PUBLIC_KEY: ci-placeholder
+      MP_WEBHOOK_SECRET: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Cache de dependencias
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Instalar (lockfile congelado)
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: |
+          start=$(date +%s)
+          bun run build
+          echo "BUILD_SECONDS=$(( $(date +%s) - start ))" >> "$GITHUB_ENV"
+
+      - name: Resumen de metricas
+        if: success()
+        run: |
+          {
+            echo "### Build OK"
+            echo "| Metrica | Valor |"
+            echo "|---|---|"
+            echo "| Tiempo de build | ${BUILD_SECONDS}s |"
+            echo "| Output (.vercel/output) | $(du -sh .vercel/output | cut -f1) |"
+            echo "| Assets estaticos | $(du -sh .vercel/output/static | cut -f1) |"
+            echo "| JS cliente (_astro) | $(du -ch .vercel/output/static/_astro/*.js 2>/dev/null | tail -1 | cut -f1) |"
+            echo "| Paginas HTML | $(find .vercel/output/static -name '*.html' | wc -l) |"
+          } >> "$GITHUB_STEP_SUMMARY"
