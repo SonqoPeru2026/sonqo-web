@@ -86,7 +86,7 @@ const items = [
   }
   @media (max-width: 767px) {
     .impact { padding: 12px 24px 16px; }
-    .impact-grid { grid-template-columns: 1fr; max-width: 480px; }
+    .impact-grid { grid-template-columns: minmax(0, 1fr); max-width: 480px; }
     .impact-block { padding: 20px 12px 8px; }
     .impact-icon { width: 56px; height: 56px; margin-bottom: 14px; }
     .impact-value { font-size: 2rem; }
@@ -101,6 +101,8 @@ const items = [
      Todos comparten la misma celda de la grilla -> la altura es la del mas alto, sin saltos de layout. */
   .impact-dots { display: none; }
   @media (max-width: 767px) {
+    /* Los slides inactivos estan desplazados 28px: sin recorte ensanchan el scroll horizontal. */
+    .impact[data-carousel] { overflow-x: clip; }
     .impact[data-carousel] .impact-grid { touch-action: pan-y; }
     .impact[data-carousel] .impact-item { grid-area: 1 / 1; }
     .impact[data-carousel] .impact-item::before { display: none; }
