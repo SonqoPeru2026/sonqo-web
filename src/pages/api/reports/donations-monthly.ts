@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
-import { RESEND_FROM, RESEND_TO, REPORT_TO, CRON_SECRET } from "astro:env/server";
+import { RESEND_FROM, RESEND_TO, REPORT_TO } from "astro:env/server";
+import { isAuthorizedCron } from "@/lib/cron-auth";
 import { resend } from "@/lib/resend";
 import { formatSoles } from "@/lib/donation";
 import { previousMonthRange } from "@/lib/datetime";
@@ -12,11 +13,8 @@ export const prerender = false;
 
 // Cron mensual: Excel de donaciones aprobadas del mes anterior → REPORT_TO (o RESEND_TO).
 export const GET: APIRoute = async ({ request }) => {
-  // Auth: sin CRON_SECRET (dev) se permite; con él, solo Vercel Cron.
-  if (CRON_SECRET) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${CRON_SECRET}`) return fail(401, "no autorizado");
-  }
+  // Auth: solo Vercel Cron. Falla cerrado en producción (ver lib/cron-auth).
+  if (!isAuthorizedCron(request)) return fail(401, "no autorizado");
 
   try {
     // 2. Rango del mes anterior en hora Lima.

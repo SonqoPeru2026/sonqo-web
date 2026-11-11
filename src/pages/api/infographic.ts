@@ -89,7 +89,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   // 7. Email con la infografía al usuario (best-effort).
   try {
-    const html = await render(LeadUser({ name }));
+    const html = await render(LeadUser());
     const { error } = await resend.emails.send({
       from: RESEND_FROM,
       to: email,

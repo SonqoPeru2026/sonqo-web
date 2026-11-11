@@ -80,7 +80,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   // 6. Email de confirmación al usuario (best-effort: no rompe la solicitud si falla,
   try {
-    const html = await render(ContactUser({ name, email, phone, message }));
+    const html = await render(ContactUser());
     const { error } = await resend.emails.send({
       from: RESEND_FROM,
       to: email,

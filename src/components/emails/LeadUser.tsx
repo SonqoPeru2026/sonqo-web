@@ -1,10 +1,6 @@
 import { Heading, Section, Text } from "@react-email/components";
 import { EmailLayout, Button, brand, SITE } from "./EmailLayout";
 
-export interface LeadUserProps {
-  name: string;
-}
-
 const HERO_SRC =
   "https://res.cloudinary.com/dpoihx1r5/image/upload/v1782301008/Hero_Image_frskni.png";
 
@@ -19,7 +15,8 @@ const items = [
 ];
 
 // Email que recibe la persona que descargó la infografía.
-export function LeadUser({ name }: LeadUserProps) {
+// SEGURIDAD: no repite el nombre que escribió el visitante (ver ContactUser).
+export function LeadUser() {
   return (
     <EmailLayout
       preview="Tu infografía de Sonqo está lista"
@@ -32,7 +29,7 @@ export function LeadUser({ name }: LeadUserProps) {
         Tu infografía está lista
       </Heading>
       <Text style={{ color: brand.body, fontSize: "15px", lineHeight: "24px", margin: "0 0 24px" }}>
-        Hola {name}, gracias por tu interés en Sonqo. Descarga la infografía y conoce el origen de
+        Hola, gracias por tu interés en Sonqo. Descarga la infografía y conoce el origen de
         nuestro nombre, nuestra misión y cómo abrigamos a los niños de las comunidades altoandinas
         de todo el Perú con casacas térmicas de calidad.
       </Text>
@@ -79,7 +76,5 @@ export function LeadUser({ name }: LeadUserProps) {
     </EmailLayout>
   );
 }
-
-LeadUser.PreviewProps = { name: "María" } satisfies LeadUserProps;
 
 export default LeadUser;

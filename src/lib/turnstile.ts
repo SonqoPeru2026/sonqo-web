@@ -28,8 +28,9 @@ export async function verifyTurnstileToken(
   expectedAction: string,
   clientIp: string | null,
 ): Promise<boolean> {
-  // Sin secret configurado (dev sin keys todavía) → degradar sin romper, como MP.
-  if (!TURNSTILE_SECRET_KEY) return true;
+  // Sin secret: en dev se degrada sin romper; en producción falla cerrado
+  // (si la variable se pierde en Vercel, el anti-bot NO se apaga en silencio).
+  if (!TURNSTILE_SECRET_KEY) return !import.meta.env.PROD;
 
   if (typeof token !== "string" || token.length === 0 || token.length > 2048) {
     return false;

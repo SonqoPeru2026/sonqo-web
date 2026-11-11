@@ -47,21 +47,28 @@ export const POST: APIRoute = async ({ request, url }) => {
     return okResponse();
   }
 
-  // 3. Idempotencia: no procesar dos veces el mismo pago.
-  const key = `mp:processed:${dataId}`;
-  if (await redis.get(key)) return okResponse();
-
-  // 4. Consultar el estado real del pago en MercadoPago (fuente de verdad).
+  // 3. Consultar el estado real del pago en MercadoPago (fuente de verdad).
   const client = getPaymentClient();
   if (!client) return okResponse();
 
+  // Clave de idempotencia, reclamada tras conocer el estado (ver paso 4).
+  let key: string | null = null;
+
   try {
     const payment = await client.get({ id: String(dataId) });
-    console.info(`[mp-webhook] pago ${dataId} → ${payment.status}`);
+    const status = payment.status ?? PAYMENT_STATUS.unknown;
+    console.info(`[mp-webhook] pago ${dataId} → ${status}`);
+
+    // 4. Idempotencia POR ESTADO: un pago pasa por varios (pending → approved), y cada
+    // transición debe procesarse una vez. SET NX es atómico: si dos notificaciones
+    // llegan a la vez, solo una gana y se envían los emails una sola vez.
+    key = `mp:processed:${dataId}:${status}`;
+    const claimed = await redis.set(key, 1, { nx: true, ex: 86400 }); // 24h
+    if (!claimed) return okResponse();
 
     // Actualiza solo el status (la fila y el contacto ya los creó create-payment.ts).
     const paymentId = String(payment.id ?? dataId);
-    await updateDonationStatus(paymentId, payment.status ?? PAYMENT_STATUS.unknown, payment.date_approved ?? null);
+    await updateDonationStatus(paymentId, status, payment.date_approved ?? null);
 
     // Emails de donación aprobada: agradecimiento al donante + aviso al equipo.
     // Best-effort (try/catch propio cada uno; no deben romper el 200 a MP).
@@ -125,10 +132,11 @@ export const POST: APIRoute = async ({ request, url }) => {
       }
     }
 
-    await redis.set(key, 1, { ex: 86400 }); // marca procesado (24h)
   } catch (err) {
     console.error("[mp-webhook] error consultando el pago:", err);
     captureError(err, { scope: "mp-webhook", extra: { step: "process-payment" } });
+    // Libera la clave para que el reintento de MP pueda procesar esta transición.
+    if (key) await redis.del(key).catch(() => {});
     return new Response("error", { status: 500 }); // MP reintentará
   }
 
